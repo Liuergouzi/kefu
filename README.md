@@ -33,7 +33,7 @@
 	+	（4）找到socket\src\main.js文件里的 axios.defaults.headers={ 'content-type': 'application/json', 'Authorization': 'Bearer ' + '你的apikey' } 把apikey换成你自己在chatGPt官网里边申请的apikey  
 	+	（5）以上都修改好了之后：  
 	 	  cd 进入service文件夹：  安装依赖：npm install  ；运行：node service.js  
-		  cd进入socket文件夹：  安装依赖：npm install  ；运行：node run service  ；打包：npm run build 
+		  cd进入socket文件夹：  安装依赖：npm install  ；运行：npm run serve  ；打包：npm run build 
 	+	（6）运行起来或打包之后，用户端访问路径为：你的地址 + /index.html#/  客服端访问路径为 你的地址 + /#/customerService  
 -------------------------------------------------------------------------------------------------
 
