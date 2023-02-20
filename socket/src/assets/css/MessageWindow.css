@@ -1,0 +1,150 @@
+.RightCont {
+    -webkit-box-flex: 1;
+    overflow-y: scroll;
+}
+
+.RightCont::-webkit-scrollbar {
+    width: 15px;
+}
+
+.RightCont ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.RightCont li {
+    width: 100%;
+    height: 50px;
+    /*display: -webkit-box;*/
+    /*-webkit-box-orient: horizontal;*/
+    margin-top: 20px;
+}
+
+.customerServiceDiv {
+    float: left;
+    margin: 0.25rem 0rem;
+    display: flex;
+    position: relative;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.answerHead {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    margin-left: 15px;
+    float: left;
+}
+
+.answerHead img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+}
+
+.answers {
+    width: auto;
+    background: #eeeeee;
+    padding: 5px 20px;
+    margin: 4px;
+    line-height: 30px;
+    font-size: 14px;
+    border-radius: 10px;
+    margin-left: 10px;
+    position: relative;
+    float: left;
+    color: black;
+}
+
+.answers .jiao {
+    position: absolute;
+    left: -8px;
+    top: 10px;
+}
+
+.myselfDiv {
+    float: right;
+    margin: 0.35rem 0;
+    display: flex;
+    position: relative;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.nesHead {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    margin-left: 15px;
+    float: right;
+}
+
+.nesHead img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+}
+
+.news {
+    width: auto;
+    height: auto;
+    background: #FDE7E9;
+    padding: 10px 20px;
+    margin: 4px;
+    line-height: 20px;
+    font-size: 14px;
+    border-radius: 10px;
+    position: relative;
+    float: right;
+    color: #635C5B;
+    max-width: 350px;
+}
+
+.news .jiao {
+    position: absolute;
+    right: -8px;
+    top: 10px;
+}
+
+.news .Expr {
+    width: 30px;
+    height: 30px;
+    margin: 5px;
+}
+
+.SendImage {
+    padding: 0.08rem;
+    border-radius: 11px;
+    max-width: 150px;
+    margin-right: 1rem;
+    overflow: hidden;
+    max-height: 150px;
+    height: auto;
+}
+
+.SendImage img {
+    width: 100%;
+    height: 100%;
+}
+
+.noticeDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.moreSession {
+    width: auto;
+    height: 20px;
+    background: #D1D1D1;
+    border-radius: 20px;
+    color: #fff;
+    line-height: 16px;
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 2px;
+    padding: 2px 4px;
+    font-size: 12px;
+}

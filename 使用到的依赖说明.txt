@@ -1,0 +1,65 @@
+### 作者【轮子哥】
+
+###	服务端service  返回数据均以     {"code":xxx,"type":"xxx","message":"xxx","data":{} }	的格式为标准
+### 除了mysql.js文件，其余文件中的方法返回值统一以statu.json中的返回值为标准,
+###	因为mysql.js文件中的方法仅在service.js中进行调用，进行调用拿到返回值之后再统一以statu.json标准输出，不对其方法中的返回值直接对外输出，而是间接输出，所以虽然可以但是没必要
+### 其他文件中的方法中，如verification.js，进行调用之后，有部分内容将会对verification.js的返回值直接对外输出
+
+### 前端socket  提交数据均以 {"xxx":"xxx","yyy":"yyy"}	的格式为标准
+
+
+###	初始安装依赖
+
+###	安装需要在node安装目录下的 node_modules\npm\npmrc文件添加代理
+	registry = https://registry.npm.taobao.org
+	disturl=https://npm.taobao.org/dist
+
+###	安装express
+	npm install express -i --save
+
+###	安装mongoose数据库
+###	npm install mongoose -i --save
+
+###	socket.io即时通讯
+	npm install socket.io -i --save
+	
+### 全局安装
+    npm install vue-socket.io --save
+
+###	mysql数据库
+	npm install mysql -i --save
+	
+### 异步控制流
+    npm install async
+
+###	防止xss攻击
+	npm install xss -i --save
+
+###	后端数据解密
+	npm install node-rsa -i --save
+
+###	生成token
+	npm install jsonwebtoken -i --save
+
+###	前端数据加密
+	npm install jsencrypt -i --save	
+
+###	前端即时通讯
+	npm install socket.io-client -i --save
+
+###	安装fingerprintjs2
+	npm install fingerprintjs2 -i --save
+
+###	ajax
+    npm install axios -i --save
+
+###	vant组件库
+    npm install vant -i --save
+
+###	按需引入vant
+	npm install babel-plugin-import -i --save
+	    "babel-plugin-import": "^1.13.5",
+	
+
+###	vant 学习网址https://vant-contrib.gitee.io/vant/#/zh-CN	
+

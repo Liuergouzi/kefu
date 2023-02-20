@@ -1,0 +1,380 @@
+.serviceBody {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ccc;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.icon-wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.icon-wrapper .van-icon-success {
+    line-height: 26px;
+    color: #89fa19;
+}
+
+.icon-wrapper .van-icon-cross {
+    line-height: 26px;
+    color: var(--van-gray-5);
+}
+
+.van-switch--on {
+    background: #a0e5b7 !important;
+}
+
+.serviceHead {
+    height: 52px;
+    width: 100%;
+    display: flex;
+
+    /*width: 100%;*/
+    /*height: 52px;*/
+    /*display: -webkit-box;*/
+    /*-webkit-box-orient: horizontal;*/
+}
+
+.serviceHeadLeft {
+    width: 400px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.serviceHeadRight {
+    width: 100px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.serviceHeadCenter {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.serviceHeadImg {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    margin: 0 10px;
+    margin-top: 3px;
+}
+
+.serviceHeadImg img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.serviceHeadName {
+    width: auto;
+    height: 52px;
+    line-height: 52px;
+    color: white;
+    font-size: 14px;
+    text-decoration: underline;
+}
+
+.serviceHeadNameNone {
+    width: auto;
+    height: 52px;
+    line-height: 52px;
+    color: white;
+    font-size: 14px;
+}
+
+.van-notice-bar {
+    width: 80%;
+    background: rgb(255 255 255 / 0%) !important;
+    height: 52px !important;
+}
+
+.van-button--primary {
+    background: rgb(255 255 255 / 0%) !important;
+    border: 0 !important;
+}
+
+.serviceStateDiv {
+    background: #c8eed0;
+    display: flex;
+    height: 20px;
+    width: 48px;
+    font-size: 12px;
+    align-items: center;
+    border-start-end-radius: 10px;
+    border-start-start-radius: 10px;
+    border-end-end-radius: 10px;
+    border-end-start-radius: 10px;
+    margin-left: 5px;
+    margin-top: 16px;
+}
+
+.serviceStateGreenDot {
+    background: #63ec0b;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+.serviceStateRedDot {
+    background: #f50216;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+.noPeople {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.noPeople img {
+    width: 100%;
+    height: auto;
+}
+
+.context {
+    -webkit-box-flex: 1;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+}
+
+
+.conLeft {
+    width: 250px;
+    overflow: auto;
+
+    border-right: 10px solid #FAFAFA;
+}
+
+.conLeft::-webkit-scrollbar {
+    width: 0;
+}
+
+.conLeft ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.conLeft ul .conLeftTop {
+    width: 100%;
+    height: 30px;
+    text-indent: 10px;
+    line-height: 30px;
+    position: relative;
+    font-weight: 700;
+    color: #000;
+    cursor: pointer;
+    font-size: 14px;
+    padding-top: 3px;
+}
+
+.conLeft li {
+    width: 100%;
+    height: 62px;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+}
+
+.conLeft li .liLeft {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.liLeft img {
+    height: 50px;
+    width: auto;
+}
+
+.liRight {
+    width: 70%;
+    position: relative;
+}
+
+.liRight span {
+    display: block;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.liRight span:last-child {
+    font-size: 14px;
+    color: #767676;
+    line-height: 15px;
+    overflow: hidden;
+}
+
+.intername {
+    height: 40px;
+    line-height: 40px;
+}
+
+.infor {
+    font-size: 12px !important;
+    color: #707070;
+    width: 98%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.closeSession {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    padding: 2px;
+    text-align: center;
+}
+
+.un_read {
+    display: inline-block;
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    line-height: 17px;
+    padding: 2px;
+    text-align: center;
+    background: #DA2339;
+    color: #fff;
+    font-size: 12px;
+}
+
+.isSelect {
+    background: #FFEBEC;
+}
+
+.conRight {
+    -webkit-box-flex: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.layout-empty {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 85vh;
+}
+
+.layout-empty-conatiner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.Righthead {
+    width: 100%;
+    height: 42px;
+    border-bottom: 1px solid #ccc;
+}
+
+.headName {
+    width: auto;
+    height: 100%;
+    line-height: 42px;
+    margin-left: 20px;
+    font-family: "微软雅黑";
+    font-size: 18px;
+    float: left;
+}
+
+.RightFoot {
+    /*width: 100%;
+	height: 118px;
+	border-top: 1px solid #ccc;
+	position: relative;*/
+    width: 100%;
+    position: relative;
+    background: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 220px;
+}
+
+.notAllowSeesion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(210, 210, 210, 0.5);
+    z-index: 9;
+}
+
+.sendContent {
+    position: relative;
+    height: 100%;
+    box-shadow: 0 0 6px 3px rgba(0, 0, 0, .06);
+    border: 1px solid rgba(142, 160, 188, .3);
+}
+
+
+.footTop {
+    width: 100%;
+    height: auto;
+}
+
+.footTop ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+}
+
+.footTop li {
+    margin: 5px 10px;
+}
+
+.footTop li img {
+    width: 25px;
+    height: 25px;
+}
+
+.sendBtn {
+    width: 68px;
+    height: 25px;
+    background: #DA2339;
+    border: none;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: white;
+}
+
+.textBox {
+    width: 99%;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0 10px;
+    box-sizing: border-box;
+    resize: none;
+}

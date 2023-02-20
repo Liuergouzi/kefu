@@ -1,0 +1,72 @@
+.input__x {
+  position: relative;
+}
+
+.input__fill {
+  outline: none;
+  height: 26px;
+  line-height: 26px;
+  width: 120px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  color: #666;
+}
+
+.input__fill:not(:placeholder-shown),
+.input__fill:focus {
+  border-color: #3be2be;
+}
+
+.input__fill::placeholder {
+  color: transparent;
+}
+
+.input__fill:not(:placeholder-shown) ~ .input__label,
+.input__fill:focus ~ .input__label {
+  transform: scale(0.75) translate(0, -20px);
+  background: #fff;
+  color: #00d1a4;
+}
+
+.input__fill2 {
+    outline: none;
+    height: 30px;
+    line-height: 30px;
+    width: 200px;
+    box-sizing: border-box;
+    padding: 0 6px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #666;
+}
+
+.input__fill2:not(:placeholder-shown),
+.input__fill2:focus {
+  border-color: #3be2be;
+}
+
+.input__fill2::placeholder {
+  color: transparent;
+}
+
+.input__fill2:not(:placeholder-shown) ~ .input__label,
+.input__fill2:focus ~ .input__label {
+  transform: scale(0.75) translate(0, -20px);
+  background: #fff;
+  color: #00d1a4;
+}
+
+.input__label {
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  transition: transform .25s;
+  font-size: 12px;
+  padding: 0 6px;
+  pointer-events: none;
+  color: #999;
+}

@@ -1,0 +1,295 @@
+.userBody {
+    font-size: 14px;
+    color: #fff;
+    /*width: 100%;*/
+    /*height: 100%;*/
+}
+p{
+    color: black;
+    padding-top: 5px;
+    padding-bottom: 15px;
+}
+/*底部客服对话框*/
+.userWindow {
+    position: fixed;
+    right: 200px;
+    bottom: 80px;
+    width: 400px;
+    height: 600px;
+    border-radius: 4px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, .4);
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+
+/*右侧点击按钮*/
+.openChat {
+    position: fixed;
+    display: inline-block;
+    top: 50%;
+    right: 0;
+    margin-top: -70px;
+    padding: 10px 0;
+    width: 40px;
+    height: 135px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    box-shadow: -1px 1px 5px rgba(0, 0, 0, .4);
+    background-color: #30bcbc;
+}
+ 
+.openChat .openChatIcon {
+    position: relative;
+    display: inline-block;
+    margin-bottom: -2px;
+    width: 20px;
+    height: 16px;
+    border-radius: 4px;
+    background-color: #fff;
+}
+ 
+.openChat .openChatIcon:before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: -6px;
+    margin-left: -3px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 6px solid #fff;
+}
+ 
+.openChat .openChatline {
+    display: inline-block;
+    width: 100%;
+    height: 1px;
+    background-color: #ddd;
+}
+ 
+.openChat .openChatText {
+    padding: 5px 0;
+    letter-spacing: 4px;
+    writing-mode: vertical-rl;
+    -webkit-user-select: none;
+}
+
+/*客服对话框头部*/
+.userHead {
+    position: relative;
+    padding: 10px;
+    height: 100px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+}
+
+.notAllowSeesion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(210, 210, 210, 0.5);
+    z-index: 9;
+}
+
+.headSpan {
+    display: flex;
+    margin-right: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.headTap {
+    width: 18px;
+    height: 18px;
+}
+
+.userHeadInfo {
+    height: 40px;
+}
+
+.userHeadImg {
+    display: inline-block;
+    margin: 0 10px 0 20px;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    vertical-align: middle;
+    color: #000;
+    border-radius: 50%;
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, .2);
+    background-color: #fff;
+}
+
+.userHeadTitle {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.userHeadDetail {
+    font-size: 12px;
+}
+
+.userMessage {
+    overflow-y: auto;
+    padding: 10px;
+    height: 100%;
+    word-wrap: break-word;
+    background-color: #f9f9f9;
+}
+
+.robotSend {
+    color: red;
+    padding: 2px 0px;
+    text-decoration: underline;
+}
+.customerChatFootDiv {
+    width: 100%;
+    position: relative;
+    background: #fff;
+    box-sizing: border-box;
+    padding: 5px;
+    height: 210px;
+    box-shadow: 0 3px 5px rgb(0 0 0 / 40%);
+}
+
+
+.notAllowSeesion {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(210, 210, 210, 0.5);
+    z-index: 9;
+}
+
+.customerChatTool {
+    position: relative;
+    height: 100%;
+    box-shadow: 0 0 6px 3px rgba(0, 0, 0, .06);
+    border: 1px solid rgba(142, 160, 188, .3);
+}
+
+
+.customerChatToolList {
+    width: 100%;
+    height: auto;
+    color: gray;
+    font-size: 12px;
+}
+
+.customerChatToolList ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+}
+
+.customerChatToolList li {
+    margin: 5px 10px;
+}
+
+.customerChatToolList li img {
+    width: 25px;
+    height: 25px;
+}
+
+.customerChatText {
+    width: 99%;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0 10px;
+    box-sizing: border-box;
+    resize: none;
+}
+
+.customerChatButton {
+    width: 68px;
+    height: 25px;
+    border: none;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    color: white;
+}
+
+.custom-button {
+    width: 26px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 18px;
+    text-align: center;
+    background-color: var(--van-primary-color);
+    border-radius: 100px;
+}
+
+textarea::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: gray;
+}
+textarea:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #527383;
+}
+textarea::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #732833;
+}
+textarea::-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+ color: gray;
+}
+
+.van-popup--right{
+    position:absolute !important;
+}
+.van-overlay{
+    position:absolute !important;
+}
+
+
+/**分辨率适配**/
+@media screen and (max-width: 550px) {
+    .userBody {
+        width: 100%;
+        height: 100%;
+    }
+
+    .openChat {
+        display: none;
+    }
+
+    .userWindow {
+        position: inherit;
+        width: 100%;
+        height: 100%;
+    }
+
+    .userHead {
+        height: 10%;
+    }
+
+    .userMessage {
+        height: 75%;
+    }
+
+    .userSubmit {
+        height: 15%;
+    }
+
+}

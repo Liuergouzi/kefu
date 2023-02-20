@@ -1,0 +1,16 @@
+.serviceFileImage {
+    left: 0px !important;
+    height: 21px !important;
+    width: 21px !important;
+}
+
+.FileImage {
+    margin-top: 5px;
+    z-index: 1;
+    position: absolute;
+    opacity: 0;
+    bottom: 0px;
+    left: -0.1rem;
+    height: 0.6rem;
+    width: 1rem;
+}
