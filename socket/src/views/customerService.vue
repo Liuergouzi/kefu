@@ -150,7 +150,7 @@
                 </MessageWindow>
                 <!--聊天框底部-->
                 <div class="RightFoot">
-                    <div  class="notAllowSeesion"></div>
+                    
                     <div class="sendContent">
                         <!--表情包-->
                         <SendEmote v-show="expressionShow" @sendMessage="sendMessage"></SendEmote>

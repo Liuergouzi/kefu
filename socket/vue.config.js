@@ -1,4 +1,4 @@
-import config from './src/config'
+let config =require('./src/config.js')
 
 const { defineConfig } = require('@vue/cli-service')
 const CompressionWebpackPlugin = require('compression-webpack-plugin');
@@ -23,7 +23,7 @@ module.exports = defineConfig({
         port:9528,
         proxy:{
             '/api':{
-                target:config.apiUrl,
+                target: config.apiUrl,
                 ws:true,
                 changeOrigin:true,
                 pathRewrite:{
