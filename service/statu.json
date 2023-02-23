@@ -139,8 +139,8 @@
     },
     {
         "code":false,
-        "type":"",
-        "message":"",
+        "type":"TooTast",
+        "message":"您的操作太快了！",
         "data":{}
     },
     {

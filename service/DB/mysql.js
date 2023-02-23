@@ -141,12 +141,12 @@ function updateServiceName(serviceName, serviceId) {
 
 /**
  * 修改客服接待次数
- * @param serviceFrequency,serviceId 客服id,string
+ * @param serviceId 客服id,string
  * @returns 返回状态码
  */
 
-function updateServiceFrequency(serviceFrequency, serviceId) {
-    var sql = `update service set serviceFrequency=${serviceFrequency} where serviceId=${serviceId} ;`;
+function updateServiceFrequency(serviceId) {
+    var sql = `update service set serviceFrequency=serviceFrequency+1 where serviceId=${serviceId} ;`;
     //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {

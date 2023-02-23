@@ -115,9 +115,10 @@ io.on('connection', socket => {
                 //存入列表
                 services.push(data)
                 socket.emit("success", statu.filter((v) => v.type == "OnlineSuccess"))
-            } else {
-                socket.emit("error", statu.filter((v) => v.type == "OnlineFalse"))
-            }
+            } 
+            // else {
+            //     socket.emit("error", statu.filter((v) => v.type == "OnlineFalse"))
+            // }
         } else {
             socket.emit("error", Data)
         }
@@ -139,15 +140,19 @@ io.on('connection', socket => {
             socket.emit("error", statu.filter((v) => v.type == "OfflineFalse"))
         }
     })
-    
+
     //客服踢出用户
     socket.on("closeSeesion", data => {
-        for (var i = 0; i < services.length; i++) {
-            if(services[i].socketId==socket.id){
-                let socketId=services[i].userList.filter((v) => v.userId == data.data.userId)
-                services[i].userList=services[i].userList.filter((v) => v.userId != data.data.userId)
-                socket.to(socketId[0].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+        try {
+            for (var i = 0; i < services.length; i++) {
+                if (services[i].socketId == socket.id) {
+                    let socketId = services[i].userList.filter((v) => v.userId == data.data.userId)
+                    services[i].userList = services[i].userList.filter((v) => v.userId != data.data.userId)
+                    socket.to(socketId[0].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+                }
             }
+        } catch (e) {
+            socket.emit("error", statu.filter((v) => v.type == "TooTast"))
         }
     })
 
@@ -163,14 +168,14 @@ io.on('connection', socket => {
                 index = Math.floor(Math.random() * services.length);
                 //改变客服状态
                 services[index].serviceState = 1;
-                services[index].serviceFrequency=services[index].serviceFrequency+1;
+                services[index].serviceFrequency = services[index].serviceFrequency + 1;
                 //返回用户通知
                 let returns = statu.filter((v) => v.type == "joinSuccess");
                 returns[0].data.serviceName = services[index].serviceName;
                 returns[0].data.socketRoom = services[index].socketId;
                 returns[0].data.receiveId = services[index].serviceId;
                 socket.emit("linkServiceSuccess", returns);
-                
+
                 // }else{
                 //     socket.emit("error", statu.filter((v) => v.type == "joinFalse"));
                 // }
@@ -191,6 +196,7 @@ io.on('connection', socket => {
         if (newData.code) {
             let socketRoom = data.socketRoom;
             let receiveId = data.userId;
+            let serviceId ='';
             //把用户存入列表
             data.socketId = socket.id;
             users.push(data);
@@ -198,6 +204,7 @@ io.on('connection', socket => {
             for (var i = 0; i < services.length; i++) {
                 if (services[i].socketId == socketRoom) {
                     services[i].userList.push(data);
+                    serviceId=services[i].serviceId;
                 }
             }
             //返回客服通知
@@ -207,6 +214,9 @@ io.on('connection', socket => {
             user_returns[0].data.socketRoom = socket.id;
             user_returns[0].data.receiveId = receiveId;
             socket.to(socketRoom).emit("UserJoinSuccess", user_returns);
+
+            mysql.updateServiceFrequency('666')
+
         } else {
             socket.emit("error", Data);
         }
@@ -214,7 +224,7 @@ io.on('connection', socket => {
 
     //发送消息
     socket.on("sendMessage", data => {
-        data.time=nowTime.getNowTime();
+        data.time = nowTime.getNowTime();
         var Data = verification.newData(data);
         var newData = Data[0];
         if (newData.code) {
@@ -234,36 +244,38 @@ io.on('connection', socket => {
     })
 
     socket.on("disconnect", () => {
-        
-    try {
-            
-        if (users.length > 0) {
-            //拿出离线的用户数据
-            let user = users.filter(v => (v.socketId == socket.id))
-            if (user.length > 0) {
-                //通知用户
-                socket.to(user[0].socketRoom).emit("Offline", statu.filter((v) => v.type == "Offline"))
-                //删除该用户
-                users = users.filter(v => (v.socketId != socket.id))
-            }
-        }
-        
-        if (services.length > 0) {
-            //拿出离线的客服数据
-            let service = services.filter(v => (v.socketId == socket.id))
-            if (service.length > 0) {
-                //获取跟客服连接的用户,全部通知客服下线
-                for (var i = 0; i < service[0].userList.length; i++) {
-                    socket.to(service[0].userList[i].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+
+        try {
+            //用户离线
+            if (users.length > 0) {
+                //拿出离线的用户数据
+                let user = users.filter(v => (v.socketId == socket.id))
+                if (user.length > 0) {
+                    //通知客服
+                    let returns = statu.filter((v) => v.type == "Offline");
+                    returns[0].data = { userId: user[0].userId };
+                    socket.to(user[0].socketRoom).emit("Offline", returns)
+                    //删除该用户
+                    users = users.filter(v => (v.socketId != socket.id))
                 }
-                //删除该客服
-                services = services.filter(v => (v.socketId != socket.id))
             }
+            //客服离线
+            if (services.length > 0) {
+                //拿出离线的客服数据
+                let service = services.filter(v => (v.socketId == socket.id))
+                if (service.length > 0) {
+                    //获取跟客服连接的用户,全部通知客服下线
+                    for (var i = 0; i < service[0].userList.length; i++) {
+                        socket.to(service[0].userList[i].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+                    }
+                    //删除该客服
+                    services = services.filter(v => (v.socketId != socket.id))
+                }
+            }
+
+        } catch (e) {
+            console.log("下标错误")
         }
-        
-    } catch (e) {
-        console.log("下标错误")
-    }
 
     })
 
@@ -278,111 +290,111 @@ app.post('/verificationToken', function (req, res) {
 
 //修改名称接口
 app.post('/updateServiceName', function (req, res) {
-        var Data = verification.newData(req.body);
-        var newData = Data[0];
-        if (newData.code) {
-            mysql.updateServiceName(newData.data.serviceName,newData.data.serviceId).then((sql_data) => {
-                if (sql_data) {
-                    res.json(statu.filter((v) => v.type == "success"))
-                } else {
-                    res.json(statu.filter((v) => v.type == "false"))
-                }
-            });
-        } else {
-            res.json(statu.filter((v) => v.type == "dataFalse"))
-        }
+    var Data = verification.newData(req.body);
+    var newData = Data[0];
+    if (newData.code) {
+        mysql.updateServiceName(newData.data.serviceName, newData.data.serviceId).then((sql_data) => {
+            if (sql_data) {
+                res.json(statu.filter((v) => v.type == "success"))
+            } else {
+                res.json(statu.filter((v) => v.type == "false"))
+            }
+        });
+    } else {
+        res.json(statu.filter((v) => v.type == "dataFalse"))
+    }
 })
 
 
 //历史聊天记录查询
 app.post('/selectMessage', function (req, res) {
-        var Data = verification.newData(req.body);
-        var newData = Data[0];
-        if (newData.code) {
-            mysql.selectMessage(newData.data.sendId,newData.data.receiveId).then((sql_data) => {
-                if (sql_data) {
-                    let returns = statu.filter((v) => v.type == "success");
-                    returns[0].data = sql_data;
-                    res.json(returns)
-                } else {
-                    res.json(statu.filter((v) => v.type == "false"))
-                }
-            });
-        } else {
-            res.json(statu.filter((v) => v.type == "dataFalse"))
-        }
+    var Data = verification.newData(req.body);
+    var newData = Data[0];
+    if (newData.code) {
+        mysql.selectMessage(newData.data.sendId, newData.data.receiveId).then((sql_data) => {
+            if (sql_data) {
+                let returns = statu.filter((v) => v.type == "success");
+                returns[0].data = sql_data;
+                res.json(returns)
+            } else {
+                res.json(statu.filter((v) => v.type == "false"))
+            }
+        });
+    } else {
+        res.json(statu.filter((v) => v.type == "dataFalse"))
+    }
 })
 
 //提交留言
 app.post('/commentInsert', function (req, res) {
-        var Data = verification.newData(req.body);
-        var newData = Data[0];
-        if (newData.code) {
-            mysql.commentInsert(newData.data).then((sql_data) => {
-                if (sql_data) {
-                    res.json(statu.filter((v) => v.type == "success"))
-                } else {
-                    res.json(statu.filter((v) => v.type == "false"))
-                }
-            });
-        } else {
-            res.json(statu.filter((v) => v.type == "dataFalse"))
-        }
+    var Data = verification.newData(req.body);
+    var newData = Data[0];
+    if (newData.code) {
+        mysql.commentInsert(newData.data).then((sql_data) => {
+            if (sql_data) {
+                res.json(statu.filter((v) => v.type == "success"))
+            } else {
+                res.json(statu.filter((v) => v.type == "false"))
+            }
+        });
+    } else {
+        res.json(statu.filter((v) => v.type == "dataFalse"))
+    }
 })
 
 //查看自己留言
 app.post('/commentSelectById', function (req, res) {
-        var Data = verification.newData(req.body);
-        var newData = Data[0];
-        if (newData.code) {
-            mysql.commentSelectById(newData.data.commentId).then((sql_data) => {
-                if (sql_data) {
-                    let returns = statu.filter((v) => v.type == "success");
-                    returns[0].data = sql_data;
-                    res.json(returns)
-                } else {
-                    res.json(statu.filter((v) => v.type == "false"))
-                }
-            });
-        } else {
-            res.json(statu.filter((v) => v.type == "dataFalse"))
-        }
+    var Data = verification.newData(req.body);
+    var newData = Data[0];
+    if (newData.code) {
+        mysql.commentSelectById(newData.data.commentId).then((sql_data) => {
+            if (sql_data) {
+                let returns = statu.filter((v) => v.type == "success");
+                returns[0].data = sql_data;
+                res.json(returns)
+            } else {
+                res.json(statu.filter((v) => v.type == "false"))
+            }
+        });
+    } else {
+        res.json(statu.filter((v) => v.type == "dataFalse"))
+    }
 })
 
 //查看最新10条留言
 app.post('/commentSelect', function (req, res) {
-        var Data = verification.newData(req.body);
-        var newData = Data[0];
-        if (newData.code) {
-            mysql.commentSelect().then((sql_data) => {
-                if (sql_data) {
-                    let returns = statu.filter((v) => v.type == "success");
-                    returns[0].data = sql_data;
-                    res.json(returns)
-                } else {
-                    res.json(statu.filter((v) => v.type == "false"))
-                }
-            });
-        } else {
-            res.json(statu.filter((v) => v.type == "dataFalse"))
-        }
+    var Data = verification.newData(req.body);
+    var newData = Data[0];
+    if (newData.code) {
+        mysql.commentSelect().then((sql_data) => {
+            if (sql_data) {
+                let returns = statu.filter((v) => v.type == "success");
+                returns[0].data = sql_data;
+                res.json(returns)
+            } else {
+                res.json(statu.filter((v) => v.type == "false"))
+            }
+        });
+    } else {
+        res.json(statu.filter((v) => v.type == "dataFalse"))
+    }
 })
 
 //客服回复
 app.post('/commentReply', function (req, res) {
-        var Data = verification.newData(req.body);
-        var newData = Data[0];
-        if (newData.code) {
-            mysql.commentReply(newData.data).then((sql_data) => {
-                if (sql_data) {
-                    res.json(statu.filter((v) => v.type == "success"))
-                } else {
-                    res.json(statu.filter((v) => v.type == "false"))
-                }
-            });
-        } else {
-            res.json(statu.filter((v) => v.type == "dataFalse"))
-        }
+    var Data = verification.newData(req.body);
+    var newData = Data[0];
+    if (newData.code) {
+        mysql.commentReply(newData.data).then((sql_data) => {
+            if (sql_data) {
+                res.json(statu.filter((v) => v.type == "success"))
+            } else {
+                res.json(statu.filter((v) => v.type == "false"))
+            }
+        });
+    } else {
+        res.json(statu.filter((v) => v.type == "dataFalse"))
+    }
 })
 
 //端口启动

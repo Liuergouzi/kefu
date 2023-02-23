@@ -29,7 +29,7 @@
     export default {
         data() {
             return {
-                socket: this.$store.state.socket,
+                socket: this.$store.state.serviceSocket,
                 publicKey: '',
                 login: {
                     serviceAccount: '',
@@ -68,6 +68,7 @@
         methods: {
 
             initialization() {
+                
                 //初始化，从服务端拿公钥
                 this.socket.emit("getPublicKey");
             },

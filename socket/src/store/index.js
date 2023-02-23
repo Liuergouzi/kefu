@@ -1,14 +1,15 @@
 import { createStore } from 'vuex'
 import io from "socket.io-client";
+import config from '../config'
 export default createStore({
   state: {
     userData:'', 
     userId:'',
     token:'',
-    socket:io("http://xxx.xxx.xxx.xxx:3030"),
-    //全局背景样式颜色
-    bgColor:'background: #30bcbc',
-    textColor:'color : #30bcbc',
+    socket:io(config.apiUrl),         //丢在这里可能不是太合理，后面再看看吧
+    serviceSocket:io(config.apiUrl),  //同一个浏览器同时用客服端和用户端会发生数据叠加，再创一个socket连接      
+    bgColor:'background: #30bcbc',    //全局背景样式颜色
+    textColor:'color : #30bcbc',      
     robot: [
         {
         "sendType" :2,
