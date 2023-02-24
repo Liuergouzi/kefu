@@ -281,13 +281,14 @@ function commentSelectById(commentId) {
 
 
 /**
- * 获取
+ * 获取留言
+ * @param {*} page 页数
  * @returns 返回最新10条留言
  */
-function commentSelect() {
-    var sql = `select * from comment  order by id desc;`;
+ function commentSelect(page) {
+    var star=(page-1)*10;
+    var sql = `select * from comment  order by id desc limit ${star}, 10;`;
     //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {

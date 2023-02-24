@@ -7,6 +7,7 @@
                 <span v-bind:class="{ messageActive: !messageType }" class="messageTopBtn"
                     v-on:click="changeMessageType(false)">留言记录</span>
             </div>
+            <!--提交页面-->
             <div v-show="messageType">
                 <div class="messageTip">
                     {{ messageTip }}
@@ -20,7 +21,7 @@
                     </div>
                 </div>
             </div>
-
+            <!--回复查看页面-->
             <div v-show="!messageType" class="messageRecord">
                 <div v-for="(item, index) in messageList" :key="index" class="messageDiv">
                     <div class="messageTime">{{ item.commentTime }}</div>

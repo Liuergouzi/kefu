@@ -37,6 +37,7 @@
                     </div>
                 </div>
             </div>
+            <van-pagination v-model="currentPage" :page-count="10"></van-pagination>
         </div>
         <!--对接页面-->
         <div v-show="current_state == 2" class="infoContent">
@@ -54,7 +55,7 @@
             
             this.service = Object.assign({}, JSON.parse(localStorage.getItem('serviceData')))
             
-            let params = {}
+            let params = {page:1}
             axios({
                 method: 'post',
                 url: '/commentSelect',
@@ -62,6 +63,7 @@
             }).then((response) => {
                 if (response.data[0].code) {
                     this.messageList = JSON.parse(response.data[0].data);
+                    console.log(this.messageList)
                 } else {
                     this.$toast("获取失败")
                 }
@@ -134,8 +136,29 @@
                         state: false,
                     },
                 ],
+                currentPage:1
             }
         },
+        watch: {
+            //监听，页数切换
+            currentPage: {
+                handler() {
+                    let params = {page:this.currentPage}
+                    axios({
+                        method: 'post',
+                        url: '/commentSelect',
+                        data: params
+                    }).then((response) => {
+                        if (response.data[0].code) {
+                            this.messageList = JSON.parse(response.data[0].data);
+                            console.log(this.messageList)
+                        } else {
+                            this.$toast("没有更多了")
+                        }
+                    })
+                }
+            }
+        }
     }
 </script>
 <style scoped>

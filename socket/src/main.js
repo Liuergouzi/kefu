@@ -21,6 +21,7 @@ import { Popover } from "vant"
 import { Rate } from "vant"
 import { Popup } from "vant"
 import { Slider } from "vant"
+import { Pagination } from 'vant';
 
 
 /**
@@ -73,4 +74,4 @@ router.beforeEach((to, from, next) => {
 
 })
 
-createApp(App).use(store).use(router).use(Button).use(Switch).use(Popup).use(Slider).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Rate).mount('#app')
+createApp(App).use(store).use(router).use(Button).use(Switch).use(Popup).use(Slider).use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Rate).mount('#app')

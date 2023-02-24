@@ -366,7 +366,7 @@ app.post('/commentSelect', function (req, res) {
     var Data = verification.newData(req.body);
     var newData = Data[0];
     if (newData.code) {
-        mysql.commentSelect().then((sql_data) => {
+        mysql.commentSelect(newData.data.page).then((sql_data) => {
             if (sql_data) {
                 let returns = statu.filter((v) => v.type == "success");
                 returns[0].data = sql_data;
