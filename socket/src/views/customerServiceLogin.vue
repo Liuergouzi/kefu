@@ -44,7 +44,7 @@
 
             //接收公钥
             this.socket.on("returnPublicKey", (data) => {
-                this.publicKey = JSON.stringify(data[0].data).replace(/\\r\\n/g, '');
+                this.publicKey = JSON.stringify(data[0].data).replace(/\\r|\\n/g, '');
                 encryptor.setPublicKey(this.publicKey);
             });
 
