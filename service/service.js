@@ -115,7 +115,7 @@ io.on('connection', socket => {
                 //存入列表
                 services.push(data)
                 socket.emit("success", statu.filter((v) => v.type == "OnlineSuccess"))
-            } 
+            }
             // else {
             //     socket.emit("error", statu.filter((v) => v.type == "OnlineFalse"))
             // }
@@ -148,7 +148,8 @@ io.on('connection', socket => {
                 if (services[i].socketId == socket.id) {
                     let socketId = services[i].userList.filter((v) => v.userId == data.data.userId)
                     services[i].userList = services[i].userList.filter((v) => v.userId != data.data.userId)
-                    socket.to(socketId[0].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+                    // users = users.filter(v => (v.socketId != data.data.userId))
+                    socket.to(socketId[0].socketId).emit("Offline", statu.filter((v) => v.type == "KickOut"))
                 }
             }
         } catch (e) {
@@ -162,23 +163,30 @@ io.on('connection', socket => {
         var newData = Data[0];
         if (newData.code) {
             if (services.length > 0) {
-                // let serviceTemp=services.filter((v) => v.serviceState == 0)
-                // if(serviceTemp.length>0){
                 //随机分配客服
                 index = Math.floor(Math.random() * services.length);
-                //改变客服状态
-                services[index].serviceState = 1;
-                services[index].serviceFrequency = services[index].serviceFrequency + 1;
-                //返回用户通知
-                let returns = statu.filter((v) => v.type == "joinSuccess");
-                returns[0].data.serviceName = services[index].serviceName;
-                returns[0].data.socketRoom = services[index].socketId;
-                returns[0].data.receiveId = services[index].serviceId;
-                socket.emit("linkServiceSuccess", returns);
+                //防止同个用户同个浏览器多开窗口连接到同一个客服
+                let userList = services[index].userList.filter((v) => v.userId == data.userId)
+                if (userList.length == 0) {
+                    // let serviceTemp=services.filter((v) => v.serviceState == 0)
+                    // if(serviceTemp.length>0){
+                    //改变客服状态
+                    services[index].serviceState = 1;
+                    services[index].serviceFrequency = services[index].serviceFrequency + 1;
+                    //返回用户通知
+                    let returns = statu.filter((v) => v.type == "joinSuccess");
+                    returns[0].data.serviceName = services[index].serviceName;
+                    returns[0].data.socketRoom = services[index].socketId;
+                    returns[0].data.receiveId = services[index].serviceId;
+                    socket.emit("linkServiceSuccess", returns);
+                    // }else{
+                    //     socket.emit("error", statu.filter((v) => v.type == "joinFalse"));
+                    // }
+                } else {
+                    //让另一个窗口下线
+                    socket.to(userList[0].socketId).emit("Offline", statu.filter((v) => v.type == "DuplicateConnection"))
+                }
 
-                // }else{
-                //     socket.emit("error", statu.filter((v) => v.type == "joinFalse"));
-                // }
             } else {
                 socket.emit("error", statu.filter((v) => v.type == "nullService"));
             }
@@ -196,15 +204,14 @@ io.on('connection', socket => {
         if (newData.code) {
             let socketRoom = data.socketRoom;
             let receiveId = data.userId;
-            let serviceId ='';
-            //把用户存入列表
             data.socketId = socket.id;
-            users.push(data);
             //将用户存入客服列表
             for (var i = 0; i < services.length; i++) {
                 if (services[i].socketId == socketRoom) {
+                    //把用户存入列表
+                    users.push(data);
+                    //存入客服的用户列表
                     services[i].userList.push(data);
-                    serviceId=services[i].serviceId;
                 }
             }
             //返回客服通知
@@ -214,9 +221,7 @@ io.on('connection', socket => {
             user_returns[0].data.socketRoom = socket.id;
             user_returns[0].data.receiveId = receiveId;
             socket.to(socketRoom).emit("UserJoinSuccess", user_returns);
-
             mysql.updateServiceFrequency('666')
-
         } else {
             socket.emit("error", Data);
         }
@@ -257,6 +262,12 @@ io.on('connection', socket => {
                     socket.to(user[0].socketRoom).emit("Offline", returns)
                     //删除该用户
                     users = users.filter(v => (v.socketId != socket.id))
+                    //删除客服列表里的用户
+                    for(var i= 0;i<services.length;i++){
+                        if(services[i].socketId==user[0].socketRoom){
+                            services[i].userList=services[i].userList.filter((v)=>(v.userId !=user[0].userId))
+                        }
+                    }
                 }
             }
             //客服离线

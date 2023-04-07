@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </div>
-            <van-pagination v-model="currentPage" :page-count="10"></van-pagination>
+            <van-pagination v-model="currentPage" :page-count="totalPage"></van-pagination>
         </div>
         <!--对接页面-->
         <div v-show="current_state == 2" class="infoContent">
@@ -63,7 +63,9 @@
             }).then((response) => {
                 if (response.data[0].code) {
                     this.messageList = JSON.parse(response.data[0].data);
-                    console.log(this.messageList)
+                    if(JSON.parse(response.data[0].data).length==10 ){
+                        this.totalPage=this.totalPage+1
+                    }
                 } else {
                     this.$toast("获取失败")
                 }
@@ -136,7 +138,8 @@
                         state: false,
                     },
                 ],
-                currentPage:1
+                currentPage:1,
+                totalPage:1
             }
         },
         watch: {

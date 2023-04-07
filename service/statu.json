@@ -12,12 +12,6 @@
         "data":{}
     },
     {
-        "code":false,
-        "type":"Offline",
-        "message":"对方已离线",
-        "data":{}
-    },
-    {
         "code":true,
         "type":"joinSuccess",
         "message":"连接成功",
@@ -121,6 +115,18 @@
     },
     {
         "code":false,
+        "type":"Offline",
+        "message":"对方已离线",
+        "data":{}
+    },
+    {
+        "code":false,
+        "type":"KickOut",
+        "message":"客服已断开当前会话",
+        "data":{}
+    },
+    {
+        "code":false,
         "type":"OnlineFalse",
         "message":"您已在线",
         "data":{}
@@ -145,8 +151,8 @@
     },
     {
         "code":false,
-        "type":"",
-        "message":"",
+        "type":"DuplicateConnection",
+        "message":"您已在另一个窗口重复连接！",
         "data":{}
     },
 

@@ -24,34 +24,34 @@
                     </div>
                 </div>
             </div>
-            
+
             <van-popup v-model:show="showPopup" position="right"
-                    :style="{ width: '50%', height: '100%', padding: '10px', }">
-                    <br>
-                    <p>提问最大回复量（ai回复最大字数）：</p>
-                    <van-slider v-model="maxTokens" :min="1000" :max="3500">
-                        <template #button>
-                            <div class="custom-button">{{ maxTokens }}</div>
-                        </template>
-                    </van-slider>
-                    <br>
-                    <p>语义联系最大量（决定最多关联多少上下文）：</p>
-                    <van-slider v-model="maxTokens" :min="1000" :max="3500" disabled reverse>
-                        <template #button>
-                            <div class="custom-button">{{ 4096 - maxTokens }}</div>
-                        </template>
-                    </van-slider>
-                    <br>
-                    <p>打字速度（数值越高越慢）：</p>
-                    <van-slider v-model="speed" :min="0" :max="3000">
-                        <template #button>
-                            <div class="custom-button">{{ speed }}</div>
-                        </template>
-                    </van-slider>
-                    <br>
-                    <p>控制流（ai回复速度有点差别）：</p>
-                    <van-switch v-model="isStream"></van-switch>
-                    <br>
+                :style="{ width: '50%', height: '100%', padding: '10px', }">
+                <br>
+                <p>提问最大回复量（ai回复最大字数）：</p>
+                <van-slider v-model="maxTokens" :min="1000" :max="3500">
+                    <template #button>
+                        <div class="custom-button">{{ maxTokens }}</div>
+                    </template>
+                </van-slider>
+                <br>
+                <p>语义联系最大量（决定最多关联多少上下文）：</p>
+                <van-slider v-model="maxTokens" :min="1000" :max="3500" disabled reverse>
+                    <template #button>
+                        <div class="custom-button">{{ 4096 - maxTokens }}</div>
+                    </template>
+                </van-slider>
+                <br>
+                <p>打字速度（数值越高越慢）：</p>
+                <van-slider v-model="speed" :min="0" :max="3000">
+                    <template #button>
+                        <div class="custom-button">{{ speed }}</div>
+                    </template>
+                </van-slider>
+                <br>
+                <p>控制流（ai回复速度有点差别）：</p>
+                <van-switch v-model="isStream"></van-switch>
+                <br>
             </van-popup>
 
             <!--信息窗口-->
@@ -76,9 +76,9 @@
 
                     <!--发送内容-->
                     <div style="height: calc(100% - 70px)">
-                        <textarea v-model="sendData" class="customerChatText"  :style="this.$store.state.textColor"
+                        <textarea v-model="sendData" class="customerChatText" :style="this.$store.state.textColor"
                             :placeholder="allowSession ? '道友，请传音' : footHit" v-on:keyup.enter="enterSend"></textarea>
-                        <button class="customerChatButton" v-on:click="sendMessage(sendData, 1,'me')"
+                        <button class="customerChatButton" v-on:click="sendMessage(sendData, 1, 'me')"
                             :style="this.$store.state.bgColor">
                             发送(s)
                         </button>
@@ -87,7 +87,6 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
@@ -100,7 +99,7 @@ export default {
     name: 'HomeView',
     components: {
         ChatGPTWindow
-        },
+    },
     data() {
         return {
             isDisplay: true,
@@ -194,7 +193,7 @@ export default {
         toLabor() {
             this.socket.emit("toLabor", this.user);
         },
-        
+
         ajax(sendMessage) {
             let params = { max_tokens: this.maxTokens, model: "text-davinci-003", stream: this.isStream };
             params.prompt = sendMessage;
@@ -380,7 +379,7 @@ export default {
         },
 
 
-        
+
         //跳转留言
         showComment() {
             this.$router.push({ path: '/comment', replace: false })
@@ -415,7 +414,7 @@ export default {
             handler(newValue, oldValue) {
                 console.log(oldValue)
                 this.$store.state.bgColor = 'background:' + newValue
-                this.$store.state.textColor='color:'+newValue
+                this.$store.state.textColor = 'color:' + newValue
             }
         },
     }

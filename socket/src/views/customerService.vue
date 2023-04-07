@@ -112,6 +112,7 @@
                         </div>
                     </li>
                 </ul>
+
                 <!--列表为空-->
                 <div v-show="onlineUsers.length === 0 && offlineUsers.length === 0" class="noPeople">
                     <img src="../assets/images/noPeple.png" />
@@ -150,7 +151,7 @@
                 </MessageWindow>
                 <!--聊天框底部-->
                 <div class="RightFoot">
-                    
+                    <!--<div  class="notAllowSeesion"></div>-->
                     <div class="sendContent">
                         <!--表情包-->
                         <SendEmote v-show="expressionShow" @sendMessage="sendMessage"></SendEmote>
@@ -169,7 +170,7 @@
                         <!--发送内容-->
                         <div style="height: calc(100% - 70px)">
                             <textarea v-on:focus="expressionShow = false" id="dope" v-model="sendData" class="textBox"
-                                 v-on:keyup.enter="enterSend"></textarea>
+                                v-on:keyup.enter="enterSend"></textarea>
                             <button class="sendBtn" id="serviceSendBtn" v-on:click="sendMessage(sendData, 1)">
                                 发送(s)
                             </button>
@@ -255,12 +256,15 @@ export default {
             let isNewJoinUser = this.onlineUsers.filter((v) => v.data.userId === data[0].data.userId)
             if (isNewJoinUser.length == 0) {
                 this.onlineUsers.push(data[0])
-                this.offlineUsers=this.offlineUsers.filter((v) => v.data.userId != data[0].data.userId)
-            } else {
+                if (this.offlineUsers.length != 0) {
+                    this.offlineUsers = this.offlineUsers.filter((v) => v.data.userId != data[0].data.userId)
+                }
+            } 
+            else {
                 for (var i = 0; i < this.onlineUsers.length; i++) {
                     if (isNewJoinUser[0].data.userId == this.onlineUsers[i].data.userId) {
                         this.onlineUsers[i].data.message = "重新加入了会话"
-                        this.offlineUsers=this.offlineUsers.filter((v) => v.data.userId != data[0].data.userId)
+                        this.offlineUsers = this.offlineUsers.filter((v) => v.data.userId != data[0].data.userId)
                     }
                 }
             }
@@ -294,12 +298,16 @@ export default {
 
         //离线处理
         this.socket.on("Offline", (data) => {
+            console.log(JSON.stringify(data[0]))
             this.$toast(data[0].message);
             let obj = { sendType: 4, sendPeople: 'notice', message: data[0].message }
             this.selectUsers.data.messageList.push(obj)
             //删除在线列表，加入离线列表
-            this.offlineUsers.push(this.onlineUsers.filter((v) => v.data.userId == data[0].data.userId)[0])
-            this.onlineUsers = this.onlineUsers.filter((v) => v.data.userId != data[0].data.userId)
+            let offline = this.onlineUsers.filter((v) => v.data.userId == data[0].data.userId)[0]
+            if (offline != undefined) {
+                this.offlineUsers.push(this.onlineUsers.filter((v) => v.data.userId == data[0].data.userId)[0])
+                this.onlineUsers = this.onlineUsers.filter((v) => v.data.userId != data[0].data.userId)
+            }
         });
 
         //错误通知
@@ -314,7 +322,7 @@ export default {
 
     },
     methods: {
-        
+
 
         initialization() {
             //加载数据,正常流程进入此页面，会拿到数据，假如浏览器不支持或被禁止存储，或因为各种迷惑行为导致没拿到数据，直接退出登录
@@ -382,6 +390,9 @@ export default {
             this.selectUsers = {}
             //拷贝选择的用户进入新列表    
             this.selectUsers = Object.assign({}, obj)
+
+            // console.log(JSON.stringify(obj))
+
         },
 
         //客服发送消息
@@ -417,16 +428,17 @@ export default {
             this.sendData = text;
         },
 
-        //客服删除关闭在线列表
+        //客服踢人
         closeSeesion(item) {
             this.socket.emit("closeSeesion", item);
             this.isSelectSession = false
             // this.selectUsers = {}
             this.onlineUsers = this.onlineUsers.filter((v) => v != item)
+            this.offlineUsers = this.offlineUsers.filter((v) => v != item)
         },
 
         //客服删除关闭离线列表
-        deleteOffLine(item){
+        deleteOffLine(item) {
             this.isSelectSession = false
             this.offlineUsers = this.offlineUsers.filter((v) => v != item)
         },
