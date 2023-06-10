@@ -4,7 +4,7 @@
         <div class="customerChat">
             <div class="customerChatHead" :style="this.$store.state.bgColor">轮子哥在线客服</div>
             <!--聊天内容-->
-            <MessageWindow :messageList="messageList" class="customerChatMessage"
+            <MessageWindow :messageList="messageList" class="customerChatMessage" id="customerChatWindow"
                 :sendId="this.$store.state.userData.userId" :receiveId="this.$store.state.userData.receiveId"
                 :isService="'false'"></MessageWindow>
             <!--聊天框底部-->
@@ -20,7 +20,7 @@
                                 <img src="../assets/images/expression.png" />
                             </li>
                             <li v-on:click="EmoteShow = false" style="position: relative">
-                                <img src="../assets/images/imageFile.png" />
+                                <img src="../assets/images/imageFile.png" style="width:22px ;height:22px;"/>
                                 <SendImage @sendMessage="sendMessage"></SendImage>
                             </li>
                         </ul>
@@ -73,6 +73,7 @@ export default {
             this.message = data[0].data.message;
             let obj = { sendType: data[0].data.sendType, sendPeople: 'other', message: data[0].data.message }
             this.messageList.push(obj)
+            this.toBottom(128)
         });
 
         //错误接收
@@ -133,7 +134,7 @@ export default {
         //回到底部
         toBottom(time) {
             setTimeout(() => {
-                let RightCont = document.getElementById("RightCont");
+                let RightCont = document.getElementById("customerChatWindow");
                 if (RightCont != null) {
                     let scrollHeight2 = RightCont.scrollHeight;
                     RightCont.scrollTop = scrollHeight2;

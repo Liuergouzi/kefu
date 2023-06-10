@@ -33,6 +33,20 @@
                     <img src="../assets/images/visitor.png" />
                 </div>
             </div>
+
+            <!--状态通知显示-->
+            <div v-if="item.sendPeople == 'notice'" class="noticeDiv">
+                <div class="moreSession" v-if="item.sendType == 4">
+                    <span style="display: flex;">
+                        当前客服忙，您当前排在第{{ item.waitCount }}位
+                    </span>
+                    <div class="wait">
+                        <div class="animation_div"></div>
+                        <div class="waitCal">取消</div>
+                    </div>
+                </div>
+            </div>
+
             <div style="clear: both"></div>
         </div>
     </div>
@@ -52,7 +66,7 @@ export default {
         }
     },
     methods: {
-                //回复
+        //回复
         robotClick(items, index) {
             let obj = {}
             obj.sendType = 1
@@ -64,6 +78,19 @@ export default {
             objs.sendPeople = 'other'
             objs.message = this.$store.state.robot[0].reply[index];
             this.messageList_copy.push(objs)
+            this.toBottom(200)
+        },
+        //回到底部
+        toBottom(time) {
+            setTimeout(() => {
+                let RightCont = document.getElementById("userMessage");
+                if (RightCont != null) {
+                    console.log("yes")
+                    let scrollHeight2 = RightCont.scrollHeight;
+                    RightCont.scrollTop = scrollHeight2;
+                }
+            }, time);
+            clearTimeout();
         },
     },
     watch: {

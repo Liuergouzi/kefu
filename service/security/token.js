@@ -4,7 +4,7 @@ const statu = require("../statu.json")  //引入全局返回状态
 const md5 = crypto.createHash('md5')    //使用MD5
 
 
-let str = '潮州有一个怀揣着梦想的轮子哥相信在广应科的学习中会创造出一个个惊艳绝伦的轮子';   //自定义签名字键
+let str = '潮州有一个怀揣着梦想的轮子哥相信在不断内卷中会创造出一个个惊艳绝伦的轮子';   //自定义签名字键
 secret = md5.update(str).digest('hex')
 
 

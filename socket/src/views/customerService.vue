@@ -8,11 +8,20 @@
                 <div class="serviceHeadImg">
                     <img src="../assets/images/service_head.png" />
                 </div>
+                <!--昵称及修改昵称-->
                 <div v-if="!changeServiceName" class="serviceHeadName" v-on:mouseenter="changeServiceName = true">
-                    {{ service.serviceName }}
+                    昵称：{{ service.serviceName }}
                 </div>
                 <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceName = false" :line="'1'"
-                    :serviceId="service.serviceId" @changeValue1="changeValue"></MyInput>
+                    :serviceId="service.serviceId" :serviceNameProps="service.serviceName" @changeValue1="changeValue"></MyInput>
+
+                <!--最大接待人数及修改-->
+                <div v-if="!changeServiceReception" class="serviceHeadReception" v-on:mouseenter="changeServiceReception = true">
+                    最大同时可接待：{{ service.serviceMax }}
+                </div>
+                <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceReception = false" :line="'2'"
+                    :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue1="changeValue"></MyInput>
+
                 <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">接待次数：{{ service.serviceFrequency
                 }}</div>
                 <div style="margin-top: 13px; margin-left: 5px">
@@ -212,7 +221,8 @@ export default {
                 serviceId: '',
                 serviceName: '',
                 serviceState: 0,
-                serviceFrequency: 0
+                serviceFrequency: 0,
+                serviceMax:1
             },
             onlineUsers: [],
             offlineUsers: [],
@@ -232,6 +242,7 @@ export default {
             sendData: '',
             reviceMessage: '',
             changeServiceName: false,
+            changeServiceReception:false,
             stateChange: false,
             showNoticeBar: false,
             onlineShow: true,
@@ -259,7 +270,7 @@ export default {
                 if (this.offlineUsers.length != 0) {
                     this.offlineUsers = this.offlineUsers.filter((v) => v.data.userId != data[0].data.userId)
                 }
-            } 
+            }
             else {
                 for (var i = 0; i < this.onlineUsers.length; i++) {
                     if (isNewJoinUser[0].data.userId == this.onlineUsers[i].data.userId) {
@@ -292,8 +303,8 @@ export default {
                     this.onlineUsers[i].data.messageList.push(obj)
                 }
             }
-
             this.reviceMessage = data[0].data.message;
+            this.toBottom(128)
         });
 
         //离线处理
@@ -443,9 +454,12 @@ export default {
             this.offlineUsers = this.offlineUsers.filter((v) => v != item)
         },
 
-        //接收子组件返回
-        changeValue(value) {
-            this.service.serviceName = value;
+        //接收顶部input子组件返回
+        changeValue(value,index) {
+            switch(index){
+                case 1:this.service.serviceName = value;break;
+                case 2:this.service.serviceMax = value;break;
+            }
             localStorage.setItem('serviceData', JSON.stringify(this.service))
         },
 

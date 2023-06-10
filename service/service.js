@@ -165,26 +165,29 @@ io.on('connection', socket => {
             if (services.length > 0) {
                 //随机分配客服
                 index = Math.floor(Math.random() * services.length);
-                //防止同个用户同个浏览器多开窗口连接到同一个客服
-                let userList = services[index].userList.filter((v) => v.userId == data.userId)
-                if (userList.length == 0) {
-                    // let serviceTemp=services.filter((v) => v.serviceState == 0)
-                    // if(serviceTemp.length>0){
-                    //改变客服状态
-                    services[index].serviceState = 1;
-                    services[index].serviceFrequency = services[index].serviceFrequency + 1;
-                    //返回用户通知
-                    let returns = statu.filter((v) => v.type == "joinSuccess");
-                    returns[0].data.serviceName = services[index].serviceName;
-                    returns[0].data.socketRoom = services[index].socketId;
-                    returns[0].data.receiveId = services[index].serviceId;
-                    socket.emit("linkServiceSuccess", returns);
-                    // }else{
-                    //     socket.emit("error", statu.filter((v) => v.type == "joinFalse"));
-                    // }
+                //判断是否超出最大同时可接待人数
+                if (services[index].serviceState < services[index].serviceMax) {
+                    //防止同个用户同个浏览器多开窗口连接到同一个客服
+                    let userList = services[index].userList.filter((v) => v.userId == data.userId)
+                    if (userList.length == 0) {
+                        //改变客服接待人数状态和接待次数
+                        services[index].serviceState = services[index].serviceState + 1;
+                        services[index].serviceFrequency = services[index].serviceFrequency + 1;
+                        //返回用户通知
+                        let returns = statu.filter((v) => v.type == "joinSuccess");
+                        returns[0].data.serviceName = services[index].serviceName;
+                        returns[0].data.socketRoom = services[index].socketId;
+                        returns[0].data.receiveId = services[index].serviceId;
+                        socket.emit("linkServiceSuccess", returns);
+                    } else {
+                        //让另一个窗口下线
+                        socket.to(userList[0].socketId).emit("Offline", statu.filter((v) => v.type == "DuplicateConnection"))
+                    }
                 } else {
-                    //让另一个窗口下线
-                    socket.to(userList[0].socketId).emit("Offline", statu.filter((v) => v.type == "DuplicateConnection"))
+                    //客服最大连接人数已满，返回通知用户进行排队
+                    let returns = statu.filter((v) => v.type == "ServiceFull");
+                    returns[0].data.waitCount = services[index].serviceState-services[index].serviceMax+1;
+                    socket.emit("ServiceFull", returns);
                 }
 
             } else {
@@ -248,14 +251,18 @@ io.on('connection', socket => {
         }
     })
 
-    socket.on("disconnect", () => {
 
+    //离线处理
+    socket.on("disconnect", () => {
         try {
             //用户离线
             if (users.length > 0) {
                 //拿出离线的用户数据
                 let user = users.filter(v => (v.socketId == socket.id))
                 if (user.length > 0) {
+                    //客服在线状态（连接人数减-1）
+                    const serviceIndex=services.findIndex((v) => v.socketId == user[0].socketRoom)
+                    services[serviceIndex].serviceState=services[serviceIndex].serviceState-1
                     //通知客服
                     let returns = statu.filter((v) => v.type == "Offline");
                     returns[0].data = { userId: user[0].userId };
@@ -263,9 +270,9 @@ io.on('connection', socket => {
                     //删除该用户
                     users = users.filter(v => (v.socketId != socket.id))
                     //删除客服列表里的用户
-                    for(var i= 0;i<services.length;i++){
-                        if(services[i].socketId==user[0].socketRoom){
-                            services[i].userList=services[i].userList.filter((v)=>(v.userId !=user[0].userId))
+                    for (var i = 0; i < services.length; i++) {
+                        if (services[i].socketId == user[0].socketRoom) {
+                            services[i].userList = services[i].userList.filter((v) => (v.userId != user[0].userId))
                         }
                     }
                 }
@@ -316,6 +323,23 @@ app.post('/updateServiceName', function (req, res) {
     }
 })
 
+
+//修改最大接待次数接口
+app.post('/updateServiceMax', function (req, res) {
+    var Data = verification.newData(req.body);
+    var newData = Data[0];
+    if (newData.code) {
+        mysql.updateServiceMax(Number(newData.data.serviceMax), newData.data.serviceId).then((sql_data) => {
+            if (sql_data) {
+                res.json(statu.filter((v) => v.type == "success"))
+            } else {
+                res.json(statu.filter((v) => v.type == "false"))
+            }
+        });
+    } else {
+        res.json(statu.filter((v) => v.type == "dataFalse"))
+    }
+})
 
 //历史聊天记录查询
 app.post('/selectMessage', function (req, res) {

@@ -155,7 +155,12 @@
         "message":"您已在另一个窗口重复连接！",
         "data":{}
     },
-
+    {
+        "code":false,
+        "type":"ServiceFull",
+        "message":"当前客服正在忙，您可以手动切换其它在线客服",
+        "data":{}
+    },
     {
         "code":false,
         "type":"",

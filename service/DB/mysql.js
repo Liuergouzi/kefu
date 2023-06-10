@@ -138,6 +138,30 @@ function updateServiceName(serviceName, serviceId) {
 }
 
 
+/**
+ * 修改客服最大接待次数
+ * @param serviceMax 客服最大接待次数 serviceId 客服id,number,string
+ * @returns 返回状态码
+ */
+
+ function updateServiceMax(serviceMax, serviceId) {
+    var sql = `update service set serviceMax=${serviceMax} where serviceId=${serviceId} ;`;
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            })
+            connection.release();
+        })
+    })
+
+}
+
 
 /**
  * 修改客服接待次数
@@ -339,6 +363,7 @@ module.exports = {
     insertUser,
     serviceLogin,
     updateServiceName,
+    updateServiceMax,
     updateServiceFrequency,
     insertMessage,
     selectMessage,

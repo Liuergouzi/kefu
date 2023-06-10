@@ -6,7 +6,7 @@ import axios from 'axios'
 import config from './config'
 
 axios.defaults.baseURL = '/api'		//设置默认请求地址
-//axios.defaults.baseURL = 'http://localhost:3030/' //打包之后路径可能1会出现错误，可能不需要代理，因此需要使用此路径
+//axios.defaults.baseURL = 'http://localhost:3030/' //打包之后路径可能会出现错误，可能不需要代理，因此需要使用此路径
 axios.defaults.headers={ 'content-type': 'application/json', 'Authorization': 'Bearer ' + config.chatGptKey }
 
 

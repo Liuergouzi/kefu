@@ -85,6 +85,7 @@
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </template>
@@ -125,12 +126,6 @@ export default {
             oldSendData: '',
             speed: 110,
             loadLoop: function () { },
-            moreToolList: [
-                {
-                    name: "留言",
-                    image: require("../assets/images/service_head.png"),
-                },
-            ],
         }
     },
 
@@ -140,6 +135,16 @@ export default {
         this.socket.on("error", (data) => {
             this.$toast(data[0].message);
         });
+
+        //客服最大接待人数已满的情况
+        this.socket.on("ServiceFull", (data) => {
+            this.$toast(data[0].message);
+
+            let noticeData={sendPeople:'notice',sendType:4,waitCount:data[0].data.waitCount}
+            console.log(noticeData)
+            this.messageList.push(noticeData)
+        });
+
         //访问注册
         this.socket.on("visitReturn", (data) => {
             this.user = JSON.parse(data[0].data)
@@ -369,7 +374,7 @@ export default {
         //回到底部
         toBottom(time) {
             setTimeout(() => {
-                let RightCont = document.getElementById("RightCont");
+                let RightCont = document.getElementById("userMessage");
                 if (RightCont != null) {
                     let scrollHeight2 = RightCont.scrollHeight;
                     RightCont.scrollTop = scrollHeight2;
@@ -411,8 +416,7 @@ export default {
     watch: {
         //改变全局背景
         bgColor: {
-            handler(newValue, oldValue) {
-                console.log(oldValue)
+            handler(newValue) {
                 this.$store.state.bgColor = 'background:' + newValue
                 this.$store.state.textColor = 'color:' + newValue
             }
