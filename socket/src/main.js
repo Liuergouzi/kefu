@@ -5,10 +5,13 @@ import store from './store'
 import axios from 'axios'
 import config from './config'
 
-axios.defaults.baseURL = '/api'		//设置默认请求地址
-//axios.defaults.baseURL = 'http://localhost:3030/' //打包之后路径可能会出现错误，可能不需要代理，因此需要使用此路径
-axios.defaults.headers={ 'content-type': 'application/json', 'Authorization': 'Bearer ' + config.chatGptKey }
+if(config.environment=='dev'){
+	axios.defaults.baseURL = '/api'		//设置默认请求地址
+}else if(config.environment=='build'){
+    axios.defaults.baseURL = config.apiUrl  //设置默认请求地址
+}
 
+axios.defaults.headers={ 'content-type': 'application/json', 'Authorization': 'Bearer ' + config.chatGptKey }
 
 //按需引入vant
 import 'vant/lib/index.css'
