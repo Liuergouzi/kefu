@@ -40,6 +40,8 @@ app.use(cors()); //使用cors中间件解决跨域问题
 let users = [];
 //记录所有加入的客服
 let services = [];
+//记录排队等待的用户
+let waitUsers = [];
 
 io.on('connection', socket => {
 
@@ -133,6 +135,15 @@ io.on('connection', socket => {
             for (var i = 0; i < service[0].userList.length; i++) {
                 socket.to(service[0].userList[i].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
             }
+
+            //如果此客服有排队咨询的用户，全部通知全部排队的用户客服已离线，并删除排队用户
+            let waitUserTemp = waitUsers.filter((v) => v.serviceSocketId == socket.id)
+            if (waitUserTemp.length > 0) {
+                waitUserTemp.forEach(element => {
+                    socket.to(element.userSocketId).emit("WaitServiceOffline", statu.filter((v) => v.type == "WaitServiceOffline"))
+                });
+                waitUsers = waitUsers.filter((v) => v.serviceSocketId != socket.id)
+            }
             //删除该客服
             services = services.filter(v => (v.socketId != socket.id))
             socket.emit("success", statu.filter((v) => v.type == "OfflineSuccess"))
@@ -144,6 +155,7 @@ io.on('connection', socket => {
     //客服踢出用户
     socket.on("closeSeesion", data => {
         try {
+            //通知用户
             for (var i = 0; i < services.length; i++) {
                 if (services[i].socketId == socket.id) {
                     let socketId = services[i].userList.filter((v) => v.userId == data.data.userId)
@@ -156,6 +168,14 @@ io.on('connection', socket => {
             socket.emit("error", statu.filter((v) => v.type == "TooTast"))
         }
     })
+
+    //客服同意排队用户进入
+    // socket.on("agreeWait", data => {
+    //     let waitUserTemp = waitUsers.filter((v) => v.userSocketId == data.data.userSocketId)
+    //     if (waitUserTemp.length > 0) {
+    //         socket.to(waitUserTemp[0].userSocketId).emit("WaitSuccess")
+    //     }
+    // })
 
     //用户转人工
     socket.on("toLabor", data => {
@@ -183,11 +203,18 @@ io.on('connection', socket => {
                         //让另一个窗口下线
                         socket.to(userList[0].socketId).emit("Offline", statu.filter((v) => v.type == "DuplicateConnection"))
                     }
-                } else {
+                } else if (waitUsers.filter((v) => v.userSocketId == socket.id).length == 0) {
                     //客服最大连接人数已满，返回通知用户进行排队
+                    services[index].serviceState = services[index].serviceState + 1;
                     let returns = statu.filter((v) => v.type == "ServiceFull");
-                    returns[0].data.waitCount = services[index].serviceState-services[index].serviceMax+1;
+                    returns[0].data.waitCount = services[index].serviceState - services[index].serviceMax;
+                    returns[0].data.serviceName = services[index].serviceName;
+                    returns[0].data.socketRoom = services[index].socketId;
+                    returns[0].data.receiveId = services[index].serviceId;
                     socket.emit("ServiceFull", returns);
+                    //把等待的用户的socketId存进来
+                    let waitUserTemp = { serviceSocketId: services[index].socketId, userSocketId: socket.id }
+                    waitUsers.push(waitUserTemp)
                 }
 
             } else {
@@ -199,6 +226,29 @@ io.on('connection', socket => {
         }
     })
 
+    //删除排队的用户
+    socket.on("waitCancel", data => {
+        const waitUserTemp = waitUsers.filter((v) => v.userSocketId == socket.id)
+        const waitUserTempIndex = waitUsers.findIndex((v) => v.userSocketId == socket.id)
+        if (waitUserTemp.length > 0) {
+            //客服状态-1
+            const serviceIndex = services.findIndex((v) => v.socketId == waitUserTemp[0].serviceSocketId)
+            if (serviceIndex >= 0) {
+                if (waitUserTempIndex >= 0) {
+                    //通知排在后面的用户排队次序-1
+                    let waitUserTemp2 = waitUsers.filter((v) => v.serviceSocketId == services[serviceIndex].socketId).slice(waitUserTempIndex,)
+                    if (waitUserTemp2.length > 0) {
+                        waitUserTemp2.forEach(element => {
+                            socket.to(element.userSocketId).emit("WaitCountState")
+                        });
+                    }
+                }
+                services[serviceIndex].serviceState = services[serviceIndex].serviceState - 1
+                //删除等待用户
+                waitUsers = waitUsers.filter((v) => v.userSocketId != socket.id)
+            }
+        }
+    })
 
     //让用户进入
     socket.on("userJoin", data => {
@@ -224,7 +274,7 @@ io.on('connection', socket => {
             user_returns[0].data.socketRoom = socket.id;
             user_returns[0].data.receiveId = receiveId;
             socket.to(socketRoom).emit("UserJoinSuccess", user_returns);
-            mysql.updateServiceFrequency('666')
+            mysql.updateServiceFrequency(data.receiveId)
         } else {
             socket.emit("error", Data);
         }
@@ -255,14 +305,12 @@ io.on('connection', socket => {
     //离线处理
     socket.on("disconnect", () => {
         try {
-            //用户离线
+
+            //连接客服时用户刷新或意外离线
             if (users.length > 0) {
                 //拿出离线的用户数据
                 let user = users.filter(v => (v.socketId == socket.id))
                 if (user.length > 0) {
-                    //客服在线状态（连接人数减-1）
-                    const serviceIndex=services.findIndex((v) => v.socketId == user[0].socketRoom)
-                    services[serviceIndex].serviceState=services[serviceIndex].serviceState-1
                     //通知客服
                     let returns = statu.filter((v) => v.type == "Offline");
                     returns[0].data = { userId: user[0].userId };
@@ -275,8 +323,41 @@ io.on('connection', socket => {
                             services[i].userList = services[i].userList.filter((v) => (v.userId != user[0].userId))
                         }
                     }
+                    //假如连接客服时被踢了，或主动离开
+                    const serviceIndex = services.findIndex((v) => v.socketId == user[0].socketRoom)
+                    if (services.length > 0 && serviceIndex >= 0) {
+                        //客服在线状态（连接人数减-1）
+                        services[serviceIndex].serviceState = services[serviceIndex].serviceState - 1
+                        //如果此客服有排队咨询的用户，进行通知排队次序减-1
+                        let waitUserTemp = waitUsers.filter((v) => v.serviceSocketId == services[serviceIndex].socketId)
+                        if (waitUserTemp.length > 0) {
+                            waitUserTemp.forEach(element => {
+                                socket.to(element.userSocketId).emit("WaitCountState")
+                            });
+                        }
+                    }
                 }
             }
+
+            //假如用户排队时刷新或意外离线了
+            const waitUserTemp = waitUsers.filter((v) => v.userSocketId == socket.id)
+            if (waitUserTemp.length > 0) {
+                const waitUserTempIndex = waitUsers.findIndex((v) => v.userSocketId == socket.id)
+                const serviceIndex = services.findIndex((v) => v.socketId == waitUserTemp[0].serviceSocketId)
+                if (serviceIndex >= 0 && waitUserTempIndex >= 0) {
+                    //通知排在后面的用户排队次序-1
+                    services[serviceIndex].serviceState = services[serviceIndex].serviceState - 1
+                    let waitUserTemp2 = waitUsers.filter((v) => v.serviceSocketId == services[serviceIndex].socketId).slice(waitUserTempIndex,)
+                    if (waitUserTemp2.length > 0) {
+                        waitUserTemp2.forEach(element => {
+                            socket.to(element.userSocketId).emit("WaitCountState")
+                        });
+                    }
+                    //删除等待用户
+                    waitUsers = waitUsers.filter((v) => v.userSocketId != socket.id)
+                }
+            }
+
             //客服离线
             if (services.length > 0) {
                 //拿出离线的客服数据
@@ -285,6 +366,14 @@ io.on('connection', socket => {
                     //获取跟客服连接的用户,全部通知客服下线
                     for (var i = 0; i < service[0].userList.length; i++) {
                         socket.to(service[0].userList[i].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+                    }
+                    //如果此客服有排队咨询的用户，全部通知全部排队的用户客服已离线，并删除排队用户
+                    let waitUserTemp = waitUsers.filter((v) => v.serviceSocketId == socket.id)
+                    if (waitUserTemp.length > 0) {
+                        waitUserTemp.forEach(element => {
+                            socket.to(element.userSocketId).emit("WaitServiceOffline", statu.filter((v) => v.type == "WaitServiceOffline"))
+                        });
+                        waitUsers = waitUsers.filter((v) => v.serviceSocketId != socket.id)
                     }
                     //删除该客服
                     services = services.filter(v => (v.socketId != socket.id))
@@ -296,9 +385,9 @@ io.on('connection', socket => {
         }
 
     })
-
-
 });
+
+
 
 //token校验接口
 app.post('/verificationToken', function (req, res) {

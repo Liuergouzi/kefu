@@ -13,14 +13,17 @@
                     昵称：{{ service.serviceName }}
                 </div>
                 <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceName = false" :line="'1'"
-                    :serviceId="service.serviceId" :serviceNameProps="service.serviceName" @changeValue1="changeValue"></MyInput>
+                    :serviceId="service.serviceId" :serviceNameProps="service.serviceName" @changeValue1="changeValue">
+                </MyInput>
 
                 <!--最大接待人数及修改-->
-                <div v-if="!changeServiceReception" class="serviceHeadReception" v-on:mouseenter="changeServiceReception = true">
+                <div v-if="!changeServiceReception" class="serviceHeadReception"
+                    v-on:mouseenter="changeServiceReception = true">
                     最大同时可接待：{{ service.serviceMax }}
                 </div>
                 <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceReception = false" :line="'2'"
-                    :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue1="changeValue"></MyInput>
+                    :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue1="changeValue">
+                </MyInput>
 
                 <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">接待次数：{{ service.serviceFrequency
                 }}</div>
@@ -95,15 +98,37 @@
                     </li>
                 </ul>
 
+                <!--排队等待的用户列表-->
+                <!-- <ul>
+                    <div v-show="waitUsers.length > 0" class="conLeftTop" v-on:click="waitShow = !waitShow">
+                        <span v-show="waitShow">▼</span>
+                        <span v-show="!waitShow">▲</span>
+                        排队用户
+                    </div>
+                    <li v-show="waitShow" :key="index" v-for="(item, index) in waitUsers" class="offlineUlStyle"
+                        v-on:mouseenter="item.CloseSession = true" v-on:mouseleave="item.CloseSession = false">
+                        <div class="liLeft">
+                            <img src="../assets/images/visitor.png" />
+                        </div>
+                        <div class="liRight">
+                            <span class="intername">排队用户{{ index+1 }}</span>
+                            <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="agreeWait(item)">
+                                <img src="../assets/images/agreeWait.png" style="width:12px;height:12px">
+                                接入
+                            </span>
+                        </div>
+                    </li>
+                </ul> -->
+
                 <!--离线用户列表-->
                 <ul>
-                    <div v-show="offlineUsers.length > 0" class="conLeftTop" v-on:click="onlineShow = !onlineShow">
-                        <span v-show="onlineShow">▼</span>
-                        <span v-show="!onlineShow">▲</span>
+                    <div v-show="offlineUsers.length > 0" class="conLeftTop" v-on:click="offlineShow = !offlineShow">
+                        <span v-show="offlineShow">▼</span>
+                        <span v-show="!offlineShow">▲</span>
                         离线会话
                     </div>
-                    <!--显示在线连接列表-->
-                    <li v-show="onlineShow" :key="index" v-for="(item, index) in offlineUsers" class="offlineUlStyle"
+                    <!--显示离线连接列表-->
+                    <li v-show="offlineShow" :key="index" v-for="(item, index) in offlineUsers" class="offlineUlStyle"
                         v-on:click="selectSession(item)" v-on:mouseenter="item.CloseSession = true"
                         v-on:mouseleave="item.CloseSession = false">
                         <div class="liLeft">
@@ -222,10 +247,11 @@ export default {
                 serviceName: '',
                 serviceState: 0,
                 serviceFrequency: 0,
-                serviceMax:1
+                serviceMax: 1
             },
             onlineUsers: [],
             offlineUsers: [],
+            waitUsers:[],
             selectUsers: {
                 data: {
                     userId: '',
@@ -242,10 +268,12 @@ export default {
             sendData: '',
             reviceMessage: '',
             changeServiceName: false,
-            changeServiceReception:false,
+            changeServiceReception: false,
             stateChange: false,
             showNoticeBar: false,
             onlineShow: true,
+            waitShow: true,
+            offlineShow: true,
             isSelectSession: false,
             isSelectShow: true,
             expressionShow: false,
@@ -383,6 +411,11 @@ export default {
             this.showNoticeBar = !this.showNoticeBar
         },
 
+        //同意排队用户接入
+        // agreeWait(item){
+        //     this.socket.emit("agreeWait", item);
+        // },
+
         //客服选择会话
         selectSession(obj) {
             //隐藏
@@ -455,10 +488,10 @@ export default {
         },
 
         //接收顶部input子组件返回
-        changeValue(value,index) {
-            switch(index){
-                case 1:this.service.serviceName = value;break;
-                case 2:this.service.serviceMax = value;break;
+        changeValue(value, index) {
+            switch (index) {
+                case 1: this.service.serviceName = value; break;
+                case 2: this.service.serviceMax = value; break;
             }
             localStorage.setItem('serviceData', JSON.stringify(this.service))
         },
@@ -482,6 +515,4 @@ export default {
 </script>
 
 
-<style scoped>
-@import url("../assets/css/CustomerService.css");
-</style>
+<style scoped>@import url("../assets/css/CustomerService.css");</style>

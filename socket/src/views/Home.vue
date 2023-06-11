@@ -13,7 +13,8 @@
                     <!--<img class="headTap" src="../assets/images/TurnOnSound.png">-->
                     <!--<img class="headTap" src="../assets/images/enlarge.png">-->
                     <input class="headTap" type="color" v-on:click="changeBg" v-model="bgColor">
-                    <img class="headTap" src="../assets/images/close.png" v-on:click="isDisplay = !isDisplay">
+                    <img class="headTap" src="../assets/images/close.png" v-show="isShowClose"
+                        v-on:click="isDisplay = !isDisplay">
                 </span>
 
                 <div class="userHeadInfo">
@@ -55,7 +56,8 @@
             </van-popup>
 
             <!--信息窗口-->
-            <ChatGPTWindow :messageList="messageList" id="userMessage" class="userMessage" style="display:inline-block">
+            <ChatGPTWindow :messageList="messageList" id="userMessage" class="userMessage" @waitCancel="waitCancel"
+                style="display:inline-block">
             </ChatGPTWindow>
 
             <!--底部发送-->
@@ -85,7 +87,7 @@
                     </div>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </template>
@@ -121,6 +123,7 @@ export default {
             allowSession: true,
             showPopup: false,
             isStream: true,
+            isShowClose: true,
             netCount: 0,
             footHit: '...请耐心等待,轮子哥正在为你火速加载中...',
             oldSendData: '',
@@ -130,6 +133,7 @@ export default {
     },
 
     mounted() {
+
         this.initialization();
         //错误通知返回
         this.socket.on("error", (data) => {
@@ -139,9 +143,29 @@ export default {
         //客服最大接待人数已满的情况
         this.socket.on("ServiceFull", (data) => {
             this.$toast(data[0].message);
+            let noticeData = { sendPeople: 'notice', sendType: 4, waitCount: data[0].data.waitCount }
+            this.messageList.push(noticeData)
+        });
 
-            let noticeData={sendPeople:'notice',sendType:4,waitCount:data[0].data.waitCount}
-            console.log(noticeData)
+        //等待客服，更新排队次序
+        this.socket.on("WaitCountState", () => {
+            let length = this.messageList.length - 1
+            this.messageList[length].waitCount = this.messageList[length].waitCount - 1
+            if (this.messageList[length].waitCount == 0) {
+                this.waitCancel()
+                this.toLabor()
+            }
+        });
+
+        //接收等待时成功的通知
+        // this.socket.on("WaitSuccess", () => {
+        //     console.log("同意")
+        // });
+
+        //假如等待的过程中客服离线了，取消排队
+        this.socket.on("WaitServiceOffline", (data) => {
+            this.messageList.pop()
+            let noticeData = { sendPeople: 'notice', sendType: 5, message: data[0].message }
             this.messageList.push(noticeData)
         });
 
@@ -149,6 +173,7 @@ export default {
         this.socket.on("visitReturn", (data) => {
             this.user = JSON.parse(data[0].data)
         });
+
         //连接客服成功通知
         this.socket.on("linkServiceSuccess", (data) => {
             this.socketRoom = data[0].data.socketRoom;
@@ -191,7 +216,7 @@ export default {
             });
 
             this.messageList.push(this.$store.state.robot[0])
-
+            if (!this.isPC()) { this.isShowClose = false }
         },
 
         //转人工
@@ -199,6 +224,14 @@ export default {
             this.socket.emit("toLabor", this.user);
         },
 
+        //取消排队
+        waitCancel() {
+            this.messageList.pop()
+            //请求删除排队用户
+            this.socket.emit("waitCancel", this.user);
+        },
+
+        //chatGpt请求
         ajax(sendMessage) {
             let params = { max_tokens: this.maxTokens, model: "text-davinci-003", stream: this.isStream };
             params.prompt = sendMessage;
@@ -267,6 +300,7 @@ export default {
             })
         },
 
+        //消息发送
         sendMessage(data, sendType, sendPeople) {
             //判断空
             if (sendType === 1 && this.sendData.length <= 0) {
@@ -388,29 +422,29 @@ export default {
         //跳转留言
         showComment() {
             this.$router.push({ path: '/comment', replace: false })
-        }
+        },
 
         // //判断是否PC端
-        // isPC() {
-        //     //是否为PC端
-        //     var userAgentInfo = navigator.userAgent;
-        //     var Agents = [
-        //         "Android",
-        //         "iPhone",
-        //         "SymbianOS",
-        //         "Windows Phone",
-        //         "iPad",
-        //         "iPod",
-        //     ];
-        //     var flag = true;
-        //     for (var v = 0; v < Agents.length; v++) {
-        //         if (userAgentInfo.indexOf(Agents[v]) > 0) {
-        //             flag = false;
-        //             break;
-        //         }
-        //     }
-        //     return flag;
-        // },
+        isPC() {
+            //是否为PC端
+            var userAgentInfo = navigator.userAgent;
+            var Agents = [
+                "Android",
+                "iPhone",
+                "SymbianOS",
+                "Windows Phone",
+                "iPad",
+                "iPod",
+            ];
+            var flag = true;
+            for (var v = 0; v < Agents.length; v++) {
+                if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                    flag = false;
+                    break;
+                }
+            }
+            return flag;
+        },
 
     },
     watch: {

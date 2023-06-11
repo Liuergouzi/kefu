@@ -163,8 +163,8 @@
     },
     {
         "code":false,
-        "type":"",
-        "message":"",
+        "type":"WaitServiceOffline",
+        "message":"很抱歉，当前排队的客服已离线",
         "data":{}
     },
     {

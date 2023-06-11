@@ -34,7 +34,7 @@
                 </div>
             </div>
 
-            <!--状态通知显示-->
+            <!--等待状态通知显示-->
             <div v-if="item.sendPeople == 'notice'" class="noticeDiv">
                 <div class="moreSession" v-if="item.sendType == 4">
                     <span style="display: flex;">
@@ -42,8 +42,15 @@
                     </span>
                     <div class="wait">
                         <div class="animation_div"></div>
-                        <div class="waitCal">取消</div>
+                        <div class="waitCal" v-on:click="waitCancel">取消</div>
                     </div>
+                </div>
+            </div>
+
+            <!--普通状态通知显示-->
+            <div v-if="item.sendPeople == 'notice'" class="noticeDiv">
+                <div class="moreSession" v-if="item.sendType == 5">
+                    {{ item.message }}
                 </div>
             </div>
 
@@ -68,17 +75,25 @@ export default {
     methods: {
         //回复
         robotClick(items, index) {
-            let obj = {}
-            obj.sendType = 1
-            obj.sendPeople = 'me'
-            obj.message = items;
-            this.messageList_copy.push(obj)
-            let objs = {}
-            objs.sendType = 1
-            objs.sendPeople = 'other'
-            objs.message = this.$store.state.robot[0].reply[index];
-            this.messageList_copy.push(objs)
-            this.toBottom(200)
+            if (this.messageList_copy.filter((v) => v.sendType == 4).length==0) {
+                let obj = {}
+                obj.sendType = 1
+                obj.sendPeople = 'me'
+                obj.message = items;
+                this.messageList_copy.push(obj)
+                let objs = {}
+                objs.sendType = 1
+                objs.sendPeople = 'other'
+                objs.message = this.$store.state.robot[0].reply[index];
+                this.messageList_copy.push(objs)
+                this.toBottom(200)
+            }else{
+                this.$toast("请先取消排队");
+            }
+        },
+        //取消排队
+        waitCancel() {
+            this.$emit('waitCancel');
         },
         //回到底部
         toBottom(time) {
