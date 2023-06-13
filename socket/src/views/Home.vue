@@ -152,7 +152,7 @@ export default {
             let length = this.messageList.length - 1
             this.messageList[length].waitCount = this.messageList[length].waitCount - 1
             if (this.messageList[length].waitCount == 0) {
-                this.waitCancel()
+                this.socket.emit("waitSuccess", this.user);
                 this.toLabor()
             }
         });
