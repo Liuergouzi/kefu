@@ -3,9 +3,9 @@
         <div class="showComment">
             <div class="commentTitle">
                 <span v-bind:class="{ messageActive: messageType }" class="messageTopBtn"
-                    v-on:click="changeMessageType(true)">请您留言</span>
+                    v-on:click="changeMessageType(true)">{{$t('text.Comment.t1')}}</span>
                 <span v-bind:class="{ messageActive: !messageType }" class="messageTopBtn"
-                    v-on:click="changeMessageType(false)">留言记录</span>
+                    v-on:click="changeMessageType(false)">{{$t('text.Comment.t2')}}</span>
             </div>
             <!--提交页面-->
             <div v-show="messageType">
@@ -17,7 +17,7 @@
                 <div class="submitDiv" style="margin-top: 10px">
                     <div class="submitBtn" :style="this.$store.state.bgColor"
                         v-bind:class="{ activeBtn: customerMessage.length > 0 }" v-on:click="sumbitMessage">
-                        提交
+                        {{$t('text.Comment.t3')}}
                     </div>
                 </div>
             </div>
@@ -27,17 +27,17 @@
                     <div class="messageTime">{{ item.commentTime }}</div>
                     <div class="messageContent">
                         <div class="messageDetail">{{ item.commentContent }}</div>
-                        <div class="messageState" v-if="item.commentState == 0">待回复</div>
+                        <div class="messageState" v-if="item.commentState == 0">{{$t('text.Comment.t4')}}</div>
                         <div class="messageState" v-else-if="item.State == 2" v-on:click="item.State = 1">
-                            ∧收起
+                            {{$t('text.Comment.t5')}}
                         </div>
                         <div class="messageState" :style="this.$store.state.bgColor" v-else
                             v-on:click="seeMessageDetail(item)">
-                            查看详情
+                            {{$t('text.Comment.t6')}}
                         </div>
                     </div>
                     <div v-if="item.State == 2" style="text-align: left">
-                        <div>客服：{{ item.commentService }}</div>
+                        <div>{{$t('text.Comment.t7')}}{{ item.commentService }}</div>
                         <div>{{ item.commentReply }}</div>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
         data() {
             return {
                 messageType: true,
-                messageTip: "您好，很抱歉我们暂时无法为您提供服务，如需帮助，请留言，我们将尽快联系并解决您的问题",
+                messageTip: this.$t('text.Comment.t8'),
                 rateValue: 10,
                 customerMessage: '',
                 messageList: []
@@ -74,12 +74,13 @@
                     axios({
                         method: 'post',
                         url: '/commentSelectById',
-                        data: params
+                        data: params,
+                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
                     }).then((response) => {
-                        if (response.data[0].code) {
-                            this.messageList = JSON.parse(response.data[0].data);
+                        if (response.data.code) {
+                            this.messageList = JSON.parse(response.data.data);
                         } else {
-                            this.$toast("获取失败")
+                            this.$toast(this.$t('text.Comment.t9'))
                         }
                     })
                 }
@@ -98,13 +99,14 @@
                 axios({
                     method: 'post',
                     url: '/commentInsert',
-                    data: params
+                    data: params,
+                    headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
                 }).then((response) => {
-                    if (response.data[0].code) {
-                        this.$toast("提交成功")
+                    if (response.data.code) {
+                        this.$toast(this.$t('text.Comment.t10'))
                         this.customerMessage = "";
                     } else {
-                        this.$toast("提交失败")
+                        this.$toast(this.$t('text.Comment.t11'))
                     }
                 })
             },

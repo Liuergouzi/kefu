@@ -91,6 +91,8 @@ p{
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+    display: flex;
+    justify-content: space-between;
 }
 
 .notAllowSeesion {
@@ -105,9 +107,10 @@ p{
 
 .headSpan {
     display: flex;
-    margin-right: 10px;
+    margin-right: 5px;
     align-items: center;
     justify-content: flex-end;
+    gap: 10px;
 }
 
 .headTap {
@@ -117,11 +120,12 @@ p{
 
 .userHeadInfo {
     height: 40px;
+    display: flex;
 }
 
 .userHeadImg {
     display: inline-block;
-    margin: 0 10px 0 20px;
+    margin: 0 10px 0 15px;
     width: 40px;
     height: 40px;
     text-align: center;
@@ -134,12 +138,22 @@ p{
 }
 
 .userHeadTitle {
-    display: inline-block;
-    vertical-align: middle;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
 }
 
-.userHeadDetail {
+.userHeadName,.userHeadDetail {
     font-size: 12px;
+    text-overflow: -o-ellipsis-lastline;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    height: 23px;
+    line-height: 23px;
 }
 
 .userMessage {
@@ -281,7 +295,7 @@ textarea::-ms-input-placeholder {
     }
 
     .userHead {
-        height: 10%;
+        height: auto;
     }
 
     .userMessage {

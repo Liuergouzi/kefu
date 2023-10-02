@@ -16,24 +16,25 @@
                     <div class="messageTime">{{ item.commentTime }}</div>
                     <div class="messageContent">
                         <div class="messageDetail">{{ item.commentContent }}</div>
-                        <div class="messageState" v-if="item.commentState == 1">已回复</div>
+                        <div class="messageState" v-if="item.commentState == 1">{{ $t('text.CommentReply.t1') }}</div>
                         <div class="messageState" v-else-if="item.State == 2" v-on:click="item.State = 1">
-                            取消
+                            {{ $t('text.CommentReply.t2') }}
                         </div>
                         <div class="messageState" :style="this.$store.state.bgColor" v-else
                             v-on:click="seeMessageDetail(item)">
-                            回复
+                            {{ $t('text.CommentReply.t3') }}
                         </div>
                     </div>
-                    
+
                     <div v-if="item.commentState == 1" style="text-align: left">
-                        <div>客服：{{ item.commentService }}</div>
+                        <div>{{ $t('text.CommentReply.t4') }}{{ item.commentService }}</div>
                         <div>{{ item.commentReply }}</div>
                     </div>
-                    
+
                     <div v-if="item.State == 2" style="text-align: left;width:200px;margin-top:10px">
                         <input v-model="serviceMessage">
-                        <div class="messageSub" :style="this.$store.state.bgColor" v-on:click="replySubmit(item.id)">提交</div>
+                        <div class="messageSub" :style="this.$store.state.bgColor" v-on:click="replySubmit(item.id)">
+                            {{ $t('text.CommentReply.t5') }}</div>
                     </div>
                 </div>
             </div>
@@ -41,132 +42,134 @@
         </div>
         <!--对接页面-->
         <div v-show="current_state == 2" class="infoContent">
-            页面后续扩展内容
+            {{ $t('text.CommentReply.t6') }}
         </div>
     </div>
-
 </template>
 
 <script>
-    import axios from 'axios';
-    export default {
-        name: 'CommentReply',
-        mounted() {
-            
-            this.service = Object.assign({}, JSON.parse(localStorage.getItem('serviceData')))
-            
-            let params = {page:1}
+import axios from 'axios';
+export default {
+    name: 'CommentReply',
+    mounted() {
+
+        this.service = Object.assign({}, JSON.parse(localStorage.getItem('serviceData')))
+
+        let params = { page: 1 }
+        axios({
+            method: 'post',
+            url: '/commentSelect',
+            data: params,
+            headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+        }).then((response) => {
+            if (response.data.code) {
+                this.messageList = JSON.parse(response.data.data);
+                if (JSON.parse(response.data.data).length == 10) {
+                    this.totalPage = this.totalPage + 1
+                }
+            } else {
+                this.$toast(this.$t('text.CommentReply.t7'))
+            }
+        })
+    },
+    methods: {
+        //切换客服工具
+        changeToolPage(serviceTool) {
+            this.serviceTool.map((a) => {
+                if (a.id == serviceTool.id) {
+                    a.state = true;
+                    this.current_state = a.id;
+                } else {
+                    a.state = false;
+                }
+            });
+        },
+
+        //回复留言
+        replySubmit(id) {
+            let params = {
+                id: id,
+                commentService: this.service.serviceName,
+                commentReply: this.serviceMessage
+            }
+            console.log(params)
             axios({
                 method: 'post',
-                url: '/commentSelect',
-                data: params
+                url: '/commentReply',
+                data: params,
+                headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
             }).then((response) => {
-                if (response.data[0].code) {
-                    this.messageList = JSON.parse(response.data[0].data);
-                    if(JSON.parse(response.data[0].data).length==10 ){
-                        this.totalPage=this.totalPage+1
-                    }
+                if (response.data.code) {
+                    this.$toast(this.$t('text.CommentReply.t8'))
+                    // for(var i=0;i<this.messageList.length();i++){
+
+                    // }
+                    this.messageList
+                    this.serviceMessage = "";
                 } else {
-                    this.$toast("获取失败")
+                    this.$toast(this.$t('text.CommentReply.t9'))
                 }
             })
         },
-        methods: {
-            //切换客服工具
-            changeToolPage(serviceTool) {
-                this.serviceTool.map((a) => {
-                    if (a.id == serviceTool.id) {
-                        a.state = true;
-                        this.current_state = a.id;
-                    } else {
-                        a.state = false;
-                    }
-                });
+
+        seeMessageDetail(message) {
+            message.State = 2;
+        },
+    },
+    data() {
+        return {
+            current_state: 1,
+            currentEasy: 0,
+            messageList: [],
+            serviceMessage: "",
+            service: {
+                serviceId: '',
+                serviceName: '',
+                serviceState: 0,
+                serviceFrequency: 0
             },
-            
-            //回复留言
-            replySubmit(id) {
-                let params = {
-                    id:id,
-                    commentService: this.service.serviceName,
-                    commentReply:this.serviceMessage
-                }
-                console.log(params)
+            serviceTool: [
+                {
+                    id: 1,
+                    text: this.$t('text.CommentReply.t10'),
+                    state: true,
+                },
+                {
+                    id: 2,
+                    text: this.$t('text.CommentReply.t11'),
+                    state: false,
+                },
+            ],
+            currentPage: 1,
+            totalPage: 1
+        }
+    },
+    watch: {
+        //监听，页数切换
+        currentPage: {
+            handler() {
+                let params = { page: this.currentPage }
                 axios({
                     method: 'post',
-                    url: '/commentReply',
-                    data: params
+                    url: '/commentSelect',
+                    data: params,
+                    headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
                 }).then((response) => {
-                    if (response.data[0].code) {
-                        this.$toast("回复成功")
-                        // for(var i=0;i<this.messageList.length();i++){
-                            
-                        // }
-                        this.messageList
-                        this.serviceMessage = "";
+                    if (response.data.code) {
+                        this.messageList = JSON.parse(response.data.data);
+                        console.log(this.messageList)
                     } else {
-                        this.$toast("回复失败")
+                        this.$toast(this.$t('text.CommentReply.t12'))
                     }
                 })
-            },
-            
-            seeMessageDetail(message) {
-                message.State = 2;
-            },
-        },
-        data() {
-            return {
-                current_state: 1,
-                currentEasy: 0,
-                messageList: [],
-                serviceMessage:"",
-                service: {
-                    serviceId: '',
-                    serviceName: '',
-                    serviceState: 0,
-                    serviceFrequency: 0
-                },
-                serviceTool: [
-                    {
-                        id: 1,
-                        text: "留言回复",
-                        state: true,
-                    },
-                    {
-                        id: 2,
-                        text: "页面后续扩展内容",
-                        state: false,
-                    },
-                ],
-                currentPage:1,
-                totalPage:1
-            }
-        },
-        watch: {
-            //监听，页数切换
-            currentPage: {
-                handler() {
-                    let params = {page:this.currentPage}
-                    axios({
-                        method: 'post',
-                        url: '/commentSelect',
-                        data: params
-                    }).then((response) => {
-                        if (response.data[0].code) {
-                            this.messageList = JSON.parse(response.data[0].data);
-                            console.log(this.messageList)
-                        } else {
-                            this.$toast("没有更多了")
-                        }
-                    })
-                }
             }
         }
     }
+}
 </script>
 <style scoped>
-    @import url("../assets/css/ServiceRightPage.css");
+@import url("../assets/css/ServiceRightPage.css");
 </style>
 <style scoped>
-    @import url("../assets/css/Comment.css");
+@import url("../assets/css/Comment.css");
 </style>

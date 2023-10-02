@@ -19,8 +19,8 @@
     /*display: -webkit-box;*/
     /*-webkit-box-orient: horizontal;*/
     margin-top: 20px;
+    position: relative;
 }
-
 .customerServiceDiv {
     float: left;
     margin: 0.25rem 0rem;

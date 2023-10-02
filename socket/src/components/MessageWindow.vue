@@ -2,7 +2,7 @@
     <div class="RightCont">
         <div v-if="lastSession" class="noticeDiv">
             <div class="moreSession" v-on:click="selectMessage">
-                加载更多
+                {{$t('text.MessageWindow.t1')}}
             </div>
         </div>
         <!--消息接收-->
@@ -65,7 +65,7 @@ export default {
         messageList: Object,
         sendId: String,
         receiveId: String,
-        isService: String
+        isService: String,
     },
     mounted() {
 
@@ -77,10 +77,11 @@ export default {
         axios({
             method: 'post',
             url: '/selectMessage',
-            data: params
+            data: params,
+            headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
         }).then((response) => {
-            if (response.data[0].code) {
-                let message = JSON.parse(response.data[0].data);
+            if (response.data.code) {
+                let message = JSON.parse(response.data.data);
                 if (message.length == 0) {
                     this.lastSession = false
                 }
@@ -98,10 +99,11 @@ export default {
             axios({
                 method: 'post',
                 url: '/selectMessage',
-                data: params
+                data: params,
+                headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
             }).then((response) => {
-                if (response.data[0].code) {
-                    let message = JSON.parse(response.data[0].data);
+                if (response.data.code) {
+                    let message = JSON.parse(response.data.data);
 
                     for (var i = message.length - 1; i >= 0; i--) {
                         if (message[i].sendId == this.sendId) {
@@ -118,7 +120,7 @@ export default {
                     this.lastSession = false
                 } else {
                     this.lastSession = false
-                    this.$toast(response.data[0].message);
+                    this.$toast(response.data.message);
                 }
             })
         }
@@ -150,16 +152,17 @@ export default {
                     axios({
                         method: 'post',
                         url: '/selectMessage',
-                        data: params
+                        data: params,
+                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
                     }).then((response) => {
-                        if (response.data[0].code) {
-                            let message = JSON.parse(response.data[0].data);
+                        if (response.data.code) {
+                            let message = JSON.parse(response.data.data);
                             if (message.length == 0) {
                                 this.lastSession = false
                             }
                         } else {
                             this.lastSession = false
-                            this.$toast(response.data[0].message);
+                            this.$toast(response.data.message);
                         }
                     })
                 }

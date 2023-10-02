@@ -2,14 +2,22 @@
     <div class="Chat">
         <!--会话窗口-->
         <div class="customerChat">
-            <div class="customerChatHead" :style="this.$store.state.bgColor">轮子哥在线客服</div>
+            <div class="customerChatHead" :style="this.$store.state.bgColor">
+                <div>{{ $t('text.Home.t1') }}</div>
+                <div class="customerChatHeadIcon">
+                    <SetLanguage></SetLanguage>
+                    <img src="../assets/images/closeSeesion.png" class="closeImg" @click="closeSeesion">
+                </div>
+            </div>
             <!--聊天内容-->
             <MessageWindow :messageList="messageList" class="customerChatMessage" id="customerChatWindow"
                 :sendId="this.$store.state.userData.userId" :receiveId="this.$store.state.userData.receiveId"
                 :isService="'false'"></MessageWindow>
             <!--聊天框底部-->
             <div class="customerChatFoot">
-                <div v-show="!allowSession" class="notAllowSeesion"></div>
+                <div v-show="!allowSession" class="notAllowSeesion">
+                    <div class="back" :style="this.$store.state.bgColor" @click="back">{{$t('text.customerChat.t1')}}</div>
+                </div>
                 <div class="customerChatTool">
                     <!--表情包-->
                     <SendEmote v-show="EmoteShow" @sendMessage="sendMessage"></SendEmote>
@@ -20,7 +28,7 @@
                                 <img src="../assets/images/expression.png" />
                             </li>
                             <li v-on:click="EmoteShow = false" style="position: relative">
-                                <img src="../assets/images/imageFile.png" style="width:22px ;height:22px;"/>
+                                <img src="../assets/images/imageFile.png" style="width:22px ;height:22px;" />
                                 <SendImage @sendMessage="sendMessage"></SendImage>
                             </li>
                         </ul>
@@ -28,10 +36,10 @@
                     <!--发送内容-->
                     <div style="height: calc(100% - 70px)">
                         <textarea v-on:focus="EmoteShow = false" id="dope" v-model="sendData" class="customerChatText"
-                            :placeholder="allowSession ? '请输入会话内容' : '当前客服已离线'" v-on:keyup.enter="enterSend"></textarea>
+                            :placeholder="textareaHit" v-on:keyup.enter="enterSend"></textarea>
                         <button class="customerChatButton" id="serviceSendBtn" v-on:click="sendMessage(sendData, 1)"
                             :style="this.$store.state.bgColor">
-                            发送(s)
+                           {{$t('text.customerChat.t2')}}
                         </button>
                     </div>
 
@@ -46,11 +54,13 @@
 import MessageWindow from '@/components/MessageWindow.vue';
 import SendEmote from '@/components/SendEmote.vue';
 import SendImage from '@/components/SendImage.vue';
+import SetLanguage from '@/components/SetLanguage.vue';
 export default {
     components: {
         MessageWindow,
         SendEmote,
-        SendImage
+        SendImage,
+        SetLanguage
     },
     data() {
         return {
@@ -60,7 +70,8 @@ export default {
             allowSession: true,
             message: '',
             user: {},
-            messageList: []
+            messageList: [],
+            textareaHit:this.$t('text.customerChat.t3')
         }
     },
 
@@ -70,26 +81,27 @@ export default {
 
         //接收消息
         this.socket.on("reviceMessage", (data) => {
-            this.message = data[0].data.message;
-            let obj = { sendType: data[0].data.sendType, sendPeople: 'other', message: data[0].data.message }
+            this.message = data.data.message;
+            let obj = { sendType: data.data.sendType, sendPeople: 'other', message: data.data.message }
             this.messageList.push(obj)
             this.toBottom(128)
         });
 
         //错误接收
         this.socket.on("error", (data) => {
-            this.$toast(data[0].message);
+            this.$toast(data.message);
         });
 
         //离线处理
         this.socket.on("Offline", (data) => {
             //
-            //此处你可以更据data[0].type=='DuplicateConnection'来进一步的弹出是否要下线的通知
+            //此处你可以更据data.type=='DuplicateConnection'来进一步的弹出是否要下线的通知
             //
-            this.$toast(data[0].message);
+            this.$toast(data.message);
             this.allowSession = false;
-            let obj = { sendType: 4, sendPeople: 'notice', message: data[0].message }
+            let obj = { sendType: 4, sendPeople: 'notice', message: data.message }
             this.messageList.push(obj)
+            this.textareaHit=this.$t('text.customerChat.t4')
             this.socket.close()
         });
     },
@@ -100,16 +112,29 @@ export default {
                 //此处修改对象会丢失响应式监听，不会触发视图更新，因此要显式拷贝对象
                 this.user = Object.assign({}, JSON.parse(localStorage.getItem('userData')))
             } else {
-                alert("道友莫要开玩笑，时代变了，您的上古浏览法器太落后了！")
+                alert(this.$t('text.customerChat.t5'))
                 this.$router.push({ path: '/', replace: true })
             }
             this.socket.emit('userJoin', this.user)
         },
 
+        //关闭会话
+        closeSeesion(){
+            this.allowSession = false;
+            this.textareaHit=this.$t('text.customerChat.t6')
+            this.socket.close()
+        },
+
+        //返回
+        back(){
+            this.$router.go(0)
+            this.$router.push({path:"/",replace:true})
+        },
+        //发送消息
         sendMessage(data, sendType) {
             //判断发送类型
             if (sendType === 1 && this.sendData.length <= 0) {
-                this.$toast("大哥至少说点什么吧!");
+                this.$toast(this.$t('text.customerChat.t7'));
                 return;
             }
             if (sendType === 2 && this.$route.path === '/customerChat') {

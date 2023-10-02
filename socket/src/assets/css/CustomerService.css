@@ -37,11 +37,6 @@
     height: 52px;
     width: 100%;
     display: flex;
-
-    /*width: 100%;*/
-    /*height: 52px;*/
-    /*display: -webkit-box;*/
-    /*-webkit-box-orient: horizontal;*/
 }
 
 .serviceHeadLeft {
@@ -52,9 +47,11 @@
 }
 
 .serviceHeadRight {
-    width: 100px;
     display: flex;
     justify-content: space-around;
+    align-items: center;
+    gap: 15px;
+    padding-right: 40px;
 }
 
 .serviceHeadCenter {
@@ -110,7 +107,7 @@
     background: #c8eed0;
     display: flex;
     height: 20px;
-    width: 48px;
+    width: auto;
     font-size: 12px;
     align-items: center;
     border-start-end-radius: 10px;
@@ -119,6 +116,8 @@
     border-end-start-radius: 10px;
     margin-left: 5px;
     margin-top: 16px;
+    white-space: nowrap;
+    padding-right: 5px;
 }
 
 .offlineUlStyle{
@@ -229,6 +228,7 @@
     color: #767676;
     line-height: 15px;
     overflow: hidden;
+    background-color: #e6f7f6;
 }
 
 .intername {
@@ -250,6 +250,8 @@
     right: 10px;
     padding: 2px;
     text-align: center;
+    background: #e6f7f6;
+    display: flex;
 }
 
 .un_read {
@@ -269,7 +271,7 @@
 }
 
 .isSelect {
-    background: #FFEBEC;
+    background: #e6f7f6;
 }
 
 .conRight {

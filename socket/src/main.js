@@ -5,13 +5,13 @@ import store from './store'
 import axios from 'axios'
 import config from './config'
 
-if(config.environment=='dev'){
+if (config.environment == 'dev') {
 	axios.defaults.baseURL = '/api'		//设置默认请求地址
-}else if(config.environment=='build'){
-    axios.defaults.baseURL = config.apiUrl  //设置默认请求地址
+} else if (config.environment == 'build') {
+	axios.defaults.baseURL = config.apiUrl  //设置默认请求地址
 }
 
-axios.defaults.headers={ 'content-type': 'application/json', 'Authorization': 'Bearer ' + config.chatGptKey }
+axios.defaults.headers = { 'content-type': 'application/json'}
 
 //按需引入vant
 import 'vant/lib/index.css'
@@ -25,6 +25,28 @@ import { Rate } from "vant"
 import { Popup } from "vant"
 import { Slider } from "vant"
 import { Pagination } from 'vant';
+import { Dialog } from 'vant';
+
+
+/**
+ * 中英文
+ */
+import { createI18n } from "vue-i18n";
+import ZH from './language/zh-CN'
+import EN from './language/en-US'
+const i18n = createI18n({
+	legacy: false,
+	locale: localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN',
+	globalInjection: true,
+	messages: {
+		"zh-CN": {
+			text: ZH
+		},
+		"en-US": {
+			text: EN
+		}
+	}
+});
 
 
 /**
@@ -50,7 +72,7 @@ router.beforeEach((to, from, next) => {
 			url: '/verificationToken',
 			data: params
 		}).then((response) => {
-			if (response.data[0].code) {
+			if (response.data.code) {
 				next();
 				return;
 			} else {
@@ -77,4 +99,5 @@ router.beforeEach((to, from, next) => {
 
 })
 
-createApp(App).use(store).use(router).use(Button).use(Switch).use(Popup).use(Slider).use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Rate).mount('#app')
+createApp(App).use(store).use(router).use(i18n).use(Button).use(Switch).use(Popup).use(Slider)
+	.use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).mount('#app')

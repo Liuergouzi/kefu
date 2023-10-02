@@ -4,24 +4,32 @@
     background-color: #fafafa;
     padding: 15px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 
 .serviceTool {
-    height: 40px;
+    height: auto;
     width: 100%;
     background-color: #fff;
     display: flex;
     justify-content: space-around;
     margin-bottom: 10px;
 }
+.serviceTool>div {
+    padding: 10px 0;
+}
 
 .infoContent {
     position: relative;
-    height: 86vh;
     background: #fff;
     padding: 10px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
 }
 
 .infoContent>div {

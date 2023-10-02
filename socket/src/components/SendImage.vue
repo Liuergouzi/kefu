@@ -15,7 +15,7 @@ export default {
             const fileObj = e.target.files[0];
             if (fileObj != null) {
                 if (!/image\/\w+/.test(fileObj.type)) {
-                    return alert("请选择图片文件!", { icon: 5, time: 1000 });
+                    return alert(this.$t('text.SendImage.t1'), { icon: 5, time: 1000 });
                 }
                 var fd = new FormData();
                 fd.append("file", fileObj);
@@ -43,7 +43,7 @@ export default {
                         };
                     };
                 } else if (fileObj.size > 1024 * 1024 * 10) {
-                    return alert("上传图片不能超过10M!", { icon: 5, time: 1000 });
+                    return alert(this.$t('text.SendImage.t2'), { icon: 5, time: 1000 });
                 } else {
                     let reader = new FileReader();
                     reader.readAsDataURL(fileObj);

@@ -3,19 +3,20 @@
         <div class="main">
             <div class="bg"></div>
             <form class="formone" action="/" method="get">
-                <div class="title">客服登录</div>
+                <div class="title">{{ $t('text.customerServiceLogin.t1') }}</div>
                 <div class="username">
-                    <input type="text" id="login_account" v-model="login.serviceAccount" placeholder="请输入账号ID" />
+                    <input type="text" id="login_account" v-model="login.serviceAccount" :placeholder="$t('text.customerServiceLogin.t2')" />
                 </div>
                 <div class="password">
-                    <input type="password" id="login_password" v-model="login.servicePassword" placeholder="请输入密码" />
+                    <input type="password" id="login_password" v-model="login.servicePassword" :placeholder="$t('text.customerServiceLogin.t3')" />
                 </div>
                 <div class="clear">
-                    <div v-on:click="clear()">清空</div>
+                    <div v-on:click="clear()">{{ $t('text.customerServiceLogin.t4') }}</div>
+                    <SetLanguage></SetLanguage>
                 </div>
                 <div class="loginbtn" v-on:click="serviceLogin">
-                    <div class="btnbg">登录</div>
-                    <button type="button">登录</button>
+                    <div class="btnbg">{{ $t('text.customerServiceLogin.t5') }}</div>
+                    <button type="button">{{ $t('text.customerServiceLogin.t5') }}</button>
                 </div>
             </form>
         </div>
@@ -24,76 +25,68 @@
 
 
 <script>
-    import JSEncrypt from 'jsencrypt';
+    import SetLanguage from '@/components/SetLanguage.vue';
+import JSEncrypt from 'jsencrypt';
     let encryptor = new JSEncrypt();
     export default {
-        data() {
-            return {
-                socket: this.$store.state.serviceSocket,
-                publicKey: '',
-                login: {
-                    serviceAccount: '',
-                    servicePassword: ''
-                }
+    data() {
+        return {
+            socket: this.$store.state.serviceSocket,
+            publicKey: '',
+            login: {
+                serviceAccount: '',
+                servicePassword: ''
+            }
+        };
+    },
+    mounted() {
+        this.initialization();
+        //接收公钥
+        this.socket.on("returnPublicKey", (data) => {
+            this.publicKey = JSON.stringify(data.data).replace(/\\r|\\n/g, '');
+            encryptor.setPublicKey(this.publicKey);
+        });
+        //接收登录返回
+        this.socket.on("loginReturn", (data) => {
+            //数据存储
+            //存储到localStorage
+            console.log(data.token.data);
+            localStorage.setItem('token', data.token.data);
+            //客服数据存储到localStorage
+            localStorage.setItem('serviceData', data.data);
+            //页面跳转
+            this.$router.push({ path: '/customerService', replace: true });
+        });
+        //错误失败处理
+        this.socket.on("error", (data) => {
+            alert(data.message);
+        });
+    },
+    methods: {
+        initialization() {
+            //初始化，从服务端拿公钥
+            this.socket.emit("getPublicKey");
+        },
+        //登录
+        serviceLogin() {
+            if (this.login.serviceAccount == null || this.login.servicePassword == null) {
+                alert("输入为空");
+            }
+            else {
+                //数据加密
+                this.login.serviceAccount = encryptor.encrypt(this.login.serviceAccount);
+                this.login.servicePassword = encryptor.encrypt(this.login.servicePassword);
+                this.socket.emit("serviceLogin", this.login);
             }
         },
-
-        mounted() {
-
-            this.initialization();
-
-            //接收公钥
-            this.socket.on("returnPublicKey", (data) => {
-                this.publicKey = JSON.stringify(data[0].data).replace(/\\r|\\n/g, '');
-                encryptor.setPublicKey(this.publicKey);
-            });
-
-            //接收登录返回
-            this.socket.on("loginReturn", (data) => {
-                //数据存储
-                //存储到localStorage
-                localStorage.setItem('token', data[0].token[0].data)
-                //客服数据存储到localStorage
-                localStorage.setItem('serviceData', data[0].data)
-                //页面跳转
-                this.$router.push({ path: '/customerService', replace: true })
-            });
-
-            //错误失败处理
-            this.socket.on("error", (data) => {
-                alert(data[0].message)
-            });
-
+        //清空密码账号输入
+        clear() {
+            this.login.serviceAccount = null;
+            this.login.servicePassword = null;
         },
-        methods: {
-
-            initialization() {
-                
-                //初始化，从服务端拿公钥
-                this.socket.emit("getPublicKey");
-            },
-
-            //登录
-            serviceLogin() {
-                if (this.login.serviceAccount == null || this.login.servicePassword == null) {
-                    alert("输入为空")
-                } else {
-                    //数据加密
-                    this.login.serviceAccount = encryptor.encrypt(this.login.serviceAccount);
-                    this.login.servicePassword = encryptor.encrypt(this.login.servicePassword);
-                    this.socket.emit("serviceLogin", this.login);
-                }
-            },
-
-            //清空密码账号输入
-            clear() {
-                this.login.serviceAccount = null;
-                this.login.servicePassword = null;
-            },
-            
-        }
-
-    }
+    },
+    components: { SetLanguage }
+}
 
 </script>
 
@@ -106,7 +99,10 @@
         box-sizing: border-box;
 
     }
-
+    .clear{
+        display: flex;
+        gap: 20px;
+    }
     .container {
         position: absolute;
         width: 100%;

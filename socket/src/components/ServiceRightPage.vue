@@ -12,23 +12,23 @@
         <!--用户信息-->
         <div v-show="current_state == 1" class="infoContent">
             <div>
-                <label>用户id：</label>
+                <label>{{$t('text.ServiceRightPage.t1')}}</label>
                 <span>{{ user.data.userId }}</span>
             </div>
             <div>
-                <label>用户名：</label>
+                <label>{{$t('text.ServiceRightPage.t2')}}</label>
                 <span>{{ user.data.userName }}</span>
             </div>
             <div>
-                <label>临时房间号：</label>
+                <label>{{$t('text.ServiceRightPage.t3')}}</label>
                 <span>{{ user.data.socketRoom }}</span>
             </div>
             <div>
-                <label>临时服务id：</label>
+                <label>{{$t('text.ServiceRightPage.t4')}}</label>
                 <span>{{ user.data.receiveId }}</span>
             </div>
             <div>
-                <label>用户状态：</label>
+                <label>{{$t('text.ServiceRightPage.t5')}}</label>
                 <span>【{{ user.data.isProhibit}}】</span>
             </div>
         </div>
@@ -57,7 +57,7 @@
         </div>
         <!--对接页面-->
         <div v-show="current_state == 3" class="infoContent">
-            <iframe style="width: 100%; height: 100%; border: 0px" src="http://60.205.187.0/home/zfb/pay.html"></iframe>
+            <iframe style="width: 100%; height: 100%; border: 0px" src="https://ctrlc.cc/home/zfb/pay.html"></iframe>
         </div>
     </div>
     
@@ -105,17 +105,17 @@ export default {
             serviceTool: [
                 {
                     id: 1,
-                    text: "客户信息",
+                    text: this.$t('text.ServiceRightPage.t6'),
                     state: true,
                 },
                 {
                     id: 2,
-                    text: "快捷回复",
+                    text: this.$t('text.ServiceRightPage.t7'),
                     state: false,
                 },
                 {
                     id: 3,
-                    text: "轮子哥",
+                    text: this.$t('text.ServiceRightPage.t8'),
                     state: false,
                 },
             ],

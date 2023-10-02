@@ -2,10 +2,11 @@ const mysql = require("./DB/mysql.js");      //引入mysql
 const verification = require("./security/verification.js");  //引入数据校验
 const token = require("./security/token.js");  //引入token
 const RSA = require("./security/RSA/RSA.js");  //引入数据加解密
-const statu = require("./statu.json");      //引入全局返回状态
+const state = require('./i18n'); //引入全局返回状态     
 const nowTime = require("./time.js");
 const express = require('express');	// 引入express
 const path = require("path");
+
 
 const app = express();
 app.use(express.json());	//中间件，解析表单中的 JSON 格式的数据
@@ -71,18 +72,36 @@ let services = [];
 //记录排队等待的用户
 let waitUsers = [];
 
+
+//设置语言
+const i18nMiddleware = (req, res, next) => {
+    // 获取请求头
+    const language = req.headers['accept-language']
+    state.setLocale(language)
+    next()
+}
+app.use(i18nMiddleware)
+//socket设置语言
+io.use((socket, next) => {
+    // 获取请求头
+    const language = socket.request.headers['accept-language']
+    state.setLocale(language)
+    next()
+})
+
+
 io.on('connection', socket => {
 
     //如果用户存在则传回用户数据，历史聊天记录，否则创建用户
     socket.on("visit", data => {
         //校验数据
-        var newData = verification.newData(data)[0].data;
+        var newData = verification.newData(data).data;
         if (newData) {
             mysql.selectUser(newData.userId).then((data) => {
                 if (data) {
                     //传回用户数据
-                    let returns = statu.filter((v) => v.type == "success");
-                    returns[0].data = data;
+                    let returns = state.__("success");
+                    returns.data = data;
                     socket.emit("visitReturn", returns);
                 } else {
                     //进行用户注册
@@ -92,7 +111,7 @@ io.on('connection', socket => {
 
         } else {
             //数据格式错误
-            socket.emit("error", socket.emit("error", statu.filter((v) => v.type == "illegalData")))
+            socket.emit("error", socket.emit("error", state.__("illegalData")))
         }
 
     })
@@ -107,26 +126,24 @@ io.on('connection', socket => {
     //客服端登录验证
     socket.on("serviceLogin", data => {
         //数据校验解密
-        var Data = verification.newDataDecrypt(data);
-        var newData = Data[0];
+        var newData = verification.newDataDecrypt(data);
         if (newData.code) {
 
             mysql.serviceLogin(newData.data).then((data) => {
                 if (data) {
                     //传回客服数据+token
-                    let returns = statu.filter((v) => v.type == "success");
-                    returns[0].token = token.createToken(data);
-                    returns[0].data = data;
-                    // console.log(returns[0].token)
+                    let returns = state.__("success");
+                    returns.token = token.createToken(data);
+                    returns.data = data;
                     socket.emit("loginReturn", returns);
                 } else {
                     //登录失败
-                    socket.emit("error", statu.filter((v) => v.type == "loginFalse"));
+                    socket.emit("error", state.__("loginFalse"));
                 }
             });
 
         } else {
-            socket.emit("error", Data)
+            socket.emit("error", newData)
         }
 
     })
@@ -136,52 +153,53 @@ io.on('connection', socket => {
     //客服上线
     socket.on("serviceOnline", data => {
         //数据校验  
-        var Data = verification.newData(data);
-        var newData = Data[0];
+        var newData = verification.newData(data);
         if (newData.code) {
             if (services.filter((v) => v.serviceId === data.serviceId).length == 0) {
                 data.socketId = socket.id;
                 data.userList = [];
                 //存入列表
                 services.push(data)
-                socket.emit("success", statu.filter((v) => v.type == "OnlineSuccess"))
+                socket.emit("success", state.__("OnlineSuccess"))
             }
             // else {
-            //     socket.emit("error", statu.filter((v) => v.type == "OnlineFalse"))
+            //     socket.emit("error", state.__("OnlineFalse"))
             // }
         } else {
-            socket.emit("error", Data)
+            socket.emit("error", newData)
         }
     })
 
     //客服手动离线
     socket.on("serviceOffline", data => {
+
         if (services.length > 0 && services.filter(v => (v.socketId == socket.id)).length > 0) {
             //拿出离线的客服数据
             let service = services.filter(v => (v.socketId == socket.id))
             //获取跟客服连接的用户,全部通知客服下线
             for (var i = 0; i < service[0].userList.length; i++) {
-                socket.to(service[0].userList[i].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+                socket.to(service[0].userList[i].socketId).emit("Offline", state.__("Offline"))
             }
 
             //如果此客服有排队咨询的用户，全部通知全部排队的用户客服已离线，并删除排队用户
             let waitUserTemp = waitUsers.filter((v) => v.serviceSocketId == socket.id)
             if (waitUserTemp.length > 0) {
                 waitUserTemp.forEach(element => {
-                    socket.to(element.userSocketId).emit("WaitServiceOffline", statu.filter((v) => v.type == "WaitServiceOffline"))
+                    socket.to(element.userSocketId).emit("WaitServiceOffline", state.__("WaitServiceOffline"))
                 });
                 waitUsers = waitUsers.filter((v) => v.serviceSocketId != socket.id)
             }
             //删除该客服
             services = services.filter(v => (v.socketId != socket.id))
-            socket.emit("success", statu.filter((v) => v.type == "OfflineSuccess"))
+            socket.emit("success", state.__("OfflineSuccess"))
         } else {
-            socket.emit("error", statu.filter((v) => v.type == "OfflineFalse"))
+            socket.emit("error", state.__("OfflineFalse"))
         }
     })
 
     //客服踢出用户
     socket.on("closeSeesion", data => {
+
         try {
             //通知用户
             for (var i = 0; i < services.length; i++) {
@@ -189,11 +207,11 @@ io.on('connection', socket => {
                     let socketId = services[i].userList.filter((v) => v.userId == data.data.userId)
                     services[i].userList = services[i].userList.filter((v) => v.userId != data.data.userId)
                     // users = users.filter(v => (v.socketId != data.data.userId))
-                    socket.to(socketId[0].socketId).emit("Offline", statu.filter((v) => v.type == "KickOut"))
+                    socket.to(socketId[0].socketId).emit("Offline", state.__("KickOut"))
                 }
             }
         } catch (e) {
-            socket.emit("error", statu.filter((v) => v.type == "TooTast"))
+            socket.emit("error", state.__("TooTast"))
         }
     })
 
@@ -207,8 +225,8 @@ io.on('connection', socket => {
 
     //用户转人工
     socket.on("toLabor", data => {
-        var Data = verification.newData(data);
-        var newData = Data[0];
+
+        var newData = verification.newData(data);
         if (newData.code) {
             if (services.length > 0) {
                 //随机分配客服
@@ -221,39 +239,40 @@ io.on('connection', socket => {
                         //改变客服接待次数
                         services[index].serviceFrequency = services[index].serviceFrequency + 1;
                         //返回用户通知
-                        let returns = statu.filter((v) => v.type == "joinSuccess");
-                        returns[0].data.serviceName = services[index].serviceName;
-                        returns[0].data.socketRoom = services[index].socketId;
-                        returns[0].data.receiveId = services[index].serviceId;
+                        let returns = state.__("joinSuccess");
+                        returns.data.serviceName = services[index].serviceName;
+                        returns.data.socketRoom = services[index].socketId;
+                        returns.data.receiveId = services[index].serviceId;
                         socket.emit("linkServiceSuccess", returns);
                     } else {
                         //让另一个窗口下线
-                        socket.to(userList[0].socketId).emit("Offline", statu.filter((v) => v.type == "DuplicateConnection"))
+                        socket.to(userList[0].socketId).emit("Offline", state.__("DuplicateConnection"))
                     }
                 } else if (waitUsers.filter((v) => v.userSocketId == socket.id).length == 0) {
                     //把等待的用户的socketId存进来
                     let waitUserTemp = { serviceSocketId: services[index].socketId, userSocketId: socket.id }
                     waitUsers.push(waitUserTemp)
                     //客服最大连接人数已满，返回通知用户进行排队
-                    let returns = statu.filter((v) => v.type == "ServiceFull");
-                    returns[0].data.waitCount = waitUsers.length;
-                    returns[0].data.serviceName = services[index].serviceName;
-                    returns[0].data.socketRoom = services[index].socketId;
-                    returns[0].data.receiveId = services[index].serviceId;
+                    let returns = state.__("ServiceFull");
+                    returns.data.waitCount = waitUsers.length;
+                    returns.data.serviceName = services[index].serviceName;
+                    returns.data.socketRoom = services[index].socketId;
+                    returns.data.receiveId = services[index].serviceId;
                     socket.emit("ServiceFull", returns);
                 }
 
             } else {
-                socket.emit("error", statu.filter((v) => v.type == "nullService"));
+                socket.emit("error", state.__("nullService"));
             }
 
         } else {
-            socket.emit("error", Data);
+            socket.emit("error", newData);
         }
     })
 
     //取消排队
     socket.on("waitCancel", data => {
+
         const waitUserTemp = waitUsers.filter((v) => v.userSocketId == socket.id)
         const waitUserTempIndex = waitUsers.findIndex((v) => v.userSocketId == socket.id)
         if (waitUserTemp.length > 0) {
@@ -276,6 +295,7 @@ io.on('connection', socket => {
 
     //排队成功时删除掉排队的用户
     socket.on("waitSuccess", data => {
+
         const waitUserTemp = waitUsers.filter((v) => v.userSocketId == socket.id)
         if (waitUserTemp.length > 0) {
             const serviceIndex = services.findIndex((v) => v.socketId == waitUserTemp[0].serviceSocketId)
@@ -289,8 +309,8 @@ io.on('connection', socket => {
 
     //让用户进入
     socket.on("userJoin", data => {
-        var Data = verification.newData(data);
-        var newData = Data[0];
+
+        var newData = verification.newData(data);
         if (newData.code) {
             let socketRoom = data.socketRoom;
             let receiveId = data.userId;
@@ -305,36 +325,36 @@ io.on('connection', socket => {
                 }
             }
             //返回客服通知
-            let user_returns = statu.filter((v) => v.type == "joinSuccess");
+            let user_returns = state.__("joinSuccess");
             let res = Object.assign({}, data)
-            user_returns[0].data = res;
-            user_returns[0].data.socketRoom = socket.id;
-            user_returns[0].data.receiveId = receiveId;
+            user_returns.data = res;
+            user_returns.data.socketRoom = socket.id;
+            user_returns.data.receiveId = receiveId;
             socket.to(socketRoom).emit("UserJoinSuccess", user_returns);
             mysql.updateServiceFrequency(data.receiveId)
         } else {
-            socket.emit("error", Data);
+            socket.emit("error", newData);
         }
     })
 
     //发送消息
     socket.on("sendMessage", data => {
+
         data.time = nowTime.getNowTime();
-        var Data = verification.newData(data);
-        var newData = Data[0];
+        var newData = verification.newData(data);
         if (newData.code) {
             mysql.insertMessage(newData.data).then((sql_data) => {
                 if (sql_data) {
                     //消息发送
-                    let returns = statu.filter((v) => v.type == "success");
-                    returns[0].data = data;
+                    let returns = state.__("success");
+                    returns.data = data;
                     socket.to(data.socketRoom).emit("reviceMessage", returns)
                 } else {
-                    socket.emit("error", statu.filter((v) => v.type == "false"));
+                    socket.emit("error", state.__("false"));
                 }
             });
         } else {
-            socket.emit("error", Data)
+            socket.emit("error", newData)
         }
     })
 
@@ -349,8 +369,8 @@ io.on('connection', socket => {
                 let user = users.filter(v => (v.socketId == socket.id))
                 if (user.length > 0) {
                     //通知客服
-                    let returns = statu.filter((v) => v.type == "Offline");
-                    returns[0].data = { userId: user[0].userId };
+                    let returns = state.__("Offline");
+                    returns.data = { userId: user[0].userId };
                     socket.to(user[0].socketRoom).emit("Offline", returns)
                     //删除该用户
                     users = users.filter(v => (v.socketId != socket.id))
@@ -399,13 +419,13 @@ io.on('connection', socket => {
                 if (service.length > 0) {
                     //获取跟客服连接的用户,全部通知客服下线
                     for (var i = 0; i < service[0].userList.length; i++) {
-                        socket.to(service[0].userList[i].socketId).emit("Offline", statu.filter((v) => v.type == "Offline"))
+                        socket.to(service[0].userList[i].socketId).emit("Offline", state.__("Offline"))
                     }
                     //如果此客服有排队咨询的用户，全部通知全部排队的用户客服已离线，并删除排队用户
                     let waitUserTemp = waitUsers.filter((v) => v.serviceSocketId == socket.id)
                     if (waitUserTemp.length > 0) {
                         waitUserTemp.forEach(element => {
-                            socket.to(element.userSocketId).emit("WaitServiceOffline", statu.filter((v) => v.type == "WaitServiceOffline"))
+                            socket.to(element.userSocketId).emit("WaitServiceOffline", state.__("WaitServiceOffline"))
                         });
                         waitUsers = waitUsers.filter((v) => v.serviceSocketId != socket.id)
                     }
@@ -431,126 +451,119 @@ app.post('/verificationToken', function (req, res) {
 
 //修改名称接口
 app.post('/updateServiceName', function (req, res) {
-    var Data = verification.newData(req.body);
-    var newData = Data[0];
+    var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.updateServiceName(newData.data.serviceName, newData.data.serviceId).then((sql_data) => {
             if (sql_data) {
-                res.json(statu.filter((v) => v.type == "success"))
+                res.json(state.__("success"))
             } else {
-                res.json(statu.filter((v) => v.type == "false"))
+                res.json(state.__("false"))
             }
         });
     } else {
-        res.json(statu.filter((v) => v.type == "dataFalse"))
+        res.json(state.__("dataFalse"))
     }
 })
 
 
 //修改最大接待次数接口
 app.post('/updateServiceMax', function (req, res) {
-    var Data = verification.newData(req.body);
-    var newData = Data[0];
+    var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.updateServiceMax(Number(newData.data.serviceMax), newData.data.serviceId).then((sql_data) => {
             if (sql_data) {
-                res.json(statu.filter((v) => v.type == "success"))
+                res.json(state.__("success"))
             } else {
-                res.json(statu.filter((v) => v.type == "false"))
+                res.json(state.__("false"))
             }
         });
     } else {
-        res.json(statu.filter((v) => v.type == "dataFalse"))
+        res.json(state.__("dataFalse"))
     }
 })
 
 //历史聊天记录查询
 app.post('/selectMessage', function (req, res) {
-    var Data = verification.newData(req.body);
-    var newData = Data[0];
+    var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.selectMessage(newData.data.sendId, newData.data.receiveId).then((sql_data) => {
             if (sql_data) {
-                let returns = statu.filter((v) => v.type == "success");
-                returns[0].data = sql_data;
+                let returns = state.__("success");
+                returns.data = sql_data;
                 res.json(returns)
             } else {
-                res.json(statu.filter((v) => v.type == "false"))
+                res.json(state.__("false"))
             }
         });
     } else {
-        res.json(statu.filter((v) => v.type == "dataFalse"))
+        res.json(state.__("dataFalse"))
     }
 })
 
 //提交留言
 app.post('/commentInsert', function (req, res) {
-    var Data = verification.newData(req.body);
-    var newData = Data[0];
+    var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentInsert(newData.data).then((sql_data) => {
             if (sql_data) {
-                res.json(statu.filter((v) => v.type == "success"))
+                res.json(state.__("success"))
             } else {
-                res.json(statu.filter((v) => v.type == "false"))
+                res.json(state.__("false"))
             }
         });
     } else {
-        res.json(statu.filter((v) => v.type == "dataFalse"))
+        res.json(state.__("dataFalse"))
     }
 })
 
 //查看自己留言
 app.post('/commentSelectById', function (req, res) {
-    var Data = verification.newData(req.body);
-    var newData = Data[0];
+    var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentSelectById(newData.data.commentId).then((sql_data) => {
             if (sql_data) {
-                let returns = statu.filter((v) => v.type == "success");
-                returns[0].data = sql_data;
+                let returns = state.__("success");
+                returns.data = sql_data;
                 res.json(returns)
             } else {
-                res.json(statu.filter((v) => v.type == "false"))
+                res.json(state.__("false"))
             }
         });
     } else {
-        res.json(statu.filter((v) => v.type == "dataFalse"))
+        res.json(state.__("dataFalse"))
     }
 })
 
 //查看最新10条留言
 app.post('/commentSelect', function (req, res) {
-    var Data = verification.newData(req.body);
-    var newData = Data[0];
+    var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentSelect(newData.data.page).then((sql_data) => {
             if (sql_data) {
-                let returns = statu.filter((v) => v.type == "success");
-                returns[0].data = sql_data;
+                let returns = state.__("success");
+                returns.data = sql_data;
                 res.json(returns)
             } else {
-                res.json(statu.filter((v) => v.type == "false"))
+                res.json(state.__("false"))
             }
         });
     } else {
-        res.json(statu.filter((v) => v.type == "dataFalse"))
+        res.json(state.__("dataFalse"))
     }
 })
 
 //客服回复
 app.post('/commentReply', function (req, res) {
-    var Data = verification.newData(req.body);
-    var newData = Data[0];
+    var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentReply(newData.data).then((sql_data) => {
             if (sql_data) {
-                res.json(statu.filter((v) => v.type == "success"))
+                res.json(state.__("success"))
             } else {
-                res.json(statu.filter((v) => v.type == "false"))
+                res.json(state.__("false"))
             }
         });
     } else {
-        res.json(statu.filter((v) => v.type == "dataFalse"))
+        res.json(state.__("dataFalse"))
     }
 })

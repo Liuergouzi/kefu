@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')     //引入token依赖
 const crypto = require('crypto')        //引入需要用到MD5的模块
-const statu = require("../statu.json")  //引入全局返回状态
+const state = require("../i18n")  //引入全局返回状态
 const md5 = crypto.createHash('md5')    //使用MD5
 
 
@@ -20,12 +20,12 @@ function createToken(payload) {
         payload=JSON.parse(payload);
         payload.time = new Date().getTime() + 86400000;//设置时效一天
         let token = jwt.sign(payload, secret);
-        let returns=statu.filter((v) => v.type == "createTokenSuccess");
-        returns[0].data=token;
+        let returns=state.__("createTokenSuccess");
+        returns.data=token;
         return returns;
     } catch (e) {
         // console.log("【轮子哥】生成token失败")
-        return statu.filter((v) => v.type == "createTokenError");
+        return state.__("createTokenError");
     }
 
 }
@@ -44,12 +44,12 @@ function verificationToken(token) {
     try {
         let json = jwt.verify(token, secret)
         if (json.time > new Date().getTime()) {
-            return statu.filter((v) => v.type == "verificationTokenSuccess");
+            return state.__("verificationTokenSuccess");
         } else {
-            return statu.filter((v) => v.type == "verificationTokenTimeOut");
+            return state.__("verificationTokenTimeOut");
         }
     } catch (err) {
-        return statu.filter((v) => v.type == "decryptTokenError");
+        return state.__("decryptTokenError");
     }
 }
 
@@ -64,11 +64,11 @@ function verificationToken(token) {
 function decryptToken(token) {
     try {
         let json = jwt.verify(token, secret);
-        let returns=statu.filter((v) => v.type == "decryptTokenSuccess");
-        returns[0].data=json;
+        let returns=state.__("decryptTokenSuccess");
+        returns.data=json;
         return returns;
     } catch (err) {
-        return statu.filter((v) => v.type == "decryptTokenError");
+        return state.__("decryptTokenError");
     }
 }
 

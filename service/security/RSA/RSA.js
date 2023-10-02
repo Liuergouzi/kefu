@@ -1,7 +1,7 @@
 const NodeRSA = require('node-rsa');    //引入rsa
 const fs = require('fs');   //引入文件操作
 const path = require("path");
-const statu = require("../../statu.json")  //引入全局返回状态
+const state = require("../../i18n")  //引入全局返回状态
 // const { publicDecrypt } = require('crypto');
 
 const privateKey = fs.readFileSync(path.join(__dirname, './private.pem'));   //读取私钥
@@ -17,8 +17,8 @@ key.setOptions({ encryptionScheme: 'pkcs1' }); // node-rsa 跟jsecrypt 协议不
 
 function returnPublicKey() {
     publicKey = fs.readFileSync(path.join(__dirname, './public.pem'), 'utf8');
-    let returns = statu.filter((v) => v.type == "returnPublicKeySuccess");
-    returns[0].data = publicKey;
+    let returns = state.__("returnPublicKeySuccess");
+    returns.data = publicKey;
     return returns;
 }
 
@@ -32,11 +32,11 @@ function returnPublicKey() {
 
 function Decrypt(value) {
     try {
-        let returns = statu.filter((v) => v.type == "decryptDataSuccess");
-        returns[0].data=key.decrypt(value.toString(), 'utf8');
+        let returns = state.__("decryptDataSuccess");
+        returns.data=key.decrypt(value.toString(), 'utf8');
         return returns;
     } catch (e) {
-        return statu.filter((v) => v.type == "illegalData");
+        return state.__("illegalData");
     }
 }
 

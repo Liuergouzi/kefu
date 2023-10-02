@@ -38,11 +38,11 @@
             <div v-if="item.sendPeople == 'notice'" class="noticeDiv">
                 <div class="moreSession" v-if="item.sendType == 4">
                     <span style="display: flex;">
-                        当前客服忙，您当前排在第{{ item.waitCount }}位
+                        {{$t('text.HomeAiChat.t1')}}{{ item.waitCount }}{{$t('text.HomeAiChat.t2')}}
                     </span>
                     <div class="wait">
                         <div class="animation_div"></div>
-                        <div class="waitCal" v-on:click="waitCancel">取消</div>
+                        <div class="waitCal" v-on:click="waitCancel">{{$t('text.HomeAiChat.t3')}}</div>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
 
 <script>
 export default {
-    name: 'ChatGPTWindow',
+    name: 'HomeAiChat',
     props: {
         messageList: Object,
     },
@@ -88,7 +88,7 @@ export default {
                 this.messageList_copy.push(objs)
                 this.toBottom(200)
             }else{
-                this.$toast("请先取消排队");
+                this.$toast(this.$t('text.HomeAiChat.t4'));
             }
         },
         //取消排队

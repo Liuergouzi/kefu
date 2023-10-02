@@ -10,7 +10,7 @@
                 </div>
                 <!--昵称及修改昵称-->
                 <div v-if="!changeServiceName" class="serviceHeadName" v-on:mouseenter="changeServiceName = true">
-                    昵称：{{ service.serviceName }}
+                    {{ $t('text.customerService.t1') }}{{ service.serviceName }}
                 </div>
                 <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceName = false" :line="'1'"
                     :serviceId="service.serviceId" :serviceNameProps="service.serviceName" @changeValue1="changeValue">
@@ -19,13 +19,13 @@
                 <!--最大接待人数及修改-->
                 <div v-if="!changeServiceReception" class="serviceHeadReception"
                     v-on:mouseenter="changeServiceReception = true">
-                    最大同时可接待：{{ service.serviceMax }}
+                    {{ $t('text.customerService.t2') }}{{ service.serviceMax }}
                 </div>
                 <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceReception = false" :line="'2'"
                     :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue1="changeValue">
                 </MyInput>
 
-                <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">接待次数：{{ service.serviceFrequency
+                <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">{{ $t('text.customerService.t3') }}{{ service.serviceFrequency
                 }}</div>
                 <div style="margin-top: 13px; margin-left: 5px">
                     <van-switch v-model="stateChange" size="24px" v-on:click="changeOnLine">
@@ -38,7 +38,7 @@
                 </div>
                 <div class="serviceStateDiv">
                     <div :class="stateChange ? 'serviceStateGreenDot' : 'serviceStateRedDot'"></div>
-                    {{ stateChange ? "在线" : "离线" }}
+                    {{ stateChange ?  $t('text.customerService.t4') : $t('text.customerService.t5') }}
                 </div>
 
             </div>
@@ -46,12 +46,13 @@
             <!--中-->
             <div class="serviceHeadCenter">
                 <van-notice-bar v-if="showNoticeBar" left-icon="volume-o" delay="0" scrollable
-                    text="【轮子哥在线客服客服端】您有一位新的小黑子访问" mode="closeable">
+                    :text="$t('text.customerService.t6')" mode="closeable">
                 </van-notice-bar>
             </div>
 
             <!--右-->
             <div class="serviceHeadRight">
+                <SetLanguage></SetLanguage>
                 <div style="margin-top:5px">
                     <van-popover v-model:show="isPopover" :actions="actions" @select="onSelect()">
                         <template #reference>
@@ -59,7 +60,6 @@
                         </template>
                     </van-popover>
                 </div>
-
             </div>
 
         </div>
@@ -72,7 +72,7 @@
                     <div v-show="onlineUsers.length > 0" class="conLeftTop" v-on:click="onlineShow = !onlineShow">
                         <span v-show="onlineShow">▼</span>
                         <span v-show="!onlineShow">▲</span>
-                        在线会话
+                        {{ $t('text.customerService.t7') }}
                     </div>
                     <!--显示在线连接列表-->
                     <li v-show="onlineShow" :key="index" v-for="(item, index) in onlineUsers" style="cursor: pointer"
@@ -90,10 +90,10 @@
                             <div v-show="item.data.UnRead > 0" class="un_read">
                                 {{ item.data.UnRead > 99 ? "99+" : item.data.UnRead }}
                             </div>
-                            <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="closeSeesion(item)">
+                            <div class="closeSession" v-show="item.CloseSession" v-on:click.stop="closeSeesion(item)">
                                 <img src="../assets/images/closeSeesion.png" style="width:12px;height:12px">
-                                踢出会话
-                            </span>
+                                <div style="font-size: 12px;">{{ $t('text.customerService.t8') }}</div>
+                            </div>
                         </div>
                     </li>
                 </ul>
@@ -125,7 +125,7 @@
                     <div v-show="offlineUsers.length > 0" class="conLeftTop" v-on:click="offlineShow = !offlineShow">
                         <span v-show="offlineShow">▼</span>
                         <span v-show="!offlineShow">▲</span>
-                        离线会话
+                        {{ $t('text.customerService.t9') }}
                     </div>
                     <!--显示离线连接列表-->
                     <li v-show="offlineShow" :key="index" v-for="(item, index) in offlineUsers" class="offlineUlStyle"
@@ -141,7 +141,7 @@
                             <span class="infor">{{ item.data.message }}</span>
                             <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="deleteOffLine(item)">
                                 <img src="../assets/images/redClose.png" style="width:12px;height:12px">
-                                删除
+                                {{ $t('text.customerService.t10') }}
                             </span>
                         </div>
                     </li>
@@ -150,7 +150,7 @@
                 <!--列表为空-->
                 <div v-show="onlineUsers.length === 0 && offlineUsers.length === 0" class="noPeople">
                     <img src="../assets/images/noPeple.png" />
-                    <div style="text-align: center">正等待被撩...</div>
+                    <div style="text-align: center">{{ $t('text.customerService.t11') }}</div>
                 </div>
             </div>
             <!--左部->中间内容-->
@@ -159,8 +159,8 @@
                 <div class="layout-empty">
                     <div class="layout-empty-conatiner">
                         <img style="width: 100px; height: auto" src="../assets/images/noPeple.png" />
-                        <span>没有会话内容</span>
-                        <span style="color: #bdc3d1">当客户接入后，从左侧客户列表中选择客户开始会话</span>
+                        <span>{{ $t('text.customerService.t12') }}</span>
+                        <span style="color: #bdc3d1">{{ $t('text.customerService.t13') }}</span>
                     </div>
                 </div>
             </div>
@@ -168,8 +168,8 @@
             <div v-else-if="isSelectShow" class="conRight">
                 <div class="layout-empty">
                     <div class="layout-empty-conatiner">
-                        <span>道友</span>
-                        <span style="color: #bdc3d1">点击右侧列表开始你的表演吧！</span>
+                        <span>{{ $t('text.customerService.t14') }}</span>
+                        <span style="color: #bdc3d1">{{ $t('text.customerService.t15') }}</span>
                     </div>
                 </div>
             </div>
@@ -206,7 +206,7 @@
                             <textarea v-on:focus="expressionShow = false" id="dope" v-model="sendData" class="textBox"
                                 v-on:keyup.enter="enterSend"></textarea>
                             <button class="sendBtn" id="serviceSendBtn" v-on:click="sendMessage(sendData, 1)">
-                                发送(s)
+                                {{ $t('text.customerService.t16') }}
                             </button>
                         </div>
 
@@ -228,16 +228,18 @@ import SendEmote from '@/components/SendEmote.vue';
 import SendImage from '@/components/SendImage.vue';
 import ServiceRightPage from '@/components/ServiceRightPage.vue';
 import CommentReply from '@/components/CommentReply.vue';
+import SetLanguage from '@/components/SetLanguage.vue';
 export default {
 
     components: {
-        MyInput,
-        MessageWindow,
-        SendEmote,
-        SendImage,
-        ServiceRightPage,
-        CommentReply
-    },
+    MyInput,
+    MessageWindow,
+    SendEmote,
+    SendImage,
+    ServiceRightPage,
+    CommentReply,
+    SetLanguage
+},
 
     data() {
         return {
@@ -251,7 +253,7 @@ export default {
             },
             onlineUsers: [],
             offlineUsers: [],
-            waitUsers:[],
+            waitUsers: [],
             selectUsers: {
                 data: {
                     userId: '',
@@ -262,7 +264,7 @@ export default {
                 }
             },
             actions: [
-                { text: '退出登录' }
+                { text: this.$t('text.customerService.t17') }
             ],
             isPopover: false,
             sendData: '',
@@ -286,77 +288,77 @@ export default {
 
         //用户连接成功通知
         this.socket.on("UserJoinSuccess", (data) => {
-            data[0].data.UnRead = 1
-            data[0].data.message = "加入了会话"
-            data[0].data.messageList = []
-            data[0].data.isSelectSession = false
+            data.data.UnRead = 1
+            data.data.message = this.$t('text.customerService.t18')
+            data.data.messageList = []
+            data.data.isSelectSession = false
 
             //用户重复连线处理
-            let isNewJoinUser = this.onlineUsers.filter((v) => v.data.userId === data[0].data.userId)
+            let isNewJoinUser = this.onlineUsers.filter((v) => v.data.userId === data.data.userId)
             if (isNewJoinUser.length == 0) {
-                this.onlineUsers.push(data[0])
+                this.onlineUsers.push(data)
                 if (this.offlineUsers.length != 0) {
-                    this.offlineUsers = this.offlineUsers.filter((v) => v.data.userId != data[0].data.userId)
+                    this.offlineUsers = this.offlineUsers.filter((v) => v.data.userId != data.data.userId)
                 }
             }
             else {
                 for (var i = 0; i < this.onlineUsers.length; i++) {
                     if (isNewJoinUser[0].data.userId == this.onlineUsers[i].data.userId) {
-                        this.onlineUsers[i].data.message = "重新加入了会话"
-                        this.offlineUsers = this.offlineUsers.filter((v) => v.data.userId != data[0].data.userId)
+                        this.onlineUsers[i].data.message = this.$t('text.customerService.t19')
+                        this.offlineUsers = this.offlineUsers.filter((v) => v.data.userId != data.data.userId)
                     }
                 }
             }
 
             this.showNoticeBar = !this.showNoticeBar
             this.service.serviceFrequency = this.service.serviceFrequency + 1;
-            //设置3分钟后自动取消通知条
-            setTimeout(this.showNotice, 180000);
+            //设置30秒后自动取消通知条
+            setTimeout(this.showNotice, 30000);
         });
 
         //接收消息
         this.socket.on("reviceMessage", (data) => {
             for (var i = 0; i < this.onlineUsers.length; i++) {
-                if (this.onlineUsers[i].data.userId == data[0].data.userId) {
+                if (this.onlineUsers[i].data.userId == data.data.userId) {
                     //添加红点
                     this.onlineUsers[i].data.UnRead = this.onlineUsers[i].data.UnRead + 1;
                     //左侧列表信息更新
-                    this.onlineUsers[i].data.message = data[0].data.message;
+                    this.onlineUsers[i].data.message = data.data.message;
                     //新创建一个列表，将信息存入列表，用于聊天窗口循环
                     let obj = {
-                        sendType: data[0].data.sendType,
+                        sendType: data.data.sendType,
                         sendPeople: 'other',
-                        message: data[0].data.message
+                        message: data.data.message
                     };
                     this.onlineUsers[i].data.messageList.push(obj)
                 }
             }
-            this.reviceMessage = data[0].data.message;
+            this.reviceMessage = data.data.message;
             this.toBottom(128)
         });
 
         //离线处理
         this.socket.on("Offline", (data) => {
-            console.log(JSON.stringify(data[0]))
-            this.$toast(data[0].message);
-            let obj = { sendType: 4, sendPeople: 'notice', message: data[0].message }
+            console.log(JSON.stringify(data))
+            this.$toast(data.message);
+            let obj = { sendType: 4, sendPeople: 'notice', message: data.message }
             this.selectUsers.data.messageList.push(obj)
             //删除在线列表，加入离线列表
-            let offline = this.onlineUsers.filter((v) => v.data.userId == data[0].data.userId)[0]
+            let offline = this.onlineUsers.filter((v) => v.data.userId == data.data.userId)[0]
             if (offline != undefined) {
-                this.offlineUsers.push(this.onlineUsers.filter((v) => v.data.userId == data[0].data.userId)[0])
-                this.onlineUsers = this.onlineUsers.filter((v) => v.data.userId != data[0].data.userId)
+                this.offlineUsers.push(this.onlineUsers.filter((v) => v.data.userId == data.data.userId)[0])
+                this.onlineUsers = this.onlineUsers.filter((v) => v.data.userId != data.data.userId)
             }
         });
 
         //错误通知
         this.socket.on("error", (data) => {
-            this.$toast(data[0].message);
+            this.$toast(data.message);
         });
 
         //成功通知
         this.socket.on("success", (data) => {
-            this.$toast(data[0].message);
+            this.$toast(data.message);
         });
 
     },
@@ -375,7 +377,7 @@ export default {
                         this.socket.emit("serviceOnline", this.service);
                 }
             } else {
-                alert("道友莫要开玩笑，时代变了，您的上古浏览法器太落后了！")
+                alert(this.$t('text.customerService.t20'))
                 this.loginOut();
             }
         },
@@ -443,7 +445,7 @@ export default {
         sendMessage(data, sendType) {
             //判断发送类型
             if (sendType === 1 && this.sendData.length <= 0) {
-                this.$toast("大哥至少说点什么吧!");
+                this.$toast(this.$t('text.customerService.t21'));
                 return;
             }
             if (sendType === 2 && this.$route.path === '/customerService') {
@@ -515,4 +517,6 @@ export default {
 </script>
 
 
-<style scoped>@import url("../assets/css/CustomerService.css");</style>
+<style scoped>
+@import url("../assets/css/CustomerService.css");
+</style>

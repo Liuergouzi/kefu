@@ -18,8 +18,29 @@
     padding: 10px;
     width: 100%;
     height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
-
+.customerChatHeadIcon{
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+}
+.closeImg{
+    width: 18px;
+    height: 18px;
+}
+.back{
+    position: absolute;
+    top: 45%;
+    right: 45%;
+    z-index: 1;
+    padding: 1px 10px;
+    color: white;
+    font-size: 14px;
+    border-radius: 3px;
+}
 .customerChatMessage {
     width: 100%;
     height: 90%;

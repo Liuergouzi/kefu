@@ -17,13 +17,16 @@
 ###	安装express
 	npm install express -i --save
 
-###	安装mongoose数据库
-###	npm install mongoose -i --save
+### 后端语言国际化
+	npm install i18n -i --save
 
-###	socket.io即时通讯
+### 前端语言国际化
+	npm install vue-i18n -i --save
+
+###	服务端socket.io即时通讯
 	npm install socket.io -i --save
 	
-### 全局安装
+### 全局安装socket
     npm install vue-socket.io --save
 
 ###	mysql数据库
@@ -47,7 +50,7 @@
 ###	前端即时通讯
 	npm install socket.io-client -i --save
 
-###	安装fingerprintjs2
+###	fingerprintjs2浏览器指纹
 	npm install fingerprintjs2 -i --save
 
 ###	ajax
@@ -61,5 +64,5 @@
 	    "babel-plugin-import": "^1.13.5",
 	
 
-###	vant 学习网址https://vant-contrib.gitee.io/vant/#/zh-CN	
+###	vant组件官方地址https://vant-contrib.gitee.io/vant/#/zh-CN	
 

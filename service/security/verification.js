@@ -1,7 +1,7 @@
 const mysql = require('mysql');      //请求mysql
 const xss = require('xss');      //引入xss防止xss攻击
 const RSA = require("./RSA/RSA.js");     //引入数据加解密
-const statu = require("../statu.json");      //引入全局返回状态
+const state = require("../i18n");      //引入全局返回状态
 
 
 
@@ -17,21 +17,21 @@ function newData(json) {
 
     try {
         //判断是否为json
-        if (typeof(json) == "object" && Object.prototype.toString.call(json).toLowerCase() == "[object object]" && !json.length) {
+        if (typeof (json) == "object" && Object.prototype.toString.call(json).toLowerCase() == "[object object]" && !json.length) {
             var newJson = {};
             var keys = Object.keys(json);
             var values = Object.values(json);
             for (var i = 0; i < keys.length; i++) {
                 newJson[keys[i]] = xss(mysql.escape(values[i]));
             }
-            let returns = statu.filter((v) => v.type == "dataVerificationSuccess");
-            returns[0].data = newJson;
+            let returns = state.__("dataVerificationSuccess");
+            returns.data = newJson;
             return returns;
-        }else{
-            return statu.filter((v) => v.type == "dataFalse");
+        } else {
+            return state.__("dataFalse");
         }
     } catch (e) {
-        return statu.filter((v) => v.type == "illegalData");
+        return state.__("illegalData");
     }
 
 }
@@ -50,21 +50,21 @@ function newDataDecrypt(json) {
 
     try {
         //判断是否为json
-        if (typeof(json) == "object" && Object.prototype.toString.call(json).toLowerCase() == "[object object]" && !json.length) {
+        if (typeof (json) == "object" && Object.prototype.toString.call(json).toLowerCase() == "[object object]" && !json.length) {
             var newJson = {};
             var keys = Object.keys(json);
             var values = Object.values(json);
             for (var i = 0; i < keys.length; i++) {
-                newJson[keys[i]] = xss(mysql.escape(RSA.Decrypt(values[i])[0].data));
+                newJson[keys[i]] = xss(mysql.escape(RSA.Decrypt(values[i]).data));
             }
-            let returns = statu.filter((v) => v.type == "dataVerificationDecryptSuccess");
-            returns[0].data = newJson;
+            let returns = state.__("dataVerificationDecryptSuccess");
+            returns.data = newJson;
             return returns;
-        }else{
-            return statu.filter((v) => v.type == "dataFalse");
+        } else {
+            return state.__("dataFalse");
         }
     } catch (e) {
-        return statu.filter((v) => v.type == "illegalData");
+        return state.__("illegalData");
     }
 
 }

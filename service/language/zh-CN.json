@@ -1,0 +1,170 @@
+{
+    "false": {
+        "code": false,
+        "type": "false",
+        "message": "请求失败",
+        "data": {}
+    },
+    "success": {
+        "code": true,
+        "type": "success",
+        "message": "请求成功",
+        "data": {}
+    },
+    "joinSuccess": {
+        "code": true,
+        "type": "joinSuccess",
+        "message": "连接成功",
+        "data": {}
+    },
+    "joinFalse": {
+        "code": true,
+        "type": "joinFalse",
+        "message": "当前客服正在忙，请稍后重试",
+        "data": {}
+    },
+    "nullService": {
+        "code": true,
+        "type": "nullService",
+        "message": "当前没有客服在线",
+        "data": {}
+    },
+    "illegalData": {
+        "code": false,
+        "type": "illegalData",
+        "message": "非法数据",
+        "data": {}
+    },
+    "dataFalse": {
+        "code": false,
+        "type": "dataFalse",
+        "message": "数据格式错误",
+        "data": {}
+    },
+    "returnPublicKeySuccess": {
+        "code": true,
+        "type": "returnPublicKeySuccess",
+        "message": "公钥返回成功",
+        "data": {}
+    },
+    "decryptDataSuccess": {
+        "code": true,
+        "type": "decryptDataSuccess",
+        "message": "数据解密成功",
+        "data": {}
+    },
+    "dataVerificationSuccess": {
+        "code": true,
+        "type": "dataVerificationSuccess",
+        "message": "数据校验成功",
+        "data": {}
+    },
+    "dataVerificationDecryptSuccess": {
+        "code": true,
+        "type": "dataVerificationDecryptSuccess",
+        "message": "数据校验解密成功",
+        "data": {}
+    },
+    "createTokenSuccess": {
+        "code": true,
+        "type": "createTokenSuccess",
+        "message": "token生成成功",
+        "data": {}
+    },
+    "createTokenError": {
+        "code": false,
+        "type": "createTokenError",
+        "message": "token生成失败",
+        "data": {}
+    },
+    "decryptTokenSuccess": {
+        "code": true,
+        "type": "decryptTokenSuccess",
+        "message": "token解密成功",
+        "data": {}
+    },
+    "decryptTokenError": {
+        "code": false,
+        "type": "decryptTokenError",
+        "message": "非法token",
+        "data": {}
+    },
+    "verificationTokenSuccess": {
+        "code": true,
+        "type": "verificationTokenSuccess",
+        "message": "token验证通过",
+        "data": {}
+    },
+    "verificationTokenTimeOut": {
+        "code": false,
+        "type": "verificationTokenTimeOut",
+        "message": "登录过期，请重新登录",
+        "data": {}
+    },
+    "loginFalse": {
+        "code": false,
+        "type": "loginFalse",
+        "message": "账号或密码错误",
+        "data": {}
+    },
+    "OnlineSuccess": {
+        "code": true,
+        "type": "OnlineSuccess",
+        "message": "上线成功",
+        "data": {}
+    },
+    "Offline": {
+        "code": false,
+        "type": "Offline",
+        "message": "对方已离线",
+        "data": {}
+    },
+    "KickOut": {
+        "code": false,
+        "type": "KickOut",
+        "message": "客服已断开当前会话",
+        "data": {}
+    },
+    "OnlineFalse": {
+        "code": false,
+        "type": "OnlineFalse",
+        "message": "您已在线",
+        "data": {}
+    },
+    "OfflineSuccess": {
+        "code": true,
+        "type": "OfflineSuccess",
+        "message": "离线成功",
+        "data": {}
+    },
+    "OfflineFalse": {
+        "code": true,
+        "type": "OfflineFalse",
+        "message": "离线失败，当前未在线",
+        "data": {}
+    },
+    "TooTast": {
+        "code": false,
+        "type": "TooTast",
+        "message": "您的操作太快了！",
+        "data": {}
+    },
+    "DuplicateConnection": {
+        "code": false,
+        "type": "DuplicateConnection",
+        "message": "您已在另一个窗口重复连接！",
+        "data": {}
+    },
+    "ServiceFull": {
+        "code": false,
+        "type": "ServiceFull",
+        "message": "当前客服正在忙，您可以手动切换其它在线客服",
+        "data": {}
+    },
+    "WaitServiceOffline": {
+        "code": false,
+        "type": "WaitServiceOffline",
+        "message": "很抱歉，当前排队的客服已离线",
+        "data": {}
+    }
+}

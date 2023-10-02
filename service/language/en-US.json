@@ -1,0 +1,170 @@
+{
+    "false": {
+        "code": false,
+        "type": "false",
+        "message": "Request failure",
+        "data": {}
+    },
+    "success":{
+        "code": true,
+        "type": "success",
+        "message": "Request successful",
+        "data": {}
+    },
+    "joinSuccess":{
+        "code": true,
+        "type": "joinSuccess",
+        "message": "Successfully connected",
+        "data": {}
+    },
+    "joinFalse":{
+        "code": true,
+        "type": "joinFalse",
+        "message": "The customer service is currently busy, please try again later",
+        "data": {}
+    },
+    "nullService":{
+        "code": true,
+        "type": "nullService",
+        "message": "Currently, there is no customer service online",
+        "data": {}
+    },
+    "illegalData":{
+        "code": false,
+        "type": "illegalData",
+        "message": "Invalid data",
+        "data": {}
+    },
+    "dataFalse":{
+        "code": false,
+        "type": "dataFalse",
+        "message": "Data in wrong format",
+        "data": {}
+    },
+    "returnPublicKeySuccess":{
+        "code": true,
+        "type": "returnPublicKeySuccess",
+        "message": "Public key returned successfully",
+        "data": {}
+    },
+    "decryptDataSuccess":{
+        "code": true,
+        "type": "decryptDataSuccess",
+        "message": "Data decryption successful",
+        "data": {}
+    },
+    "dataVerificationSuccess":{
+        "code": true,
+        "type": "dataVerificationSuccess",
+        "message": "Data verification successful",
+        "data": {}
+    },
+    "dataVerificationDecryptSuccess":{
+        "code": true,
+        "type": "dataVerificationDecryptSuccess",
+        "message": "Data verification and decryption successful",
+        "data": {}
+    },
+    "createTokenSuccess":{
+        "code": true,
+        "type": "createTokenSuccess",
+        "message": "Successfully generated token",
+        "data": {}
+    },
+    "createTokenError":{
+        "code": false,
+        "type": "createTokenError",
+        "message": "Token generation failed",
+        "data": {}
+    },
+    "decryptTokenSuccess":{
+        "code": true,
+        "type": "decryptTokenSuccess",
+        "message": "Token decrypted successfully",
+        "data": {}
+    },
+    "decryptTokenError":{
+        "code": false,
+        "type": "decryptTokenError",
+        "message": "Illegal token",
+        "data": {}
+    },
+    "verificationTokenSuccess":{
+        "code": true,
+        "type": "verificationTokenSuccess",
+        "message": "Token verification passed",
+        "data": {}
+    },
+    "verificationTokenTimeOut":{
+        "code": false,
+        "type": "verificationTokenTimeOut",
+        "message": "Login expired, please log in again",
+        "data": {}
+    },
+    "loginFalse":{
+        "code": false,
+        "type": "loginFalse",
+        "message": "Account or password error",
+        "data": {}
+    },
+    "OnlineSuccess":{
+        "code": true,
+        "type": "OnlineSuccess",
+        "message": "Successfully launched",
+        "data": {}
+    },
+    "Offline":{
+        "code": false,
+        "type": "Offline",
+        "message": "The other party is offline",
+        "data": {}
+    },
+    "KickOut":{
+        "code": false,
+        "type": "KickOut",
+        "message": "Customer service has disconnected the current session",
+        "data": {}
+    },
+    "OnlineFalse":{
+        "code": false,
+        "type": "OnlineFalse",
+        "message": "You are online",
+        "data": {}
+    },
+    "OfflineSuccess":{
+        "code": true,
+        "type": "OfflineSuccess",
+        "message": "Offline successfully",
+        "data": {}
+    },
+    "OfflineFalse":{
+        "code": true,
+        "type": "OfflineFalse",
+        "message": "Offline failure, currently not online",
+        "data": {}
+    },
+    "TooTast":{
+        "code": false,
+        "type": "TooTast",
+        "message": "Your operation is too fast!",
+        "data": {}
+    },
+    "DuplicateConnection":{
+        "code": false,
+        "type": "DuplicateConnection",
+        "message": "You have repeatedly connected in another window!",
+        "data": {}
+    },
+    "ServiceFull":{
+        "code": false,
+        "type": "ServiceFull",
+        "message": "The customer service is currently busy, you can manually switch to other online customer services",
+        "data": {}
+    },
+    "WaitServiceOffline":{
+        "code": false,
+        "type": "WaitServiceOffline",
+        "message": "Sorry, the customer service currently queued is offline",
+        "data": {}
+    }
+}

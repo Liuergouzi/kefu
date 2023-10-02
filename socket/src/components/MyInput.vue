@@ -2,11 +2,11 @@
     <div>
         <div class="input__x" v-if="line == 1">
             <input type="text" class="input__fill" v-model="serviceName">
-            <label class="input__label">修改昵称</label>
+            <label class="input__label">{{$t('text.MyInput.t1')}}</label>
         </div>
         <div class="input__x" v-if="line == 2">
             <input type="number" class="input__fill" v-model="serviceMax">
-            <label class="input__label">最大接待人数</label>
+            <label class="input__label">{{$t('text.MyInput.t2')}}</label>
         </div>
     </div>
 </template>
@@ -39,9 +39,10 @@ export default {
                     axios({
                         method: 'post',
                         url: '/updateServiceName',
-                        data: params
+                        data: params,
+                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
                     }).then((response) => {
-                        if (response.data[0].code) {
+                        if (response.data.code) {
                             this.$emit('changeValue1', newValue, 1);
                         }
                     })
@@ -59,9 +60,10 @@ export default {
                     axios({
                         method: 'post',
                         url: '/updateServiceMax',
-                        data: params
+                        data: params,
+                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
                     }).then((response) => {
-                        if (response.data[0].code) {
+                        if (response.data.code) {
                             this.$emit('changeValue1', newValue, 2);
                         }
                     })
