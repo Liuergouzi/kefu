@@ -29,6 +29,9 @@
 ### 全局安装socket
     npm install vue-socket.io --save
 
+### ip2region  通过ip查询地区
+	npm install ip2region -i --save
+
 ###	mysql数据库
 	npm install mysql -i --save
 	

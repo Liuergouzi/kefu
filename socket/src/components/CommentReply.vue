@@ -60,7 +60,7 @@ export default {
             method: 'post',
             url: '/commentSelect',
             data: params,
-            headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+            headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
         }).then((response) => {
             if (response.data.code) {
                 this.messageList = JSON.parse(response.data.data);
@@ -97,7 +97,7 @@ export default {
                 method: 'post',
                 url: '/commentReply',
                 data: params,
-                headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
             }).then((response) => {
                 if (response.data.code) {
                     this.$toast(this.$t('text.CommentReply.t8'))
@@ -128,18 +128,6 @@ export default {
                 serviceState: 0,
                 serviceFrequency: 0
             },
-            serviceTool: [
-                {
-                    id: 1,
-                    text: this.$t('text.CommentReply.t10'),
-                    state: true,
-                },
-                {
-                    id: 2,
-                    text: this.$t('text.CommentReply.t11'),
-                    state: false,
-                },
-            ],
             currentPage: 1,
             totalPage: 1
         }
@@ -153,7 +141,7 @@ export default {
                     method: 'post',
                     url: '/commentSelect',
                     data: params,
-                    headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+                    headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
                 }).then((response) => {
                     if (response.data.code) {
                         this.messageList = JSON.parse(response.data.data);
@@ -164,7 +152,23 @@ export default {
                 })
             }
         }
-    }
+    },
+    computed: {
+        serviceTool(){
+            return [
+                {
+                    id: 1,
+                    text: this.$t('text.CommentReply.t10'),
+                    state: true,
+                },
+                {
+                    id: 2,
+                    text: this.$t('text.CommentReply.t11'),
+                    state: false,
+                },
+            ]
+        }
+    },
 }
 </script>
 <style scoped>

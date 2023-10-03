@@ -30,6 +30,7 @@
     flex-direction: column;
     flex: 1;
     overflow: hidden;
+    gap:5px
 }
 
 .infoContent>div {
@@ -123,4 +124,21 @@ ul.domtree li:not(:last-child):after {
     border-color: transparent #fff;
     border-width: 0 0 12px 12px;
     content: "";
+}
+
+.infoItem{
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+.infoItemTitle{
+    white-space: nowrap;
+    color: cadetblue;
+}
+table{
+    border-spacing: 2px 15px;
+}
+table>tr{
+    word-break: break-all;
+    vertical-align: baseline;
 }

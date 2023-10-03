@@ -25,8 +25,9 @@
                     :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue1="changeValue">
                 </MyInput>
 
-                <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">{{ $t('text.customerService.t3') }}{{ service.serviceFrequency
-                }}</div>
+                <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">{{ $t('text.customerService.t3')
+                }}{{ service.serviceFrequency
+}}</div>
                 <div style="margin-top: 13px; margin-left: 5px">
                     <van-switch v-model="stateChange" size="24px" v-on:click="changeOnLine">
                         <template #node>
@@ -38,7 +39,7 @@
                 </div>
                 <div class="serviceStateDiv">
                     <div :class="stateChange ? 'serviceStateGreenDot' : 'serviceStateRedDot'"></div>
-                    {{ stateChange ?  $t('text.customerService.t4') : $t('text.customerService.t5') }}
+                    {{ stateChange ? $t('text.customerService.t4') : $t('text.customerService.t5') }}
                 </div>
 
             </div>
@@ -54,7 +55,7 @@
             <div class="serviceHeadRight">
                 <SetLanguage></SetLanguage>
                 <div style="margin-top:5px">
-                    <van-popover v-model:show="isPopover" :actions="actions" @select="onSelect()">
+                    <van-popover v-model:show="isPopover" :actions="[{ text: this.$t('text.customerService.t17') }]" @select="onSelect()">
                         <template #reference>
                             <van-button type="primary"><img src="../assets/images/setting.png"></van-button>
                         </template>
@@ -232,14 +233,14 @@ import SetLanguage from '@/components/SetLanguage.vue';
 export default {
 
     components: {
-    MyInput,
-    MessageWindow,
-    SendEmote,
-    SendImage,
-    ServiceRightPage,
-    CommentReply,
-    SetLanguage
-},
+        MyInput,
+        MessageWindow,
+        SendEmote,
+        SendImage,
+        ServiceRightPage,
+        CommentReply,
+        SetLanguage
+    },
 
     data() {
         return {
@@ -263,9 +264,6 @@ export default {
                     messageList: []
                 }
             },
-            actions: [
-                { text: this.$t('text.customerService.t17') }
-            ],
             isPopover: false,
             sendData: '',
             reviceMessage: '',
@@ -288,6 +286,7 @@ export default {
 
         //用户连接成功通知
         this.socket.on("UserJoinSuccess", (data) => {
+            console.log(data)
             data.data.UnRead = 1
             data.data.message = this.$t('text.customerService.t18')
             data.data.messageList = []

@@ -101,6 +101,9 @@ const EN = {
         t6: "Customer Information",
         t7: "Quick reply",
         t8: 'Author',
+        t9: "User IP: ",
+        t10: "User Region: ",
+        t11: "User Equipment: ",
     }
 }
 export default EN

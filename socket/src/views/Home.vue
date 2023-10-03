@@ -72,6 +72,7 @@ import JSEncrypt from 'jsencrypt';
 import SetLanguage from '@/components/SetLanguage.vue';
 import HomeAiChat from '@/components/HomeAiChat.vue';
 let encryptor = new JSEncrypt();
+
 export default {
     name: 'HomeView',
     components: {

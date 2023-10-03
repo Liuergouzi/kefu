@@ -11,26 +11,74 @@
         </div>
         <!--用户信息-->
         <div v-show="current_state == 1" class="infoContent">
-            <div>
-                <label>{{$t('text.ServiceRightPage.t1')}}</label>
-                <span>{{ user.data.userId }}</span>
+            <table>
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t9') }}</td>
+                    <td>{{ user.data.ip }}</td>
+                </tr>
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t10') }}</td>
+                    <td>{{ user.data.area }}</td>
+                </tr>
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t11') }}</td>
+                    <td>{{ user.data.device }}</td>
+                </tr>
+
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t1') }}</td>
+                    <td>{{ user.data.userId }}</td>
+                </tr>
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t2') }}</td>
+                    <td>{{ user.data.userName }}</td>
+                </tr>
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t3') }}</td>
+                    <td>{{ user.data.socketRoom }}</td>
+                </tr>
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t4') }}</td>
+                    <td>{{ user.data.receiveId }}</td>
+                </tr>
+                <tr>
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</td>
+                    <td>{{ user.data.isProhibit }}</td>
+                </tr>
+            </table>
+            <!-- <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t9') }}</div>
+                <div class="infoItemValue">{{ user.data.ip }}</div>
             </div>
-            <div>
-                <label>{{$t('text.ServiceRightPage.t2')}}</label>
-                <span>{{ user.data.userName }}</span>
+            <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t10') }}</div>
+                <div class="infoItemValue">{{ user.data.area }}</div>
             </div>
-            <div>
-                <label>{{$t('text.ServiceRightPage.t3')}}</label>
-                <span>{{ user.data.socketRoom }}</span>
+            <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t11') }}</div>
+                <div class="infoItemValue">{{ user.data.device }}</div>
             </div>
-            <div>
-                <label>{{$t('text.ServiceRightPage.t4')}}</label>
-                <span>{{ user.data.receiveId }}</span>
+
+            <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t1') }}</div>
+                <div class="infoItemValue">{{ user.data.userId }}</div>
             </div>
-            <div>
-                <label>{{$t('text.ServiceRightPage.t5')}}</label>
-                <span>【{{ user.data.isProhibit}}】</span>
+            <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t2') }}</div>
+                <div class="infoItemValue">{{ user.data.userName }}</div>
             </div>
+            <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t3') }}</div>
+                <div class="infoItemValue">{{ user.data.socketRoom }}</div>
+            </div>
+            <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t4') }}</div>
+                <div class="infoItemValue">{{ user.data.receiveId }}</div>
+            </div>
+            <div class="infoItem">
+                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</div>
+                <div class="infoItemValue">【{{ user.data.isProhibit }}】</div>
+            </div> -->
         </div>
         <!--快捷回复-->
         <div v-show="current_state == 2" class="infoContent" style="display: block">
@@ -60,14 +108,13 @@
             <iframe style="width: 100%; height: 100%; border: 0px" src="https://ctrlc.cc/home/zfb/pay.html"></iframe>
         </div>
     </div>
-    
 </template>
 
 <script>
 export default {
     name: 'ServiceRightPage',
     props: {
-        user:Object
+        user: Object
     },
     methods: {
         selectReplay(text) {
@@ -102,24 +149,6 @@ export default {
         return {
             current_state: 1,
             currentEasy: 0,
-            serviceTool: [
-                {
-                    id: 1,
-                    text: this.$t('text.ServiceRightPage.t6'),
-                    state: true,
-                },
-                {
-                    id: 2,
-                    text: this.$t('text.ServiceRightPage.t7'),
-                    state: false,
-                },
-                {
-                    id: 3,
-                    text: this.$t('text.ServiceRightPage.t8'),
-                    state: false,
-                },
-            ],
-
             fastReplay: [
                 {
                     "title": "真ikun",
@@ -175,6 +204,27 @@ export default {
 
         }
     },
+    computed: {
+        serviceTool() {
+            return [
+                {
+                    id: 1,
+                    text: this.$t('text.ServiceRightPage.t6'),
+                    state: true,
+                },
+                {
+                    id: 2,
+                    text: this.$t('text.ServiceRightPage.t7'),
+                    state: false,
+                },
+                {
+                    id: 3,
+                    text: this.$t('text.ServiceRightPage.t8'),
+                    state: false,
+                },
+            ]
+        }
+    }
 }
 </script>
 <style scoped>

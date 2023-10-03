@@ -55,7 +55,9 @@ function selectUser(userId) {
  */
 
 function insertUser(userJson) {
-    var sql = `insert into user(userId,userName,userState,isProhibit) values(${userJson.userId},${userJson.userName},0,0);`;
+
+    var sql = `insert into user(userId,userName,ip,area,device) 
+    values(${userJson.userId},${userJson.userName},${userJson.ip},${userJson.area},${userJson.device});`;
     //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {

@@ -3,10 +3,11 @@ const verification = require("./security/verification.js");  //引入数据校�
 const token = require("./security/token.js");  //引入token
 const RSA = require("./security/RSA/RSA.js");  //引入数据加解密
 const state = require('./i18n'); //引入全局返回状态     
-const nowTime = require("./time.js");
+const nowTime = require("./utils/time.js");
 const express = require('express');	// 引入express
+const getIpArea = require("./utils/getIpArea")  //引入获取ip和地区工具
 const path = require("path");
-
+const UAParser = require('ua-parser-js');
 
 const app = express();
 app.use(express.json());	//中间件，解析表单中的 JSON 格式的数据
@@ -94,8 +95,20 @@ io.on('connection', socket => {
 
     //如果用户存在则传回用户数据，历史聊天记录，否则创建用户
     socket.on("visit", data => {
+
+        const clientIp = socket.handshake.address;
+        const userAgent = socket.handshake.headers['user-agent'];
+        const parser = new UAParser();
+        parser.setUA(userAgent);
+        data.ip=clientIp.split(":").pop()
+        data.area=getIpArea.getArea(clientIp)
+        data.device=parser.getResult().os.name
+        if(parser.getResult().device.model!=undefined){
+            data.device=parser.getResult().os.name+'-'+parser.getResult().device.model
+        }
         //校验数据
         var newData = verification.newData(data).data;
+
         if (newData) {
             mysql.selectUser(newData.userId).then((data) => {
                 if (data) {
@@ -536,6 +549,7 @@ app.post('/commentSelectById', function (req, res) {
 
 //查看最新10条留言
 app.post('/commentSelect', function (req, res) {
+    
     var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentSelect(newData.data.page).then((sql_data) => {
@@ -551,6 +565,7 @@ app.post('/commentSelect', function (req, res) {
         res.json(state.__("dataFalse"))
     }
 })
+
 
 //客服回复
 app.post('/commentReply', function (req, res) {
