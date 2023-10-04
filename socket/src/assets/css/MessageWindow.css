@@ -28,6 +28,7 @@
     position: relative;
     word-wrap: break-word;
     word-break: break-all;
+    width: 100%;
 }
 
 .answerHead {
@@ -71,6 +72,8 @@
     position: relative;
     word-wrap: break-word;
     word-break: break-all;
+    width: 100%;
+    justify-content: right;
 }
 
 .nesHead {
@@ -133,11 +136,12 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
 }
 
 .moreSession {
     width: auto;
-    height: 20px;
+    height: 16px;
     background: #D1D1D1;
     border-radius: 20px;
     color: #fff;
@@ -145,7 +149,7 @@
     text-align: center;
     margin: 0 auto;
     margin-top: 2px;
-    padding: 2px 4px;
+    padding: 3px 5px;
     font-size: 12px;
 }
 

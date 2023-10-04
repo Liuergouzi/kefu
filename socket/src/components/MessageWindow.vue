@@ -2,11 +2,11 @@
     <div class="RightCont">
         <div v-if="lastSession" class="noticeDiv">
             <div class="moreSession" v-on:click="selectMessage">
-                {{$t('text.MessageWindow.t1')}}
+                {{ $t('text.MessageWindow.t1') }}
             </div>
         </div>
         <!--消息接收-->
-        <div :key="index" v-for="(item, index) in messageList_copy">
+        <div :key="index" v-for="(item, index) in messageList_copy" style="display: flex;flex-wrap: wrap;">
             <!--别人-->
             <div class="customerServiceDiv" v-if="item.sendPeople == 'other'">
                 <div class="answerHead">
@@ -52,6 +52,13 @@
                 </div>
             </div>
 
+            <!--历史时间显示-->
+            <div v-if="isShowHistoryTime" class="noticeDiv">
+                <div class="moreSession" v-if="item.sendTime">
+                    {{ item.sendTime }}
+                </div>
+            </div>
+
             <div style="clear: both"></div>
         </div>
     </div>
@@ -78,7 +85,7 @@ export default {
             method: 'post',
             url: '/selectMessage',
             data: params,
-            headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+            headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
         }).then((response) => {
             if (response.data.code) {
                 let message = JSON.parse(response.data.data);
@@ -100,17 +107,32 @@ export default {
                 method: 'post',
                 url: '/selectMessage',
                 data: params,
-                headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
             }).then((response) => {
                 if (response.data.code) {
                     let message = JSON.parse(response.data.data);
-
+                    let lasTime = new Date()
+                    this.messageList_copy.length = 0
                     for (var i = message.length - 1; i >= 0; i--) {
+                        let newTime
+                        if (this.isOverTime(message[i].sendTime, lasTime)) {
+                            newTime = message[i].sendTime
+                            lasTime = message[i].sendTime
+                        } else {
+                            newTime = null
+                        }
+
                         if (message[i].sendId == this.sendId) {
-                            let obj = { sendType: message[i].sendType, sendPeople: 'me', message: message[i].sendMessage }
+                            let obj = {
+                                sendType: message[i].sendType, sendPeople: 'me', message: message[i].sendMessage,
+                                sendTime: newTime
+                            }
                             this.messageList_copy.unshift(obj)
                         } else {
-                            let obj = { sendType: message[i].sendType, sendPeople: 'other', message: message[i].sendMessage }
+                            let obj = {
+                                sendType: message[i].sendType, sendPeople: 'other',
+                                message: message[i].sendMessage, sendTime: newTime
+                            }
                             this.messageList_copy.unshift(obj)
                         }
                     }
@@ -118,11 +140,20 @@ export default {
                     let obj = { receiveId: this.receiveId }
                     this.idIsSelect.push(obj)
                     this.lastSession = false
+                    this.isShowHistoryTime = true
                 } else {
                     this.lastSession = false
                     this.$toast(response.data.message);
                 }
             })
+        },
+        //时间对比是否超过1小时，否则彼此之间不显示时间
+        isOverTime(time1, time2) {
+            const t1 = new Date(time1);
+            const t2 = new Date(time2);
+            const diff = t1 - t2; // 计算时间差值
+            const hours = Math.abs(diff / 1000 / 60 / 60); // 计算小时数
+            return hours > 1;
         }
     },
     data() {
@@ -130,7 +161,8 @@ export default {
             lastSession: true,
             idIsSelect: [],
             //此处对于子组件与父组件之间的传值需要拷贝一下，父组件传值子组件实际上还是引用地址，不能直接去修改
-            messageList_copy: this.messageList
+            messageList_copy: this.messageList,
+            isShowHistoryTime: false
         }
     },
     watch: {
@@ -153,7 +185,7 @@ export default {
                         method: 'post',
                         url: '/selectMessage',
                         data: params,
-                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+                        headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
                     }).then((response) => {
                         if (response.data.code) {
                             let message = JSON.parse(response.data.data);

@@ -2,7 +2,6 @@
     <div class="serviceBody">
         <!--头部-->
         <div class="serviceHead" :style="this.$store.state.bgColor">
-
             <!--左-->
             <div class="serviceHeadLeft">
                 <div class="serviceHeadImg">
@@ -55,7 +54,8 @@
             <div class="serviceHeadRight">
                 <SetLanguage></SetLanguage>
                 <div style="margin-top:5px">
-                    <van-popover v-model:show="isPopover" :actions="[{ text: this.$t('text.customerService.t17') }]" @select="onSelect()">
+                    <van-popover v-model:show="isPopover" :actions="[{ text: this.$t('text.customerService.t17') }]"
+                        @select="onSelect()">
                         <template #reference>
                             <van-button type="primary"><img src="../assets/images/setting.png"></van-button>
                         </template>
@@ -77,7 +77,7 @@
                     </div>
                     <!--显示在线连接列表-->
                     <li v-show="onlineShow" :key="index" v-for="(item, index) in onlineUsers" style="cursor: pointer"
-                        v-on:click="selectSession(item)" :class="{ isSelect: item.data.isSelectSession }"
+                        v-on:click="selectSession(item, false)" :class="{ isSelect: item.data.isSelectSession }"
                         v-on:mouseenter="item.CloseSession = true" v-on:mouseleave="item.CloseSession = false">
                         <div class="liLeft">
                             <img src="../assets/images/visitor.png" />
@@ -123,29 +123,38 @@
 
                 <!--离线用户列表-->
                 <ul>
-                    <div v-show="offlineUsers.length > 0" class="conLeftTop" v-on:click="offlineShow = !offlineShow">
-                        <span v-show="offlineShow">▼</span>
-                        <span v-show="!offlineShow">▲</span>
-                        {{ $t('text.customerService.t9') }}
+
+                    <div v-show="offlineUsers.length > 0" class="conLeftTopOffLine" v-on:click="offlineShow = !offlineShow">
+                        <div>
+                            <span v-show="offlineShow">▼</span>
+                            <span v-show="!offlineShow">▲</span>
+                            {{ $t('text.customerService.t9') }}
+                        </div>
+                        <img @click.stop="offlinePage=1;getOffline()" src="../assets/images/refresh.png"
+                            style="width: 18px;height:18px;padding-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
-                    <li v-show="offlineShow" :key="index" v-for="(item, index) in offlineUsers" class="offlineUlStyle"
-                        v-on:click="selectSession(item)" v-on:mouseenter="item.CloseSession = true"
-                        v-on:mouseleave="item.CloseSession = false">
-                        <div class="liLeft">
-                            <img src="../assets/images/visitor.png" />
-                        </div>
-                        <div class="liRight">
-                            <!--显示用户名-->
-                            <span class="intername">{{ item.data.userName }}</span>
-                            <!--显示最新一条消息-->
-                            <span class="infor">{{ item.data.message }}</span>
-                            <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="deleteOffLine(item)">
-                                <img src="../assets/images/redClose.png" style="width:12px;height:12px">
-                                {{ $t('text.customerService.t10') }}
-                            </span>
-                        </div>
-                    </li>
+                    <van-list v-model:loading="offlineLoading" :finished="offlineFinished"
+                     :finished-text=" $t('text.customerService.t23')" @load="getOffline">
+                        <li v-show="offlineShow" :key="index" v-for="(item, index) in offlineUsers" class="offlineUlStyle"
+                            v-on:click="selectSession(item, true)" v-on:mouseenter="item.CloseSession = true"
+                            :class="{ isSelect2: item.data.isSelectSession }"
+                            v-on:mouseleave="item.CloseSession = false">
+                            <div class="liLeft">
+                                <img src="../assets/images/visitor.png" />
+                            </div>
+                            <div class="liRight">
+                                <!--显示用户名-->
+                                <span class="intername">{{ item.data.userName }}</span>
+                                <!--显示最新一条消息-->
+                                <span class="infor">{{ item.data.message }}</span>
+                                <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="deleteOffLine(item)">
+                                    <img src="../assets/images/redClose.png" style="width:12px;height:12px">
+                                    {{ $t('text.customerService.t10') }}
+                                </span>
+                            </div>
+                        </li>
+                    </van-list>
                 </ul>
 
                 <!--列表为空-->
@@ -166,7 +175,7 @@
                 </div>
             </div>
             <!--有用户连接，但没有点击-->
-            <div v-else-if="isSelectShow" class="conRight">
+            <div v-else-if="!isSelectSession" class="conRight">
                 <div class="layout-empty">
                     <div class="layout-empty-conatiner">
                         <span>{{ $t('text.customerService.t14') }}</span>
@@ -206,7 +215,8 @@
                         <div style="height: calc(100% - 70px)">
                             <textarea v-on:focus="expressionShow = false" id="dope" v-model="sendData" class="textBox"
                                 v-on:keyup.enter="enterSend"></textarea>
-                            <button class="sendBtn" id="serviceSendBtn" v-on:click="sendMessage(sendData, 1)">
+                            <button class="sendBtn" id="serviceSendBtn" v-on:click="sendMessage(sendData, 1)"
+                                :style="this.$store.state.bgColor">
                                 {{ $t('text.customerService.t16') }}
                             </button>
                         </div>
@@ -222,7 +232,6 @@
 </template>
 
 <script>
-// import { ref } from 'vue';
 import MyInput from '@/components/MyInput.vue';
 import MessageWindow from '@/components/MessageWindow.vue';
 import SendEmote from '@/components/SendEmote.vue';
@@ -230,6 +239,7 @@ import SendImage from '@/components/SendImage.vue';
 import ServiceRightPage from '@/components/ServiceRightPage.vue';
 import CommentReply from '@/components/CommentReply.vue';
 import SetLanguage from '@/components/SetLanguage.vue';
+import axios from 'axios';
 export default {
 
     components: {
@@ -261,7 +271,8 @@ export default {
                     userName: '',
                     userState: '',
                     isProhibit: '',
-                    messageList: []
+                    messageList: [],
+                    isOffline: false
                 }
             },
             isPopover: false,
@@ -275,12 +286,15 @@ export default {
             waitShow: true,
             offlineShow: true,
             isSelectSession: false,
-            isSelectShow: true,
             expressionShow: false,
+            offlineLoading:false,
+            offlineFinished:false,
+            offlinePage:1
         }
     },
 
     mounted() {
+        console.log(JSON.parse('{}'))
         //初始化
         this.initialization();
 
@@ -338,7 +352,6 @@ export default {
 
         //离线处理
         this.socket.on("Offline", (data) => {
-            console.log(JSON.stringify(data))
             this.$toast(data.message);
             let obj = { sendType: 4, sendPeople: 'notice', message: data.message }
             this.selectUsers.data.messageList.push(obj)
@@ -395,6 +408,35 @@ export default {
             this.loginOut()
         },
 
+        //获取离线列表
+        getOffline() {
+            axios({
+                method: 'post',
+                url: '/chatListSelect',
+                data: { serviceId: this.service.serviceId, page: this.offlinePage },
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
+            }).then((response) => {
+                if (response.data.code) {
+                    let requestList = []
+                    JSON.parse(response.data.data).forEach(element => {
+                        element.message = ''
+                        element.messageList = []
+                        element.receiveId = element.userId
+                        element.socketRoom = ''
+                        element.isSelectSession=false
+                        requestList.push({ data: element })
+                    });
+                    this.offlineUsers = [...requestList]
+                    console.log("aaa")
+                    this.offlinePage=this.offlinePage+1
+                    if(JSON.parse(response.data.data).length<20){
+                        this.offlineFinished=true
+                    }
+                    this.offlineLoading=true
+                }
+            })
+        },
+
         //修改在线状态
         changeOnLine() {
             if (this.stateChange) {
@@ -418,9 +460,7 @@ export default {
         // },
 
         //客服选择会话
-        selectSession(obj) {
-            //隐藏
-            this.isSelectShow = false
+        selectSession(obj, isOffline) {
             //点击之后显示聊天窗口
             this.isSelectSession = true
             //点击之后取消显示红点
@@ -430,14 +470,15 @@ export default {
                     this.onlineUsers[i].data.UnRead = 0;
                 }
             }
+            for (var j = 0; j < this.offlineUsers.length; j++) {
+                this.offlineUsers[j].data.isSelectSession = false
+            }
             obj.data.isSelectSession = true
+            obj.data.isOffline = isOffline
             //进行初始化
             this.selectUsers = {}
             //拷贝选择的用户进入新列表    
             this.selectUsers = Object.assign({}, obj)
-
-            // console.log(JSON.stringify(obj))
-
         },
 
         //客服发送消息
@@ -457,11 +498,12 @@ export default {
             this.service.sendType = sendType;
             this.socket.emit("sendMessage", this.service);
             //将数据存入与这个用户的聊天信息列表
-            let obj = {}
-            obj.sendType = sendType;
-            obj.sendPeople = 'me'
-            obj.message = data;
+            let obj = { sendType: sendType, sendPeople: 'me', message: data }
             this.selectUsers.data.messageList.push(obj)
+            if (this.selectUsers.data.isOffline) {
+                let obj = { sendType: 4, sendPeople: 'notice', message: this.$t('text.customerService.t22') }
+                this.selectUsers.data.messageList.push(obj)
+            }
             //清空输入框
             this.sendData = '';
             //让聊天窗口回到底部

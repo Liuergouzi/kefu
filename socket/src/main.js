@@ -26,7 +26,7 @@ import { Popup } from "vant"
 import { Slider } from "vant"
 import { Pagination } from 'vant';
 import { Dialog } from 'vant';
-
+import { List  } from 'vant';
 
 /**
  * 中英文
@@ -100,4 +100,4 @@ router.beforeEach((to, from, next) => {
 })
 
 createApp(App).use(store).use(router).use(i18n).use(Button).use(Switch).use(Popup).use(Slider)
-	.use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).mount('#app')
+.use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).use(List).mount('#app')

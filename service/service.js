@@ -94,24 +94,26 @@ io.use((socket, next) => {
 io.on('connection', socket => {
 
     //如果用户存在则传回用户数据，历史聊天记录，否则创建用户
-    socket.on("visit", data => {
+    socket.on("visit", datas => {
 
         const clientIp = socket.handshake.address;
         const userAgent = socket.handshake.headers['user-agent'];
         const parser = new UAParser();
         parser.setUA(userAgent);
-        data.ip=clientIp.split(":").pop()
-        data.area=getIpArea.getArea(clientIp)
-        data.device=parser.getResult().os.name
-        if(parser.getResult().device.model!=undefined){
-            data.device=parser.getResult().os.name+'-'+parser.getResult().device.model
+        datas.ip = clientIp.split(":").pop()
+        datas.area = getIpArea.getArea(clientIp)
+        datas.device = parser.getResult().os.name
+        if (parser.getResult().device.model != undefined) {
+            datas.device = parser.getResult().os.name + '-' + parser.getResult().device.model
         }
         //校验数据
-        var newData = verification.newData(data).data;
+        var newData = verification.newData(datas).data;
 
         if (newData) {
             mysql.selectUser(newData.userId).then((data) => {
                 if (data) {
+                    //更新用户
+                    mysql.updateUser(newData,JSON.parse(data).id);
                     //传回用户数据
                     let returns = state.__("success");
                     returns.data = data;
@@ -119,6 +121,9 @@ io.on('connection', socket => {
                 } else {
                     //进行用户注册
                     mysql.insertUser(newData);
+                    let returns = state.__("success");
+                    returns.data = datas;
+                    socket.emit("visitInsertReturn", returns);
                 }
             });
 
@@ -380,7 +385,10 @@ io.on('connection', socket => {
             if (users.length > 0) {
                 //拿出离线的用户数据
                 let user = users.filter(v => (v.socketId == socket.id))
+
                 if (user.length > 0) {
+                    //设置更新离线列表
+                    mysql.insertChatList(verification.newData(user[0]).data)
                     //通知客服
                     let returns = state.__("Offline");
                     returns.data = { userId: user[0].userId };
@@ -547,9 +555,30 @@ app.post('/commentSelectById', function (req, res) {
     }
 })
 
+
+//获取最新20条离线用户列表
+app.post('/chatListSelect', function (req, res) {
+
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.chatListSelect(newData.data.serviceId,newData.data.page).then((sql_data) => {
+            if (sql_data) {
+                let returns = state.__("success");
+                returns.data = sql_data;
+                res.json(returns)
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+
 //查看最新10条留言
 app.post('/commentSelect', function (req, res) {
-    
+
     var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentSelect(newData.data.page).then((sql_data) => {

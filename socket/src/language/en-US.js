@@ -38,6 +38,8 @@ const EN = {
         t19: "Joined the session again",
         t20: "Don't joke, Taoist friends. Times have changed, and your ancient browsing tools are too outdated!",
         t21: "The input content cannot be empty",
+        t22: "The other party is offline and unable to receive messages in real-time, but they can still view this message through historical messages",
+        t23: "There's no more"
     },
     customerChat:{
         t1: "back",

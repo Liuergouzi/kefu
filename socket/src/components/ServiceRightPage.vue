@@ -45,40 +45,11 @@
                     <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</td>
                     <td>{{ user.data.isProhibit }}</td>
                 </tr>
+                <!-- <tr v-if="user.data.extend">
+                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</td>
+                    <td>{{ getExtend(user.data.extend) }}</td>
+                </tr> -->
             </table>
-            <!-- <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t9') }}</div>
-                <div class="infoItemValue">{{ user.data.ip }}</div>
-            </div>
-            <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t10') }}</div>
-                <div class="infoItemValue">{{ user.data.area }}</div>
-            </div>
-            <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t11') }}</div>
-                <div class="infoItemValue">{{ user.data.device }}</div>
-            </div>
-
-            <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t1') }}</div>
-                <div class="infoItemValue">{{ user.data.userId }}</div>
-            </div>
-            <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t2') }}</div>
-                <div class="infoItemValue">{{ user.data.userName }}</div>
-            </div>
-            <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t3') }}</div>
-                <div class="infoItemValue">{{ user.data.socketRoom }}</div>
-            </div>
-            <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t4') }}</div>
-                <div class="infoItemValue">{{ user.data.receiveId }}</div>
-            </div>
-            <div class="infoItem">
-                <div class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</div>
-                <div class="infoItemValue">【{{ user.data.isProhibit }}】</div>
-            </div> -->
         </div>
         <!--快捷回复-->
         <div v-show="current_state == 2" class="infoContent" style="display: block">
@@ -143,7 +114,9 @@ export default {
                 this.currentEasy = id;
             }
         },
-
+        // getExtend(extend){
+        //     console.log(extend)
+        // }
     },
     data() {
         return {

@@ -1,4 +1,5 @@
 var OptPool = require('./sqlPool');
+const nowTime = require("../utils/time");
 
 /**
  * 地址：https://www.cnblogs.com/fangsmile/p/6255872.html
@@ -56,8 +57,8 @@ function selectUser(userId) {
 
 function insertUser(userJson) {
 
-    var sql = `insert into user(userId,userName,ip,area,device) 
-    values(${userJson.userId},${userJson.userName},${userJson.ip},${userJson.area},${userJson.device});`;
+    var sql = `insert into user(userId,userName,ip,area,device,extend) 
+    values(${userJson.userId},${userJson.userName},${userJson.ip},${userJson.area},${userJson.device},${userJson.extend});`;
     //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
@@ -73,9 +74,33 @@ function insertUser(userJson) {
             connection.release();
         })
     })
-
 }
 
+/**
+ * 更新用户数据
+ * @param {*} userJson 传递过来的用户json数据,形式为：{},id 用户id
+ * @returns 返回是否数据插入成功
+ */
+function updateUser(userJson,id) {
+
+    var sql = `update user set ip=${userJson.ip},area=${userJson.area},device=${userJson.device},extend=${userJson.extend} 
+    where id=${"'"+id+"'"};`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(true)
+                }
+            })
+            connection.release();
+        })
+    })
+}
 
 
 /**
@@ -225,6 +250,64 @@ function insertMessage(messageJson) {
 }
 
 
+/**
+ * 客服端用户离线列表存储
+ * @param {*} 离线列表信息json数据，形式为：{}
+ * @returns 返回状态码
+ */
+
+ function insertChatList(userJson) {
+    var sql = `insert into offlinelist(userId,serviceId,userName,ip,area,device,extend,userState,isProhibit,updateTime) 
+    values(${userJson.userId},${userJson.receiveId},${userJson.userName},${userJson.ip},${userJson.area},
+           ${userJson.device},${userJson.extend},${userJson.userState},${userJson.isProhibit},${"'"+nowTime.getNowTime()+"'"}) 
+    ON DUPLICATE KEY UPDATE userName=${userJson.userName},ip=${userJson.ip},area=${userJson.area},device=${userJson.device},
+           extend=${userJson.extend},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${"'"+nowTime.getNowTime()+"'"};`;
+
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(true)
+                }
+            })
+            connection.release();
+        })
+    })
+
+}
+
+
+/**
+ * 获取用户离线列表
+ * @param {*} serviceId 客服ID  page 页数
+ * @returns 返回最新20条离线列表
+ */
+
+ function chatListSelect(serviceId,page) {
+    var star=(page-1)*20;
+    var sql = `select * from offlinelist where serviceId=${serviceId}  order by updateTime desc limit ${star}, 20;`;
+    //使用promise将内部函数的返回值传出去
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(JSON.stringify(result))
+                }
+            })
+            connection.release();
+        })
+    })
+
+}
+
 
 /**
  * 聊天记录查询
@@ -363,6 +446,7 @@ function commentReply(replyJson) {
 module.exports = {
     selectUser,
     insertUser,
+    updateUser,
     serviceLogin,
     updateServiceName,
     updateServiceMax,
@@ -372,6 +456,8 @@ module.exports = {
     commentInsert,
     commentSelectById,
     commentSelect,
+    insertChatList,
+    chatListSelect,
     commentReply
 }
 

@@ -144,7 +144,10 @@ export default {
         this.socket.on("visitReturn", (data) => {
             this.user = JSON.parse(data.data)
         });
-
+        this.socket.on("visitInsertReturn", (data) => {
+            this.user = JSON.parse(JSON.stringify(data.data))
+        });
+        
         //连接客服成功通知
         this.socket.on("linkServiceSuccess", (data) => {
             this.socketRoom = data.data.socketRoom;
@@ -164,6 +167,7 @@ export default {
 
         initialization() {
             //获取浏览器指纹并发送初始数据
+            let extend = JSON.stringify(this.$router.currentRoute._value.query.extend)
             Fingerprint2.get((components) => {
                 const values = components.map(function (component, index) {
                     if (index === 0) {
@@ -177,6 +181,7 @@ export default {
                 this.user.userId = murmur;
                 localStorage.setItem('userId', murmur);
                 this.user.userName = this.$t('text.Home.t6') + murmur.slice(0, 6);
+                this.user.extend = extend == undefined ? '' : extend
                 this.socket.emit("visit", this.user);
             })
 
@@ -193,6 +198,7 @@ export default {
 
         //转人工
         toLabor() {
+            console.log(this.user)
             this.socket.emit("toLabor", this.user);
         },
 
@@ -311,4 +317,6 @@ export default {
 </script>
 
 
-<style scoped>@import url("../assets/css/Home.css");</style>
+<style scoped>
+@import url("../assets/css/Home.css");
+</style>

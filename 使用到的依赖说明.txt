@@ -32,6 +32,9 @@
 ### ip2region  通过ip查询地区
 	npm install ip2region -i --save
 
+### ua-parser-js 设备信息对象数据格式化
+	npm install ua-parser-js -i --save
+
 ###	mysql数据库
 	npm install mysql -i --save
 	
