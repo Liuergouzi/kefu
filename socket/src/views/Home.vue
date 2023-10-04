@@ -198,7 +198,6 @@ export default {
 
         //转人工
         toLabor() {
-            console.log(this.user)
             this.socket.emit("toLabor", this.user);
         },
 

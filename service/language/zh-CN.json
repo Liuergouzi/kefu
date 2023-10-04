@@ -166,5 +166,17 @@
         "type": "WaitServiceOffline",
         "message": "很抱歉，当前排队的客服已离线",
         "data": {}
+    },
+    "RetractSuccess": {
+        "code": true,
+        "type": "WaitServiceOffline",
+        "message": "撤回成功",
+        "data": {}
+    },
+    "OtherRetract": {
+        "code": true,
+        "type": "OtherRetract",
+        "message": "对方已撤回一条消息",
+        "data": {}
     }
 }

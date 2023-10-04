@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50527
 File Encoding         : 65001
 
-Date: 2023-10-04 14:46:10
+Date: 2023-10-05 01:36:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -61,15 +61,14 @@ CREATE TABLE `message` (
   `sendTime` varchar(32) NOT NULL COMMENT '发送时间',
   `receiveId` varchar(32) NOT NULL COMMENT '消息接受者的id',
   `sendType` int(2) NOT NULL COMMENT '消息发送类型',
+  `isRetract` int(2) DEFAULT '0' COMMENT '是否撤回/0未撤回/1撤回',
   PRIMARY KEY (`id`),
   KEY `messageSelect` (`sendId`,`receiveId`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of message
 -- ----------------------------
-INSERT INTO `message` VALUES ('1', '18ae102a1f11ae97a5e386614a3e3f62', '6', '2023-10-04 13:04:10', '666', '1');
-INSERT INTO `message` VALUES ('2', '666', '7', '2023-10-04 13:04:15', '18ae102a1f11ae97a5e386614a3e3f62', '1');
 
 -- ----------------------------
 -- Table structure for offlinelist
@@ -116,7 +115,7 @@ CREATE TABLE `service` (
 -- ----------------------------
 -- Records of service
 -- ----------------------------
-INSERT INTO `service` VALUES ('1', '666', '666', '大家', '0', '471', '666', '1');
+INSERT INTO `service` VALUES ('1', '666', '666', '轮子哥', '0', '607', '666', '3');
 INSERT INTO `service` VALUES ('2', '123456', '123456', '轮子哥测试号222', '0', '0', '123456', '5');
 
 -- ----------------------------
@@ -135,8 +134,12 @@ CREATE TABLE `user` (
   `isProhibit` int(12) NOT NULL DEFAULT '0' COMMENT '是否封禁',
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user
 -- ----------------------------
+INSERT INTO `user` VALUES ('1', '18ae102a1f11ae97a5e386614a3e3f62', '用户18ae10', '1', '本机地址', 'Windows', '', '0', '0');
+INSERT INTO `user` VALUES ('2', '61f500da3d5eedc794a0d5eaab6e36f5', 'user61f500', '1', '本机地址', 'iOS-iPhone', '', '0', '0');
+INSERT INTO `user` VALUES ('3', '05b6a0aa97ca6873bc1ca76844561b47', 'user05b6a0', '1', '本机地址', 'Windows', '', '0', '0');
+INSERT INTO `user` VALUES ('4', '1ec06f53d1e7819bb40827a733ae82b2', 'user1ec06f', '1', '本机地址', 'Android-Moto G (4)', '', '0', '0');

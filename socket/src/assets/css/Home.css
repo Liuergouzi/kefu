@@ -233,7 +233,7 @@ p{
 }
 
 .customerChatButton {
-    width: 68px;
+    width: auto;
     height: 25px;
     border: none;
     position: absolute;

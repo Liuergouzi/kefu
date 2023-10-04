@@ -113,7 +113,7 @@ io.on('connection', socket => {
             mysql.selectUser(newData.userId).then((data) => {
                 if (data) {
                     //更新用户
-                    mysql.updateUser(newData,JSON.parse(data).id);
+                    mysql.updateUser(newData, JSON.parse(data).id);
                     //传回用户数据
                     let returns = state.__("success");
                     returns.data = data;
@@ -366,7 +366,11 @@ io.on('connection', socket => {
                     //消息发送
                     let returns = state.__("success");
                     returns.data = data;
+                    returns.data.messageId=sql_data
                     socket.to(data.socketRoom).emit("reviceMessage", returns)
+                    let returnsId = state.__("success");
+                    returnsId.data = { id: sql_data }
+                    socket.emit("sendMessageid", returnsId)
                 } else {
                     socket.emit("error", state.__("false"));
                 }
@@ -376,6 +380,26 @@ io.on('connection', socket => {
         }
     })
 
+    //撤回消息
+    socket.on("retractMessage", data => {
+
+        var newData = verification.newData(data);
+        if (newData.code) {
+            mysql.retractMessage(newData.data.messageId).then((sql_data) => {
+                if (sql_data) {
+                    let returns = state.__("OtherRetract")
+                    returns.data = data;
+                    socket.to(data.socketRoom).emit("otherRetract", returns)
+                    //返回撤回成功
+                    socket.emit("retractSuccess", state.__("RetractSuccess"))
+                } else {
+                    socket.emit("error", state.__("false"));
+                }
+            });
+        } else {
+            socket.emit("error", newData)
+        }
+    })
 
     //离线处理
     socket.on("disconnect", () => {
@@ -507,7 +531,7 @@ app.post('/updateServiceMax', function (req, res) {
 app.post('/selectMessage', function (req, res) {
     var newData = verification.newData(req.body);
     if (newData.code) {
-        mysql.selectMessage(newData.data.sendId, newData.data.receiveId).then((sql_data) => {
+        mysql.selectMessage(newData.data.sendId, newData.data.receiveId,newData.data.isService).then((sql_data) => {
             if (sql_data) {
                 let returns = state.__("success");
                 returns.data = sql_data;
@@ -561,7 +585,7 @@ app.post('/chatListSelect', function (req, res) {
 
     var newData = verification.newData(req.body);
     if (newData.code) {
-        mysql.chatListSelect(newData.data.serviceId,newData.data.page).then((sql_data) => {
+        mysql.chatListSelect(newData.data.serviceId, newData.data.page).then((sql_data) => {
             if (sql_data) {
                 let returns = state.__("success");
                 returns.data = sql_data;

@@ -12,11 +12,12 @@
             <!--聊天内容-->
             <MessageWindow :messageList="messageList" class="customerChatMessage" id="customerChatWindow"
                 :sendId="this.$store.state.userData.userId" :receiveId="this.$store.state.userData.receiveId"
-                :isService="'false'"></MessageWindow>
+                 @retractMessage="retractMessage"></MessageWindow>
             <!--聊天框底部-->
             <div class="customerChatFoot">
                 <div v-show="!allowSession" class="notAllowSeesion">
-                    <div class="back" :style="this.$store.state.bgColor" @click="back">{{$t('text.customerChat.t1')}}</div>
+                    <div class="back" :style="this.$store.state.bgColor" @click="back">{{ $t('text.customerChat.t1') }}
+                    </div>
                 </div>
                 <div class="customerChatTool">
                     <!--表情包-->
@@ -39,7 +40,7 @@
                             :placeholder="textareaHit" v-on:keyup.enter="enterSend"></textarea>
                         <button class="customerChatButton" id="serviceSendBtn" v-on:click="sendMessage(sendData, 1)"
                             :style="this.$store.state.bgColor">
-                           {{$t('text.customerChat.t2')}}
+                            {{ $t('text.customerChat.t2') }}
                         </button>
                     </div>
 
@@ -71,7 +72,8 @@ export default {
             message: '',
             user: {},
             messageList: [],
-            textareaHit:this.$t('text.customerChat.t3')
+            textareaHit: this.$t('text.customerChat.t3'),
+            retractItem: {}
         }
     },
 
@@ -82,9 +84,32 @@ export default {
         //接收消息
         this.socket.on("reviceMessage", (data) => {
             this.message = data.data.message;
-            let obj = { sendType: data.data.sendType, sendPeople: 'other', message: data.data.message }
+            let obj = { sendType: data.data.sendType, sendPeople: 'other', message: data.data.message, messageId: data.data.messageId }
             this.messageList.push(obj)
             this.toBottom(128)
+        });
+
+        //接收消息返回的id
+        this.socket.on("sendMessageid", (data) => {
+            const index = this.messageList.findLastIndex(item => item.sendPeople === 'me');
+            if (index !== -1) {
+                this.messageList[index].id = data.data.id
+            }
+        });
+
+        //撤回成功接收
+        this.socket.on("retractSuccess", (data) => {
+            this.$toast(data.message)
+            this.messageList = this.messageList.filter(v => v !== this.retractItem)
+            let obj = { sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t8') }
+            this.messageList.push(obj)
+        });
+
+        //客服撤回消息
+        this.socket.on("otherRetract", (data) => {
+            this.messageList = this.messageList.filter(item => item.messageId !== data.data.messageId);
+            let obj = { sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t9') }
+            this.messageList.push(obj)
         });
 
         //错误接收
@@ -101,7 +126,7 @@ export default {
             this.allowSession = false;
             let obj = { sendType: 4, sendPeople: 'notice', message: data.message }
             this.messageList.push(obj)
-            this.textareaHit=this.$t('text.customerChat.t4')
+            this.textareaHit = this.$t('text.customerChat.t4')
             this.socket.close()
         });
     },
@@ -119,16 +144,16 @@ export default {
         },
 
         //关闭会话
-        closeSeesion(){
+        closeSeesion() {
             this.allowSession = false;
-            this.textareaHit=this.$t('text.customerChat.t6')
+            this.textareaHit = this.$t('text.customerChat.t6')
             this.socket.close()
         },
 
         //返回
-        back(){
+        back() {
             this.$router.go(0)
-            this.$router.push({path:"/",replace:true})
+            this.$router.push({ path: "/", replace: true })
         },
         //发送消息
         sendMessage(data, sendType) {
@@ -150,10 +175,19 @@ export default {
             obj.sendPeople = 'me'
             obj.message = data;
             this.messageList.push(obj)
+
             //清空输入框
             this.sendData = '';
             //让聊天窗口回到底部
             this.toBottom(128)
+        },
+
+        //撤回消息
+        retractMessage(item) {
+            this.retractItem = item
+            let message = JSON.parse(JSON.stringify(this.user))
+            message.messageId = item.id
+            this.socket.emit("retractMessage", message);
         },
 
         //回到底部

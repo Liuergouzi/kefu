@@ -130,16 +130,15 @@
                             <span v-show="!offlineShow">▲</span>
                             {{ $t('text.customerService.t9') }}
                         </div>
-                        <img @click.stop="offlinePage=1;getOffline()" src="../assets/images/refresh.png"
+                        <img @click.stop="offlinePage = 1; getOffline()" src="../assets/images/refresh.png"
                             style="width: 18px;height:18px;padding-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
                     <van-list v-model:loading="offlineLoading" :finished="offlineFinished"
-                     :finished-text=" $t('text.customerService.t23')" @load="getOffline">
+                        :finished-text="$t('text.customerService.t23')" @load="getOffline">
                         <li v-show="offlineShow" :key="index" v-for="(item, index) in offlineUsers" class="offlineUlStyle"
                             v-on:click="selectSession(item, true)" v-on:mouseenter="item.CloseSession = true"
-                            :class="{ isSelect2: item.data.isSelectSession }"
-                            v-on:mouseleave="item.CloseSession = false">
+                            :class="{ isSelect2: item.data.isSelectSession }" v-on:mouseleave="item.CloseSession = false">
                             <div class="liLeft">
                                 <img src="../assets/images/visitor.png" />
                             </div>
@@ -191,7 +190,8 @@
                 </div>
                 <!--聊天内容-->
                 <MessageWindow v-if="isSelectSession" id="RightCont" :messageList="selectUsers.data.messageList"
-                    :sendId="service.serviceId" :receiveId="selectUsers.data.receiveId" :isService="'true'">
+                    :sendId="service.serviceId" :receiveId="selectUsers.data.receiveId" isService
+                    @retractMessage="retractMessage">
                 </MessageWindow>
                 <!--聊天框底部-->
                 <div class="RightFoot">
@@ -287,20 +287,19 @@ export default {
             offlineShow: true,
             isSelectSession: false,
             expressionShow: false,
-            offlineLoading:false,
-            offlineFinished:false,
-            offlinePage:1
+            offlineLoading: false,
+            offlineFinished: false,
+            offlinePage: 1,
+            retractItem: {}
         }
     },
 
     mounted() {
-        console.log(JSON.parse('{}'))
         //初始化
         this.initialization();
 
         //用户连接成功通知
         this.socket.on("UserJoinSuccess", (data) => {
-            console.log(data)
             data.data.UnRead = 1
             data.data.message = this.$t('text.customerService.t18')
             data.data.messageList = []
@@ -331,6 +330,7 @@ export default {
 
         //接收消息
         this.socket.on("reviceMessage", (data) => {
+            console.log(data)
             for (var i = 0; i < this.onlineUsers.length; i++) {
                 if (this.onlineUsers[i].data.userId == data.data.userId) {
                     //添加红点
@@ -341,13 +341,43 @@ export default {
                     let obj = {
                         sendType: data.data.sendType,
                         sendPeople: 'other',
-                        message: data.data.message
+                        message: data.data.message,
+                        messageId: data.data.messageId
                     };
                     this.onlineUsers[i].data.messageList.push(obj)
                 }
             }
             this.reviceMessage = data.data.message;
             this.toBottom(128)
+        });
+
+        //接收发送消息返回的id
+        this.socket.on("sendMessageid", (data) => {
+            const index = this.selectUsers.data.messageList.findLastIndex(item => item.sendPeople === 'me');
+            if (index !== -1) {
+                this.selectUsers.data.messageList[index].id = data.data.id
+            }
+        });
+
+        //撤回成功接收
+        this.socket.on("retractSuccess", (data) => {
+            this.$toast(data.message)
+            this.selectUsers.data.messageList = this.selectUsers.data.messageList.filter(v => v !== this.retractItem)
+            let obj = { sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t8') }
+            this.selectUsers.data.messageList.push(obj)
+        });
+
+        //对方撤回消息
+        this.socket.on("otherRetract", (data) => {
+            const index = this.onlineUsers.findIndex(v => v.data.userId === data.data.userId)
+            if (index != -1) {
+                let obj = { sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t9') }
+                this.onlineUsers[index].data.messageList.push(obj)
+                const messageIndex = this.onlineUsers[index].data.messageList.findIndex(v => v.messageId === data.data.messageId)
+                if (index != -1) {
+                    this.onlineUsers[index].data.messageList[messageIndex].isRetract=1
+                }
+            }
         });
 
         //离线处理
@@ -423,16 +453,15 @@ export default {
                         element.messageList = []
                         element.receiveId = element.userId
                         element.socketRoom = ''
-                        element.isSelectSession=false
+                        element.isSelectSession = false
                         requestList.push({ data: element })
                     });
                     this.offlineUsers = [...requestList]
-                    console.log("aaa")
-                    this.offlinePage=this.offlinePage+1
-                    if(JSON.parse(response.data.data).length<20){
-                        this.offlineFinished=true
+                    this.offlinePage = this.offlinePage + 1
+                    if (JSON.parse(response.data.data).length < 20) {
+                        this.offlineFinished = true
                     }
-                    this.offlineLoading=true
+                    this.offlineLoading = true
                 }
             })
         },
@@ -508,6 +537,14 @@ export default {
             this.sendData = '';
             //让聊天窗口回到底部
             this.toBottom(128)
+        },
+
+        //撤回消息
+        retractMessage(item) {
+            this.retractItem = item
+            let message = JSON.parse(JSON.stringify(this.service))
+            message.messageId = item.id
+            this.socket.emit("retractMessage", message);
         },
 
         //客服选择快捷回复

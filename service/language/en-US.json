@@ -166,5 +166,17 @@
         "type": "WaitServiceOffline",
         "message": "Sorry, the customer service currently queued is offline",
         "data": {}
+    },
+    "RetractSuccess": {
+        "code": false,
+        "type": "WaitServiceOffline",
+        "message": "Recall successful",
+        "data": {}
+    },
+    "OtherRetract": {
+        "code": true,
+        "type": "OtherRetract",
+        "message": "The other party has withdrawn a message",
+        "data": {}
     }
 }

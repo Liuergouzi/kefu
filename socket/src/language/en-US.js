@@ -48,7 +48,9 @@ const EN = {
         t4: "The current customer service is offline",
         t5: "Don't joke, Taoist friends. Times have changed, and your ancient browsing tools are too outdated!",
         t6: "You have closed the session",
-        t7: "The sent content cannot be empty"
+        t7: "The sent content cannot be empty",
+        t8: "You withdrew a message",
+        t9: "The other party withdrew a message"
     },
     Comment:{
         t1: "Please leave a message",
@@ -84,7 +86,9 @@ const EN = {
         t4: "Please cancel the queue first",
     },
     MessageWindow:{
-        t1:"Load more"
+        t1:"Load more",
+        t2: "You have connected to customer service, let's start consulting! (Long press on the message to recall it)",
+        t3: "withdraw"
     },
     MyInput:{
         t1:"Modify nickname",

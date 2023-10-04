@@ -81,10 +81,10 @@ function insertUser(userJson) {
  * @param {*} userJson 传递过来的用户json数据,形式为：{},id 用户id
  * @returns 返回是否数据插入成功
  */
-function updateUser(userJson,id) {
+function updateUser(userJson, id) {
 
     var sql = `update user set ip=${userJson.ip},area=${userJson.area},device=${userJson.device},extend=${userJson.extend} 
-    where id=${"'"+id+"'"};`;
+    where id=${"'" + id + "'"};`;
     //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
@@ -171,7 +171,7 @@ function updateServiceName(serviceName, serviceId) {
  * @returns 返回状态码
  */
 
- function updateServiceMax(serviceMax, serviceId) {
+function updateServiceMax(serviceMax, serviceId) {
     var sql = `update service set serviceMax=${serviceMax} where serviceId=${serviceId} ;`;
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -221,7 +221,7 @@ function updateServiceFrequency(serviceId) {
 /**
  * 聊天信息存储
  * @param {*} 聊天信息json数据，形式为：{}
- * @returns 返回状态码
+ * @returns 返回id
  */
 
 function insertMessage(messageJson) {
@@ -235,7 +235,37 @@ function insertMessage(messageJson) {
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
-            connection.query(sql, (error, result) => {
+            const result = connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(result.insertId)
+                }
+            })
+            connection.release();
+        })
+    })
+
+}
+
+
+
+/**
+ * 聊天信息撤回
+ * @param {*} messageId 聊天信息id
+ * @returns 返回状态码
+ */
+
+function retractMessage(messageId) {
+
+    var sql = `update message set isRetract='1' where id=${messageId} ;`;
+
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            const result = connection.query(sql, (error, result) => {
                 if (error) {
                     console.log('【SQL语法错误】', error.message)
                     resolve(false)
@@ -250,18 +280,19 @@ function insertMessage(messageJson) {
 }
 
 
+
 /**
  * 客服端用户离线列表存储
  * @param {*} 离线列表信息json数据，形式为：{}
  * @returns 返回状态码
  */
 
- function insertChatList(userJson) {
+function insertChatList(userJson) {
     var sql = `insert into offlinelist(userId,serviceId,userName,ip,area,device,extend,userState,isProhibit,updateTime) 
     values(${userJson.userId},${userJson.receiveId},${userJson.userName},${userJson.ip},${userJson.area},
-           ${userJson.device},${userJson.extend},${userJson.userState},${userJson.isProhibit},${"'"+nowTime.getNowTime()+"'"}) 
+           ${userJson.device},${userJson.extend},${userJson.userState},${userJson.isProhibit},${"'" + nowTime.getNowTime() + "'"}) 
     ON DUPLICATE KEY UPDATE userName=${userJson.userName},ip=${userJson.ip},area=${userJson.area},device=${userJson.device},
-           extend=${userJson.extend},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${"'"+nowTime.getNowTime()+"'"};`;
+           extend=${userJson.extend},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${"'" + nowTime.getNowTime() + "'"};`;
 
     //使用promise将内部函数的返回值传出去
 
@@ -288,8 +319,8 @@ function insertMessage(messageJson) {
  * @returns 返回最新20条离线列表
  */
 
- function chatListSelect(serviceId,page) {
-    var star=(page-1)*20;
+function chatListSelect(serviceId, page) {
+    var star = (page - 1) * 20;
     var sql = `select * from offlinelist where serviceId=${serviceId}  order by updateTime desc limit ${star}, 20;`;
     //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
@@ -315,8 +346,20 @@ function insertMessage(messageJson) {
  * @returns 查询到后，聊天json数据，否则返回false
  */
 
-function selectMessage(sendId, receiveId) {
-    var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId};`;
+function selectMessage(sendId, receiveId, isService) {
+    if (String(isService) == 'true') {
+        var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId};`;
+    } else {
+        var sql = `
+        select 
+            case when isRetract = '1' then '' else sendMessage end as sendMessage,
+            id,sendId, receiveId,sendType,sendTime,isRetract
+        from message 
+        where 
+            (sendId = ${sendId} and receiveId = ${receiveId})
+            or (sendId = ${receiveId} and receiveId = ${sendId})`;
+    }
+
     //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
@@ -334,6 +377,8 @@ function selectMessage(sendId, receiveId) {
     })
 
 }
+
+
 
 
 /**
@@ -394,8 +439,8 @@ function commentSelectById(commentId) {
  * @param {*} page 页数
  * @returns 返回最新10条留言
  */
- function commentSelect(page) {
-    var star=(page-1)*10;
+function commentSelect(page) {
+    var star = (page - 1) * 10;
     var sql = `select * from comment  order by id desc limit ${star}, 10;`;
     //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
@@ -452,6 +497,7 @@ module.exports = {
     updateServiceMax,
     updateServiceFrequency,
     insertMessage,
+    retractMessage,
     selectMessage,
     commentInsert,
     commentSelectById,
