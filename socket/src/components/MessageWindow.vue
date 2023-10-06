@@ -8,7 +8,7 @@
 
         <div class="noticeDiv">
             <div class="hitSession" v-on:click="selectMessage">
-                {{ $t('text.MessageWindow.t2') }}
+                {{ isService ? $t('text.MessageWindow.t4') : $t('text.MessageWindow.t2') }}
             </div>
         </div>
 

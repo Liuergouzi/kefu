@@ -147,7 +147,7 @@ export default {
         this.socket.on("visitInsertReturn", (data) => {
             this.user = JSON.parse(JSON.stringify(data.data))
         });
-        
+
         //连接客服成功通知
         this.socket.on("linkServiceSuccess", (data) => {
             this.socketRoom = data.data.socketRoom;
@@ -167,7 +167,7 @@ export default {
 
         initialization() {
             //获取浏览器指纹并发送初始数据
-            let extend = JSON.stringify(this.$router.currentRoute._value.query.extend)
+            let extend = this.$router.currentRoute._value.query.extend
             Fingerprint2.get((components) => {
                 const values = components.map(function (component, index) {
                     if (index === 0) {

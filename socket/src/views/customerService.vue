@@ -240,6 +240,9 @@ import ServiceRightPage from '@/components/ServiceRightPage.vue';
 import CommentReply from '@/components/CommentReply.vue';
 import SetLanguage from '@/components/SetLanguage.vue';
 import axios from 'axios';
+import config from '@/config';
+import CryptoJS from 'crypto-js'
+
 export default {
 
     components: {
@@ -300,6 +303,12 @@ export default {
 
         //用户连接成功通知
         this.socket.on("UserJoinSuccess", (data) => {
+
+            console.log(data)
+            let extendIndex=this.getExtend(data.data.extend).findIndex(v=>v.title==='userName')
+            if(extendIndex!=-1){
+                data.data.userName=this.getExtend(data.data.extend)[extendIndex].value
+            }
             data.data.UnRead = 1
             data.data.message = this.$t('text.customerService.t18')
             data.data.messageList = []
@@ -375,7 +384,7 @@ export default {
                 this.onlineUsers[index].data.messageList.push(obj)
                 const messageIndex = this.onlineUsers[index].data.messageList.findIndex(v => v.messageId === data.data.messageId)
                 if (index != -1) {
-                    this.onlineUsers[index].data.messageList[messageIndex].isRetract=1
+                    this.onlineUsers[index].data.messageList[messageIndex].isRetract = 1
                 }
             }
         });
@@ -575,7 +584,41 @@ export default {
             }
             localStorage.setItem('serviceData', JSON.stringify(this.service))
         },
+        getExtend(extend) {
+            if (extend && extend != '') {
+                try {
+                    let data = this.aesDecrypt(extend)
+                    if (data && data != '') {
+                        return this.convert(JSON.parse(data))
+                    } else {
+                        return []
+                    }
+                } catch (error) {
+                    return []
+                }
+            } else {
+                return []
+            }
+        },
+        convert(obj) {
+            const result = [];
+            for (let key in obj) {
+                result.push({
+                    title: key,
+                    value: obj[key]
+                });
+            }
+            return result;
+        },
 
+        aesDecrypt(encryptedData) {
+            let decrypted = CryptoJS.AES.decrypt(encryptedData, config.aesKey, {
+                iv: config.aesIv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        },
         //回到底部
         toBottom(time) {
             setTimeout(() => {

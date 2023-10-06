@@ -53,6 +53,9 @@
 ###	前端数据加密
 	npm install jsencrypt -i --save	
 
+### aes加解密
+	npm install crypto-js -i --save
+
 ###	前端即时通讯
 	npm install socket.io-client -i --save
 

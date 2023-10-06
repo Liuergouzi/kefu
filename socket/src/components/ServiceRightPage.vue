@@ -11,45 +11,47 @@
         </div>
         <!--用户信息-->
         <div v-show="current_state == 1" class="infoContent">
-            <table>
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t9') }}</td>
-                    <td>{{ user.data.ip }}</td>
-                </tr>
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t10') }}</td>
-                    <td>{{ user.data.area }}</td>
-                </tr>
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t11') }}</td>
-                    <td>{{ user.data.device }}</td>
-                </tr>
+            <div>
+                <table>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t2') }}</td>
+                        <td>{{ user.data.userName }}</td>
+                    </tr>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t9') }}</td>
+                        <td>{{ user.data.ip }}</td>
+                    </tr>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t10') }}</td>
+                        <td>{{ user.data.area }}</td>
+                    </tr>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t11') }}</td>
+                        <td>{{ user.data.device }}</td>
+                    </tr>
 
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t1') }}</td>
-                    <td>{{ user.data.userId }}</td>
-                </tr>
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t2') }}</td>
-                    <td>{{ user.data.userName }}</td>
-                </tr>
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t3') }}</td>
-                    <td>{{ user.data.socketRoom }}</td>
-                </tr>
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t4') }}</td>
-                    <td>{{ user.data.receiveId }}</td>
-                </tr>
-                <tr>
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</td>
-                    <td>{{ user.data.isProhibit }}</td>
-                </tr>
-                <!-- <tr v-if="user.data.extend">
-                    <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</td>
-                    <td>{{ getExtend(user.data.extend) }}</td>
-                </tr> -->
-            </table>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t1') }}</td>
+                        <td>{{ user.data.userId }}</td>
+                    </tr>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t3') }}</td>
+                        <td>{{ user.data.socketRoom }}</td>
+                    </tr>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t4') }}</td>
+                        <td>{{ user.data.receiveId }}</td>
+                    </tr>
+                    <tr>
+                        <td class="infoItemTitle">{{ $t('text.ServiceRightPage.t5') }}</td>
+                        <td>{{ user.data.isProhibit }}</td>
+                    </tr>
+                    <tr v-for="item in getExtend(user.data.extend)" v-bind:key="item">
+                        <td class="infoItemTitle">{{ item.title }}：</td>
+                        <td>{{ item.value }}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <!--快捷回复-->
         <div v-show="current_state == 2" class="infoContent" style="display: block">
@@ -82,6 +84,9 @@
 </template>
 
 <script>
+import config from '@/config';
+import CryptoJS from 'crypto-js'
+
 export default {
     name: 'ServiceRightPage',
     props: {
@@ -114,9 +119,49 @@ export default {
                 this.currentEasy = id;
             }
         },
-        // getExtend(extend){
-        //     console.log(extend)
-        // }
+        getExtend(extend) {
+            if (extend && extend != '') {
+                try {
+                    let data = this.aesDecrypt(extend)
+                    if (data && data != '') {
+                        return this.convert(JSON.parse(data)).filter(v=>v.title!=='userName')
+                    } else {
+                        return []
+                    }
+                } catch (error) {
+                    return []
+                }
+            } else {
+                return []
+            }
+        },
+        convert(obj) {
+            const result = [];
+            for (let key in obj) {
+                result.push({
+                    title: key,
+                    value: obj[key]
+                });
+            }
+            return result;
+        },
+
+        aesDecrypt(encryptedData) {
+            let decrypted = CryptoJS.AES.decrypt(encryptedData, config.aesKey, {
+                iv: config.aesIv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        },
+        aesEncrypt(data) {
+            let encrypted = CryptoJS.AES.encrypt(data, config.aesKey, {
+                iv: config.aesIv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            return encrypted.toString();
+        },
     },
     data() {
         return {

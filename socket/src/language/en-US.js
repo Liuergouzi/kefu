@@ -88,7 +88,8 @@ const EN = {
     MessageWindow:{
         t1:"Load more",
         t2: "You have connected to customer service, let's start consulting! (Long press on the message to recall it)",
-        t3: "withdraw"
+        t3: "withdraw",
+        t4: "The user has connected, start replying! (Click on the message to recall the message)"
     },
     MyInput:{
         t1:"Modify nickname",

@@ -141,14 +141,14 @@
 
 .messageState {
     padding: 5px 15px;
-    line-height: 18px;
+    line-height: 19px;
     color: #fff;
     border-radius: 15px;
     background: #E4EAF2;
     position: absolute;
     right: 0;
     bottom: 0;
-    height: 18px;
+    height: auto;
 }
 
 .messageContent {
