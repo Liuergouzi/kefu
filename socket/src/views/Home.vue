@@ -164,8 +164,10 @@ export default {
 
     },
     methods: {
-
+        
         initialization() {
+            console.log(this.$router.currentRoute._value.fullPath)
+            localStorage.setItem("extendRouter",this.$router.currentRoute._value.fullPath)
             //获取浏览器指纹并发送初始数据
             let extend = this.$router.currentRoute._value.query.extend
             Fingerprint2.get((components) => {

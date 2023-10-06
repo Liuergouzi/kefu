@@ -89,7 +89,7 @@ router.beforeEach((to, from, next) => {
 			next();
 			return;
 		} else {
-			next('/');
+			next(localStorage.getItem("extendRouter"));
 			return;
 		}
 	}

@@ -73,7 +73,7 @@
     word-wrap: break-word;
     word-break: break-all;
     width: 100%;
-    justify-content: right;
+    justify-content: flex-end;
 }
 
 .nesHead {

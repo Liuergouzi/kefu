@@ -153,7 +153,6 @@ export default {
         //返回
         back() {
             this.$router.go(0)
-            this.$router.push({ path: "/", replace: true })
         },
         //发送消息
         sendMessage(data, sendType) {
