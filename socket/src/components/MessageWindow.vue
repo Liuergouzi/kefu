@@ -8,7 +8,7 @@
 
         <div class="noticeDiv">
             <div class="hitSession" v-on:click="selectMessage">
-                {{ isService ? $t('text.MessageWindow.t4') : $t('text.MessageWindow.t2') }}
+                {{ isService ? isOffline?$t('text.MessageWindow.t5'):$t('text.MessageWindow.t4') : $t('text.MessageWindow.t2') }}
             </div>
         </div>
 
@@ -97,6 +97,7 @@ export default {
         sendId: String,
         receiveId: String,
         isService: Boolean,
+        isOffline:Boolean
     },
     data() {
         return {
@@ -109,7 +110,6 @@ export default {
         }
     },
     mounted() {
-
         let params = {
             sendId: this.sendId,
             receiveId: this.receiveId,
@@ -247,8 +247,7 @@ export default {
     watch: {
         //此处需要根据客服的选择，进行实时刷新判断是否已经加载历史消息，否则可以多次加载消息，消息列表重复
         receiveId: {
-            handler(newValue, oldValue) {
-                console.log(oldValue)
+            handler() {
                 let listTemp = this.idIsSelect.filter((v) => v.receiveId == this.receiveId)
                 if (listTemp.length == 0) {
                     this.lastSession = true

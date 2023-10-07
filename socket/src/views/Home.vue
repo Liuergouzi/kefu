@@ -73,6 +73,9 @@ import SetLanguage from '@/components/SetLanguage.vue';
 import HomeAiChat from '@/components/HomeAiChat.vue';
 let encryptor = new JSEncrypt();
 
+import config from '@/config';
+import CryptoJS from 'crypto-js'
+
 export default {
     name: 'HomeView',
     components: {
@@ -166,7 +169,6 @@ export default {
     methods: {
         
         initialization() {
-            console.log(this.$router.currentRoute._value.fullPath)
             localStorage.setItem("extendRouter",this.$router.currentRoute._value.fullPath)
             //获取浏览器指纹并发送初始数据
             let extend = this.$router.currentRoute._value.query.extend
@@ -182,7 +184,13 @@ export default {
                 const murmur = Fingerprint2.x64hash128(values.join(''), 31);
                 this.user.userId = murmur;
                 localStorage.setItem('userId', murmur);
-                this.user.userName = this.$t('text.Home.t6') + murmur.slice(0, 6);
+
+                let extendList=this.getExtend(extend).filter(v=>v.title==='userName')
+                if(extendList.length>0){
+                    this.user.userName = extendList[0].value
+                }else{
+                    this.user.userName = this.$t('text.Home.t6') + murmur.slice(0, 6);
+                }
                 this.user.extend = extend == undefined ? '' : extend
                 this.socket.emit("visit", this.user);
             })
@@ -278,6 +286,41 @@ export default {
         //跳转留言
         showComment() {
             this.$router.push({ path: '/comment', replace: false })
+        },
+
+        getExtend(extend) {
+            if (extend && extend != '') {
+                try {
+                    let data = this.aesDecrypt(extend)
+                    if (data && data != '') {
+                        return this.convert(JSON.parse(data))
+                    } else {
+                        return []
+                    }
+                } catch (error) {
+                    return []
+                }
+            } else {
+                return []
+            }
+        },
+        aesDecrypt(encryptedData) {
+            let decrypted = CryptoJS.AES.decrypt(encryptedData, config.aesKey, {
+                iv: config.aesIv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        },
+        convert(obj) {
+            const result = [];
+            for (let key in obj) {
+                result.push({
+                    title: key,
+                    value: obj[key]
+                });
+            }
+            return result;
         },
 
         // //判断是否PC端

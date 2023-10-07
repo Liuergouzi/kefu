@@ -72,7 +72,6 @@ export default {
             message: '',
             user: {},
             messageList: [],
-            textareaHit: this.$t('text.customerChat.t3'),
             retractItem: {}
         }
     },
@@ -91,7 +90,7 @@ export default {
 
         //接收消息返回的id
         this.socket.on("sendMessageid", (data) => {
-            const index = this.messageList.findLastIndex(item => item.sendPeople === 'me');
+            const index = this.findMessageIndex(this.messageList,item => item.sendPeople === 'me');
             if (index !== -1) {
                 this.messageList[index].id = data.data.id
             }
@@ -141,6 +140,16 @@ export default {
                 this.$router.push({ path: '/', replace: true })
             }
             this.socket.emit('userJoin', this.user)
+        },
+
+        //寻找相匹配数组最后一个的索引
+        findMessageIndex(array, callback) {
+            for (let i = array.length - 1; i >= 0; i--) {
+                if (callback(array[i])) {
+                    return i;
+                }
+            }
+            return -1;
         },
 
         //关闭会话
@@ -201,7 +210,12 @@ export default {
             clearTimeout();
         },
 
-    }
+    },
+    computed: {
+        textareaHit(){
+            return this.$t('text.customerChat.t3')
+        }
+    },
 
 }
 </script>

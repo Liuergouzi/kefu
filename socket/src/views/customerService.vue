@@ -191,7 +191,7 @@
                 <!--聊天内容-->
                 <MessageWindow v-if="isSelectSession" id="RightCont" :messageList="selectUsers.data.messageList"
                     :sendId="service.serviceId" :receiveId="selectUsers.data.receiveId" isService
-                    @retractMessage="retractMessage">
+                    @retractMessage="retractMessage" :isOffline="this.selectUsers.data.isOffline">
                 </MessageWindow>
                 <!--聊天框底部-->
                 <div class="RightFoot">
@@ -362,7 +362,7 @@ export default {
 
         //接收发送消息返回的id
         this.socket.on("sendMessageid", (data) => {
-            const index = this.selectUsers.data.messageList.findLastIndex(item => item.sendPeople === 'me');
+            const index = this.findMessageIndex(this.selectUsers.data.messageList,item => item.sendPeople === 'me');
             if (index !== -1) {
                 this.selectUsers.data.messageList[index].id = data.data.id
             }
@@ -447,6 +447,16 @@ export default {
             this.loginOut()
         },
 
+        //寻找相匹配数组最后一个的索引
+        findMessageIndex(array, callback) {
+            for (let i = array.length - 1; i >= 0; i--) {
+                if (callback(array[i])) {
+                    return i;
+                }
+            }
+            return -1;
+        },
+
         //获取离线列表
         getOffline() {
             axios({
@@ -458,7 +468,7 @@ export default {
                 if (response.data.code) {
                     let requestList = []
                     JSON.parse(response.data.data).forEach(element => {
-                        element.message = ''
+                        element.message = element.sendmessage
                         element.messageList = []
                         element.receiveId = element.userId
                         element.socketRoom = ''
@@ -600,6 +610,14 @@ export default {
                 return []
             }
         },
+        aesDecrypt(encryptedData) {
+            let decrypted = CryptoJS.AES.decrypt(encryptedData, config.aesKey, {
+                iv: config.aesIv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            return decrypted.toString(CryptoJS.enc.Utf8);
+        },
         convert(obj) {
             const result = [];
             for (let key in obj) {
@@ -611,14 +629,6 @@ export default {
             return result;
         },
 
-        aesDecrypt(encryptedData) {
-            let decrypted = CryptoJS.AES.decrypt(encryptedData, config.aesKey, {
-                iv: config.aesIv,
-                mode: CryptoJS.mode.CBC,
-                padding: CryptoJS.pad.Pkcs7
-            });
-            return decrypted.toString(CryptoJS.enc.Utf8);
-        },
         //回到底部
         toBottom(time) {
             setTimeout(() => {

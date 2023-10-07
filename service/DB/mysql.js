@@ -82,8 +82,7 @@ function insertUser(userJson) {
  * @returns 返回是否数据插入成功
  */
 function updateUser(userJson, id) {
-
-    var sql = `update user set ip=${userJson.ip},area=${userJson.area},device=${userJson.device},extend=${userJson.extend} 
+    var sql = `update user set userName=${userJson.userName}, ip=${userJson.ip},area=${userJson.area},device=${userJson.device},extend=${userJson.extend} 
     where id=${"'" + id + "'"};`;
     //使用promise将内部函数的返回值传出去
 
@@ -321,7 +320,19 @@ function insertChatList(userJson) {
 
 function chatListSelect(serviceId, page) {
     var star = (page - 1) * 20;
-    var sql = `select * from offlinelist where serviceId=${serviceId}  order by updateTime desc limit ${star}, 20;`;
+    var sql = `
+    select offlinelist.*,
+    (
+    select message.sendmessage
+    from message
+    where message.sendId = offlinelist.userId
+    order by message.id desc
+    limit 1
+    ) as sendmessage
+    from offlinelist  
+    where offlinelist.serviceId = ${serviceId}
+    order by offlinelist.updatetime desc
+    limit ${star}, 20;`;
     //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {

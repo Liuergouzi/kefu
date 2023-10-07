@@ -89,7 +89,8 @@ const EN = {
         t1:"Load more",
         t2: "You have connected to customer service, let's start consulting! (Long press on the message to recall it)",
         t3: "withdraw",
-        t4: "The user has connected, start replying! (Click on the message to recall the message)"
+        t4: "The user has connected, start replying! (Click on the message to recall the message)",
+        t5: "The user is offline, but you can still have a conversation and the other party can view it through historical messages"
     },
     MyInput:{
         t1:"Modify nickname",
