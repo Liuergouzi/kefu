@@ -366,7 +366,7 @@ io.on('connection', socket => {
                     //消息发送
                     let returns = state.__("success");
                     returns.data = data;
-                    returns.data.messageId=sql_data
+                    returns.data.messageId = sql_data
                     socket.to(data.socketRoom).emit("reviceMessage", returns)
                     let returnsId = state.__("success");
                     returnsId.data = { id: sql_data }
@@ -494,6 +494,22 @@ app.post('/verificationToken', function (req, res) {
 })
 
 
+
+//首页自定义问题查询
+app.get('/selectdefaultProblem', function (req, res) {
+    mysql.selectdefaultProblem().then((sql_data) => {
+        if (sql_data) {
+            let returns = state.__("success");
+            returns.data = sql_data;
+            res.json(returns)
+        } else {
+            res.json(state.__("false"))
+        }
+    });
+})
+
+
+
 //修改名称接口
 app.post('/updateServiceName', function (req, res) {
     var newData = verification.newData(req.body);
@@ -531,7 +547,7 @@ app.post('/updateServiceMax', function (req, res) {
 app.post('/selectMessage', function (req, res) {
     var newData = verification.newData(req.body);
     if (newData.code) {
-        mysql.selectMessage(newData.data.sendId, newData.data.receiveId,newData.data.isService).then((sql_data) => {
+        mysql.selectMessage(newData.data.sendId, newData.data.receiveId, newData.data.isService).then((sql_data) => {
             if (sql_data) {
                 let returns = state.__("success");
                 returns.data = sql_data;
@@ -562,7 +578,7 @@ app.post('/commentInsert', function (req, res) {
 })
 
 //查看自己留言
-app.post('/commentSelectById', function (req, res) {
+app.get('/commentSelectById', function (req, res) {
     var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentSelectById(newData.data.commentId).then((sql_data) => {

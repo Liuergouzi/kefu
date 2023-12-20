@@ -23,6 +23,32 @@ pool.getConnection(function (error, connection) {
 
 
 /**
+ * 首页自定义问题查询
+ * @param {*} 
+ * @returns 自定义问题
+ */
+
+ function selectdefaultProblem() {
+    var sql = `select * from problem;`;
+    //使用promise将内部函数的返回值传出去
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+
+}
+
+
+/**
  * 用户数据查询
  * @param {*} userId 用户浏览器指纹id,string
  * @returns 查询到返回用户数据json，否则返回false
@@ -508,6 +534,7 @@ function commentReply(replyJson) {
 
 //暴露方法
 module.exports = {
+    selectdefaultProblem,
     selectUser,
     insertUser,
     updateUser,

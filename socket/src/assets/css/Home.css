@@ -180,7 +180,8 @@ p{
     box-sizing: border-box;
     padding: 5px;
     height: 180px;
-    box-shadow: 0 3px 5px rgb(0 0 0 / 40%);
+    box-shadow: 0 3px 5px rgb(199 199 199 / 40%);
+    border-radius: 10px;
 }
 
 

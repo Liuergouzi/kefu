@@ -15,18 +15,7 @@ axios.defaults.headers = { 'content-type': 'application/json'}
 
 //按需引入vant
 import 'vant/lib/index.css'
-import { Button } from 'vant'
-import { Switch } from 'vant'
-import { Icon } from 'vant'
-import { NoticeBar } from 'vant'
-import { Toast } from "vant"
-import { Popover } from "vant"
-import { Rate } from "vant"
-import { Popup } from "vant"
-import { Slider } from "vant"
-import { Pagination } from 'vant';
-import { Dialog } from 'vant';
-import { List  } from 'vant';
+import { Button,Switch,Icon,NoticeBar,Toast,Popover,Rate,Popup,Slider,Pagination,Dialog,List,Field } from 'vant'
 
 /**
  * 中英文
@@ -100,4 +89,4 @@ router.beforeEach((to, from, next) => {
 })
 
 createApp(App).use(store).use(router).use(i18n).use(Button).use(Switch).use(Popup).use(Slider)
-.use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).use(List).mount('#app')
+.use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).use(List).use(Field).mount('#app')

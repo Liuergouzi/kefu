@@ -13,9 +13,11 @@
                 </div>
                 <div v-if="item.sendType == 2" class="answers">
                     <img class="jiao" src="../assets/images/other_radio.jpg" />
-                    <div v-html="item.message"></div>
-                    <div :key="index" v-for="(items, index) in item.problem">
-                        <div v-html="items" v-on:click="robotClick(items, index)"></div>
+                    <div :key="index" v-for="(titleItem, index) in item.message">
+                        <div v-html="titleItem.message"></div>
+                        <div :key="index" v-for="(problemItem, index) in item.problem.filter(v=>v.titleId===titleItem.id)">
+                            <div v-html="problemItem.message" v-on:click="robotClick(problemItem)"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -74,18 +76,12 @@ export default {
     },
     methods: {
         //回复
-        robotClick(items, index) {
+        robotClick(items) {
             if (this.messageList_copy.filter((v) => v.sendType == 4).length==0) {
-                let obj = {}
-                obj.sendType = 1
-                obj.sendPeople = 'me'
-                obj.message = items;
-                this.messageList_copy.push(obj)
-                let objs = {}
-                objs.sendType = 1
-                objs.sendPeople = 'other'
-                objs.message = this.$store.state.robot[0].reply[index];
-                this.messageList_copy.push(objs)
+                this.messageList_copy.push(
+                    {sendType:1,sendPeople:'me',message:items.message},
+                    {sendType:1,sendPeople:'other',message:this.messageList_copy[0].reply.filter(v=>v.problemId===items.id)[0]?.message}
+                )
                 this.toBottom(200)
             }else{
                 this.$toast(this.$t('text.HomeAiChat.t4'));
@@ -100,7 +96,6 @@ export default {
             setTimeout(() => {
                 let RightCont = document.getElementById("userMessage");
                 if (RightCont != null) {
-                    console.log("yes")
                     let scrollHeight2 = RightCont.scrollHeight;
                     RightCont.scrollTop = scrollHeight2;
                 }
@@ -109,6 +104,11 @@ export default {
         },
     },
     watch: {
+        messageList(){
+            this.messageList_copy= this.messageList
+            console.log("aa",this.messageList_copy)
+        }
+        
     }
 
 }

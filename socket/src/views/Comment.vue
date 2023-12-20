@@ -72,7 +72,7 @@
                     }
                     console.log(params)
                     axios({
-                        method: 'post',
+                        method: 'get',
                         url: '/commentSelectById',
                         data: params,
                         headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}

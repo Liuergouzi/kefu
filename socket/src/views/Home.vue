@@ -72,7 +72,7 @@ import JSEncrypt from 'jsencrypt';
 import SetLanguage from '@/components/SetLanguage.vue';
 import HomeAiChat from '@/components/HomeAiChat.vue';
 let encryptor = new JSEncrypt();
-
+import axios from 'axios';
 import config from '@/config';
 import CryptoJS from 'crypto-js'
 
@@ -201,7 +201,24 @@ export default {
                 encryptor.setPublicKey(publicKey);
             });
 
-            this.messageList.push(this.$store.state.robot[0])
+            //查询问题
+            axios({
+                method: 'get',
+                url: '/selectdefaultProblem',
+                headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+            }).then((response) => {
+                if (response.data.code) {
+                    this.messageList=[    
+                        {
+                            sendType: 2,
+                            sendPeople: 'other',
+                            message: response.data.data.filter(v=>v.type=='title'),
+                            problem: response.data.data.filter(v=>v.type=='problem'),
+                            reply: response.data.data.filter(v=>v.type=='reply')
+                        }
+                    ]
+                }
+            })
         },
 
         //转人工
