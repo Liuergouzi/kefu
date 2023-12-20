@@ -23,7 +23,7 @@
                     <!--<img class="headTap" src="../assets/images/enlarge.png">-->
                     <SetLanguage></SetLanguage>
                     <input class="headTap" type="color" v-on:click="changeBg" v-model="bgColor">
-                    <img class="headTap" src="../assets/images/close.png" v-show="isShowClose"
+                    <img class="headTap" src="../assets/images/close.png"
                         v-on:click="isDisplay = !isDisplay">
                 </span>
 
@@ -84,7 +84,7 @@ export default {
     },
     data() {
         return {
-            isDisplay: true,
+            isDisplay: false,
             bgColor: '#30bcbc',
             socket: this.$store.state.socket,
             user: {
@@ -100,7 +100,6 @@ export default {
             sendData: '',
             allowSession: true,
             showPopup: false,
-            isShowClose: true,
             oldSendData: '',
             speed: 110,
         }
@@ -203,7 +202,6 @@ export default {
             });
 
             this.messageList.push(this.$store.state.robot[0])
-            if (!this.isPC()) { this.isShowClose = false }
         },
 
         //转人工

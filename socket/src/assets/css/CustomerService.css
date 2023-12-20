@@ -109,10 +109,7 @@
     width: auto;
     font-size: 12px;
     align-items: center;
-    border-start-end-radius: 10px;
-    border-start-start-radius: 10px;
-    border-end-end-radius: 10px;
-    border-end-start-radius: 10px;
+    border-radius: 10px;
     margin-left: 5px;
     margin-top: 16px;
     white-space: nowrap;

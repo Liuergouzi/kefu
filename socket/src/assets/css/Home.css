@@ -3,6 +3,7 @@
     color: #fff;
     /*width: 100%;*/
     /*height: 100%;*/
+    z-index: -999;
 }
 p{
     color: black;
@@ -23,6 +24,7 @@ p{
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: stretch;
+    z-index: 999;
 }
 
 
@@ -81,6 +83,7 @@ p{
     letter-spacing: 4px;
     writing-mode: vertical-rl;
     -webkit-user-select: none;
+    color: white;
 }
 
 /*客服对话框头部*/
@@ -111,6 +114,7 @@ p{
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
+    height: 20px;
 }
 
 .headTap {
@@ -175,7 +179,7 @@ p{
     background: #fff;
     box-sizing: border-box;
     padding: 5px;
-    height: 210px;
+    height: 180px;
     box-shadow: 0 3px 5px rgb(0 0 0 / 40%);
 }
 
@@ -282,10 +286,11 @@ textarea::-ms-input-placeholder {
     .userBody {
         width: 100%;
         height: 100%;
+        z-index: -999;
     }
 
     .openChat {
-        display: none;
+        transform: scale(0.8);
     }
 
     .userWindow {

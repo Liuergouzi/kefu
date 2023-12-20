@@ -42,7 +42,7 @@ const EN = {
         t23: "There's no more"
     },
     customerChat:{
-        t1: "back",
+        t1: "close",
         t2: "Send (s)",
         t3: "Please enter the session content",
         t4: "The current customer service is offline",

@@ -11,7 +11,7 @@
                     <input type="password" id="login_password" v-model="login.servicePassword" :placeholder="$t('text.customerServiceLogin.t3')" />
                 </div>
                 <div class="clear">
-                    <div v-on:click="clear()">{{ $t('text.customerServiceLogin.t4') }}</div>
+                    <div v-on:click="clear()" style="padding-left: 28px;">{{ $t('text.customerServiceLogin.t4') }}</div>
                     <SetLanguage></SetLanguage>
                 </div>
                 <div class="loginbtn" v-on:click="serviceLogin">

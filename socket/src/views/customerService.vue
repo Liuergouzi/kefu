@@ -131,7 +131,7 @@
                             {{ $t('text.customerService.t9') }}
                         </div>
                         <img @click.stop="offlinePage = 1; getOffline()" src="../assets/images/refresh.png"
-                            style="width: 18px;height:18px;padding-right: 10px;">
+                            style="width: 18px;height:18px;margin-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
                     <van-list v-model:loading="offlineLoading" :finished="offlineFinished"
@@ -459,6 +459,7 @@ export default {
 
         //获取离线列表
         getOffline() {
+            this.offlineLoading = true
             axios({
                 method: 'post',
                 url: '/chatListSelect',
@@ -475,13 +476,16 @@ export default {
                         element.isSelectSession = false
                         requestList.push({ data: element })
                     });
-                    this.offlineUsers = [...requestList]
+                    this.offlineUsers = [...this.offlineUsers,...requestList]
                     this.offlinePage = this.offlinePage + 1
                     if (JSON.parse(response.data.data).length < 20) {
                         this.offlineFinished = true
+                        this.offlineLoading = false
                     }
-                    this.offlineLoading = true
+                    this.offlineLoading = false
                 }
+            }).catch(()=>{
+                this.offlineLoading = false
             })
         },
 

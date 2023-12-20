@@ -151,14 +151,14 @@
 
 .moreSession {
     width: auto;
-    background: #D1D1D1;
-    border-radius: 20px;
+    background: #d1d1d1;
+    border-radius: 10px;
     color: #fff;
     line-height: 16px;
     text-align: center;
     margin: 0 auto;
     margin-top: 2px;
-    padding: 3px 5px;
+    padding: 8px 10px;
     font-size: 12px;
 }
 
