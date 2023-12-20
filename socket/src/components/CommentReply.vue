@@ -13,7 +13,7 @@
         <div v-show="current_state == 1" class="infoContent">
             <div class="messageRecord">
                 <div v-for="(item, index) in messageList" :key="index" class="messageDiv">
-                    <div class="messageTime">{{ item.commentTime }}</div>
+                    <div class="messageTime">{{ getTransTime(item.commentTime) }}</div>
                     <div class="messageContent">
                         <div class="messageDetail">{{ item.commentContent }}</div>
                         <div class="messageState" v-if="item.commentState == 1">{{ $t('text.CommentReply.t1') }}</div>
@@ -63,8 +63,8 @@ export default {
             headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
         }).then((response) => {
             if (response.data.code) {
-                this.messageList = JSON.parse(response.data.data);
-                if (JSON.parse(response.data.data).length == 10) {
+                this.messageList = response.data.data;
+                if (response.data.data.length == 10) {
                     this.totalPage = this.totalPage + 1
                 }
             } else {
@@ -101,15 +101,18 @@ export default {
             }).then((response) => {
                 if (response.data.code) {
                     this.$toast(this.$t('text.CommentReply.t8'))
-                    // for(var i=0;i<this.messageList.length();i++){
-
-                    // }
                     this.messageList
                     this.serviceMessage = "";
                 } else {
                     this.$toast(this.$t('text.CommentReply.t9'))
                 }
             })
+        },
+
+        //时间转换
+        getTransTime(time) {
+            const date = new Date(time);
+            return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
         },
 
         seeMessageDetail(message) {
@@ -144,8 +147,7 @@ export default {
                     headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
                 }).then((response) => {
                     if (response.data.code) {
-                        this.messageList = JSON.parse(response.data.data);
-                        console.log(this.messageList)
+                        this.messageList = response.data.data;
                     } else {
                         this.$toast(this.$t('text.CommentReply.t12'))
                     }
@@ -154,7 +156,7 @@ export default {
         }
     },
     computed: {
-        serviceTool(){
+        serviceTool() {
             return [
                 {
                     id: 1,

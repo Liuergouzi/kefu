@@ -39,7 +39,10 @@ const EN = {
         t20: "Don't joke, Taoist friends. Times have changed, and your ancient browsing tools are too outdated!",
         t21: "The input content cannot be empty",
         t22: "The other party is offline and unable to receive messages in real-time, but they can still view this message through historical messages",
-        t23: "There's no more"
+        t23: "There's no more",
+        t24: "picture",
+        t25: "expression",
+        t26: "Refresh successful"
     },
     customerChat:{
         t1: "close",

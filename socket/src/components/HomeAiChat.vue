@@ -36,7 +36,7 @@
 
             <!--等待状态通知显示-->
             <div v-if="item.sendPeople == 'notice'" class="noticeDiv">
-                <div class="moreSession" v-if="item.sendType == 4">
+                <div class="moreSession" v-if="item.sendType == 4" style="padding: 8px 10px;">
                     <span style="display: flex;">
                         {{$t('text.HomeAiChat.t1')}}{{ item.waitCount }}{{$t('text.HomeAiChat.t2')}}
                     </span>

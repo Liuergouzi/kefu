@@ -328,7 +328,14 @@ function chatListSelect(serviceId, page) {
     where message.sendId = offlinelist.userId
     order by message.id desc
     limit 1
-    ) as sendmessage
+    ) as sendmessage,
+    (
+        select message.sendType
+        from message
+        where message.sendId = offlinelist.userId
+        order by message.id desc
+        limit 1
+    ) as sendType
     from offlinelist  
     where offlinelist.serviceId = ${serviceId}
     order by offlinelist.updatetime desc
@@ -341,7 +348,7 @@ function chatListSelect(serviceId, page) {
                     console.log('【SQL语法错误】', error.message);
                     resolve(false);
                 } else {
-                    resolve(JSON.stringify(result))
+                    resolve(result)
                 }
             })
             connection.release();
@@ -359,7 +366,7 @@ function chatListSelect(serviceId, page) {
 
 function selectMessage(sendId, receiveId, isService) {
     if (String(isService) == 'true') {
-        var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId};`;
+        var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId} order by sendTime asc;`;
     } else {
         var sql = `
         select 
@@ -368,7 +375,8 @@ function selectMessage(sendId, receiveId, isService) {
         from message 
         where 
             (sendId = ${sendId} and receiveId = ${receiveId})
-            or (sendId = ${receiveId} and receiveId = ${sendId})`;
+            or (sendId = ${receiveId} and receiveId = ${sendId})
+        order by sendTime asc`;
     }
 
     //使用promise将内部函数的返回值传出去
@@ -380,7 +388,7 @@ function selectMessage(sendId, receiveId, isService) {
                     console.log('【SQL语法错误】', error.message);
                     resolve(false);
                 } else {
-                    resolve(JSON.stringify(result))
+                    resolve(result)
                 }
             })
             connection.release();
@@ -434,7 +442,7 @@ function commentSelectById(commentId) {
                     console.log('【SQL语法错误】', error.message);
                     resolve(false);
                 } else {
-                    resolve(JSON.stringify(result))
+                    resolve(result)
                 }
             })
             connection.release();
@@ -461,7 +469,7 @@ function commentSelect(page) {
                     console.log('【SQL语法错误】', error.message);
                     resolve(false);
                 } else {
-                    resolve(JSON.stringify(result))
+                    resolve(result)
                 }
             })
             connection.release();

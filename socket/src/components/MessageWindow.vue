@@ -123,8 +123,7 @@ export default {
             headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
         }).then((response) => {
             if (response.data.code) {
-                let message = JSON.parse(response.data.data);
-                if (message.length == 0) {
+                if (response.data.data.length == 0) {
                     this.lastSession = false
                 }
             } else {
@@ -175,7 +174,7 @@ export default {
                 headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
             }).then((response) => {
                 if (response.data.code) {
-                    let message = JSON.parse(response.data.data);
+                    let message = response.data.data
                     let lasTime = new Date()
                     this.messageList_copy.length = 0
                     for (var i = message.length - 1; i >= 0; i--) {
@@ -267,8 +266,7 @@ export default {
                         headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
                     }).then((response) => {
                         if (response.data.code) {
-                            let message = JSON.parse(response.data.data);
-                            if (message.length == 0) {
+                            if (response.data.data== 0) {
                                 this.lastSession = false
                             }
                         } else {

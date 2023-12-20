@@ -86,7 +86,10 @@
                             <!--显示用户名-->
                             <span class="intername">{{ item.data.userName }}</span>
                             <!--显示最新一条消息-->
-                            <span class="infor">{{ item.data.message }}</span>
+                            <span class="infor">
+                                {{ item.data.sendType == '3' ? '[' + $t('text.customerService.t24') + ']' :
+                                    item.data.sendType == '2' ? '[' + $t('text.customerService.t25') + ']' : item.data.message }}
+                            </span>
                             <!--显示小红点-->
                             <div v-show="item.data.UnRead > 0" class="un_read">
                                 {{ item.data.UnRead > 99 ? "99+" : item.data.UnRead }}
@@ -130,7 +133,7 @@
                             <span v-show="!offlineShow">▲</span>
                             {{ $t('text.customerService.t9') }}
                         </div>
-                        <img @click.stop="offlinePage = 1; getOffline()" src="../assets/images/refresh.png"
+                        <img @click.stop="offlinePage = 1; getOffline(true)" src="../assets/images/refresh.png"
                             style="width: 18px;height:18px;margin-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
@@ -146,7 +149,10 @@
                                 <!--显示用户名-->
                                 <span class="intername">{{ item.data.userName }}</span>
                                 <!--显示最新一条消息-->
-                                <span class="infor">{{ item.data.message }}</span>
+                                <span class="infor">
+                                    {{ item.data.sendType == '3' ? '[' + $t('text.customerService.t24') + ']' :
+                                    item.data.sendType == '2' ? '[' + $t('text.customerService.t25') + ']' : item.data.message }}    
+                                </span>
                                 <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="deleteOffLine(item)">
                                     <img src="../assets/images/redClose.png" style="width:12px;height:12px">
                                     {{ $t('text.customerService.t10') }}
@@ -305,9 +311,9 @@ export default {
         this.socket.on("UserJoinSuccess", (data) => {
 
             console.log(data)
-            let extendIndex=this.getExtend(data.data.extend).findIndex(v=>v.title==='userName')
-            if(extendIndex!=-1){
-                data.data.userName=this.getExtend(data.data.extend)[extendIndex].value
+            let extendIndex = this.getExtend(data.data.extend).findIndex(v => v.title === 'userName')
+            if (extendIndex != -1) {
+                data.data.userName = this.getExtend(data.data.extend)[extendIndex].value
             }
             data.data.UnRead = 1
             data.data.message = this.$t('text.customerService.t18')
@@ -346,6 +352,7 @@ export default {
                     this.onlineUsers[i].data.UnRead = this.onlineUsers[i].data.UnRead + 1;
                     //左侧列表信息更新
                     this.onlineUsers[i].data.message = data.data.message;
+                    this.onlineUsers[i].data.sendType = data.data.sendType
                     //新创建一个列表，将信息存入列表，用于聊天窗口循环
                     let obj = {
                         sendType: data.data.sendType,
@@ -362,7 +369,7 @@ export default {
 
         //接收发送消息返回的id
         this.socket.on("sendMessageid", (data) => {
-            const index = this.findMessageIndex(this.selectUsers.data.messageList,item => item.sendPeople === 'me');
+            const index = this.findMessageIndex(this.selectUsers.data.messageList, item => item.sendPeople === 'me');
             if (index !== -1) {
                 this.selectUsers.data.messageList[index].id = data.data.id
             }
@@ -458,7 +465,7 @@ export default {
         },
 
         //获取离线列表
-        getOffline() {
+        getOffline(showToast) {
             this.offlineLoading = true
             axios({
                 method: 'post',
@@ -468,7 +475,7 @@ export default {
             }).then((response) => {
                 if (response.data.code) {
                     let requestList = []
-                    JSON.parse(response.data.data).forEach(element => {
+                    response.data.data.forEach(element => {
                         element.message = element.sendmessage
                         element.messageList = []
                         element.receiveId = element.userId
@@ -476,15 +483,18 @@ export default {
                         element.isSelectSession = false
                         requestList.push({ data: element })
                     });
-                    this.offlineUsers = [...this.offlineUsers,...requestList]
+                    this.offlineUsers = [...this.offlineUsers, ...requestList]
                     this.offlinePage = this.offlinePage + 1
-                    if (JSON.parse(response.data.data).length < 20) {
+                    if (response.data.data.length < 20) {
                         this.offlineFinished = true
                         this.offlineLoading = false
                     }
                     this.offlineLoading = false
+                    if(showToast){
+                        this.$toast(this.$t('text.customerService.t26'));
+                    }
                 }
-            }).catch(()=>{
+            }).catch(() => {
                 this.offlineLoading = false
             })
         },

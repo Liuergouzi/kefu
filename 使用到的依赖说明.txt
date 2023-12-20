@@ -1,13 +1,5 @@
 ### 作者【轮子哥】
 
-###	服务端service  返回数据均以     {"code":xxx,"type":"xxx","message":"xxx","data":{} }	的格式为标准
-### 除了mysql.js文件，其余文件中的方法返回值统一以statu.json中的返回值为标准,
-###	因为mysql.js文件中的方法仅在service.js中进行调用，进行调用拿到返回值之后再统一以statu.json标准输出，不对其方法中的返回值直接对外输出，而是间接输出，所以虽然可以但是没必要
-### 其他文件中的方法中，如verification.js，进行调用之后，有部分内容将会对verification.js的返回值直接对外输出
-
-### 前端socket  提交数据均以 {"xxx":"xxx","yyy":"yyy"}	的格式为标准
-
-
 ###	初始安装依赖
 
 ###	安装需要在node安装目录下的 node_modules\npm\npmrc文件添加代理

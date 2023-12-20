@@ -78,7 +78,7 @@
                         headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
                     }).then((response) => {
                         if (response.data.code) {
-                            this.messageList = JSON.parse(response.data.data);
+                            this.messageList = response.data.data;
                         } else {
                             this.$toast(this.$t('text.Comment.t9'))
                         }

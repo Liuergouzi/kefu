@@ -600,7 +600,7 @@ app.post('/chatListSelect', function (req, res) {
 })
 
 
-//查看最新10条留言
+//留言分页
 app.post('/commentSelect', function (req, res) {
 
     var newData = verification.newData(req.body);
