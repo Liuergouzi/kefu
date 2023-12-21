@@ -235,7 +235,7 @@ export default {
             // this.socket.emit("specifyConnection", this.user);
             this.selectServiceShow = !this.selectServiceShow
             axios({
-                method: 'get',
+                method: 'post',
                 url: '/selectService',
                 data:{page:1},
                 headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }

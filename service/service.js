@@ -741,7 +741,7 @@ app.post('/deleteFast', function (req, res) {
 
 
 //指定连接时查询客服
-app.get('/selectService', function (req, res) {
+app.post('/selectService', function (req, res) {
     var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.selectService(newData.data.page).then((sql_data) => {
