@@ -115,6 +115,18 @@ const EN = {
         t9: "User IP: ",
         t10: "User Region: ",
         t11: "User Equipment: ",
+        t12: "Exit Editing",
+        t13: "edit",
+        t14: "delete",
+        t15: "add",
+        t16: "Add quick reply",
+        t17: "Modify quick reply",
+        t18: "Delete quick reply",
+        t19: "Are you sure you want to delete it?",
+        t20: "Please enter a shortcut",
+        t21: "Successfully added",
+        t22: "Modified successfully",
+        t23: "Delete successful",
     }
 }
 export default EN

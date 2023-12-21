@@ -531,6 +531,102 @@ function commentReply(replyJson) {
 }
 
 
+/**
+ * 查询快捷回复
+ * @param {*} serviceId 客服id
+ * @returns 返回快捷回复数据
+ */
+function selectFast(serviceId) {
+    var sql = `select * from fast where serviceId=${serviceId} and isDelete !='1';`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
+/**
+ * 添加快捷回复
+ * @param {*} fastJson 修改数据
+ * @returns 返回快捷回复数据
+ */
+function addFast(fastJson) {
+    var sql = `insert into fast(serviceId,parentId,title) values(${fastJson.serviceId},${fastJson.parentId},${fastJson.title});`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
+/**
+ * 修改快捷回复
+ * @param {*} fastJson 修改数据
+ * @returns 返回快捷回复数据
+ */
+function editFast(fastJson) {
+    var sql = `update fast set title=${fastJson.title} where id=${fastJson.id} ;`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
+/**
+ * 删除快捷回复
+ * @param {*} id 快捷回复主键
+ * @returns 返回快捷回复数据
+ */
+function deleteFast(id) {
+    var sql = `update fast set isDelete='1' where id=${id} ;`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(true)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
 
 //暴露方法
 module.exports = {
@@ -550,7 +646,11 @@ module.exports = {
     commentSelect,
     insertChatList,
     chatListSelect,
-    commentReply
+    commentReply,
+    selectFast,
+    addFast,
+    editFast,
+    deleteFast
 }
 
 

@@ -201,3 +201,28 @@ table>tr{
     border-radius: 0;
     background: rgba(0, 0, 0, 0.1);
 }
+
+.editFastOperate{
+    display: flex;
+    align-items: center;
+    height: 20px;
+}
+
+.editFastEdit{
+    white-space: nowrap;
+    padding-right: 10px;
+}
+
+.editFastDelete{
+    white-space: nowrap;
+    color: #DA2339;
+}
+
+.addFastBtn{
+    width: auto;
+    height: 25px;
+    border: none;
+    color: white;
+    padding: 0 10px;
+    border-radius: 20px;
+}

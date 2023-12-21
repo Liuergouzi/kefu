@@ -231,7 +231,7 @@
                 </div>
             </div>
             <!--右边内容-->
-            <ServiceRightPage v-if="isSelectSession" @submit="selectReplay($event)" :user="selectUsers"></ServiceRightPage>
+            <ServiceRightPage v-if="isSelectSession" @submit="selectReplay($event)" :user="selectUsers" :serviceId="service.serviceId"></ServiceRightPage>
             <CommentReply v-if="!isSelectSession"></CommentReply>
         </div>
     </div>

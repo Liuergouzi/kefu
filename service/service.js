@@ -651,3 +651,69 @@ app.post('/commentReply', function (req, res) {
         res.json(state.__("dataFalse"))
     }
 })
+
+//查询快捷回复
+app.post('/selectFast', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.selectFast(newData.data.serviceId).then((sql_data) => {
+            if (sql_data) {
+                let returns = state.__("success");
+                returns.data = sql_data;
+                res.json(returns)
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+//添加快捷回复
+app.post('/addFast', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.addFast(newData.data).then((sql_data) => {
+            if (sql_data) {
+                res.json(state.__("success"))
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+//修改快捷回复
+app.post('/editFast', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.editFast(newData.data).then((sql_data) => {
+            if (sql_data) {
+                res.json(state.__("success"))
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+//删除快捷回复
+app.post('/deleteFast', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.deleteFast(newData.data.id).then((sql_data) => {
+            if (sql_data) {
+                res.json(state.__("success"))
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
