@@ -92,7 +92,6 @@ export default {
                 commentService: this.service.serviceName,
                 commentReply: this.serviceMessage
             }
-            console.log(params)
             axios({
                 method: 'post',
                 url: '/commentReply',

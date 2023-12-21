@@ -722,6 +722,7 @@ app.post('/editFast', function (req, res) {
     }
 })
 
+
 //删除快捷回复
 app.post('/deleteFast', function (req, res) {
     var newData = verification.newData(req.body);
@@ -729,6 +730,25 @@ app.post('/deleteFast', function (req, res) {
         mysql.deleteFast(newData.data.id).then((sql_data) => {
             if (sql_data) {
                 res.json(state.__("success"))
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+
+//指定连接时查询客服
+app.get('/selectService', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.selectService(newData.data.page).then((sql_data) => {
+            if (sql_data) {
+                let returns = state.__("success");
+                returns.data = sql_data;
+                res.json(returns)
             } else {
                 res.json(state.__("false"))
             }

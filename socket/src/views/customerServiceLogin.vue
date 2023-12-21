@@ -50,7 +50,6 @@ import JSEncrypt from 'jsencrypt';
         this.socket.on("loginReturn", (data) => {
             //数据存储
             //存储到localStorage
-            console.log(data.token.data);
             localStorage.setItem('token', data.token.data);
             //客服数据存储到localStorage
             localStorage.setItem('serviceData', data.data);

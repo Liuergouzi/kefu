@@ -1,3 +1,8 @@
+/*
+ * @轮子的作者: 轮子哥
+ * @Date: 2023-12-21 09:12:37
+ * @LastEditTime: 2023-12-21 16:50:33
+ */
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -15,7 +20,7 @@ axios.defaults.headers = { 'content-type': 'application/json'}
 
 //按需引入vant
 import 'vant/lib/index.css'
-import { Button,Switch,Icon,NoticeBar,Toast,Popover,Rate,Popup,Slider,Pagination,Dialog,List,Field } from 'vant'
+import { Button,Switch,Icon,NoticeBar,Toast,Popover,Rate,Popup,Slider,Pagination,Dialog,List,Field,ActionSheet  } from 'vant'
 
 /**
  * 中英文
@@ -89,4 +94,5 @@ router.beforeEach((to, from, next) => {
 })
 
 createApp(App).use(store).use(router).use(i18n).use(Button).use(Switch).use(Popup).use(Slider)
-.use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).use(List).use(Field).mount('#app')
+.use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).use(List)
+.use(Field).use(ActionSheet).mount('#app')

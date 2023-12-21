@@ -628,6 +628,32 @@ function deleteFast(id) {
 }
 
 
+/**
+ * 查询客服
+ * @param {*} page 页数
+ * @returns 返回10条客服数据列表
+ */
+function selectService(page) {
+    var star = (page - 1) * 10;
+    var sql = `select serviceId,serviceName,serviceMax,serviceHead from service  limit ${star}, 10;`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
+
 //暴露方法
 module.exports = {
     selectdefaultProblem,
@@ -650,7 +676,8 @@ module.exports = {
     selectFast,
     addFast,
     editFast,
-    deleteFast
+    deleteFast,
+    selectService
 }
 
 

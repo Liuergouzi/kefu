@@ -23,8 +23,7 @@
                     <!--<img class="headTap" src="../assets/images/enlarge.png">-->
                     <SetLanguage></SetLanguage>
                     <input class="headTap" type="color" v-on:click="changeBg" v-model="bgColor">
-                    <img class="headTap" src="../assets/images/close.png"
-                        v-on:click="isDisplay = !isDisplay">
+                    <img class="headTap" src="../assets/images/close.png" v-on:click="isDisplay = !isDisplay">
                 </span>
 
             </div>
@@ -41,8 +40,11 @@
                     <!--工具栏-->
                     <div class="customerChatToolList">
                         <ul>
-                            <li v-on:click="toLabor" style="position: relative">
+                            <li v-on:click="specifyConnection" style="position: relative">
                                 <img src="../assets/images/labour.png" />
+                            </li>
+                            <li v-on:click="toLabor" style="position: relative">
+                                <img src="../assets/images/random.png" />
                             </li>
                             <li v-on:click="showComment" style="position: relative">
                                 <img src="../assets/images/comments.png" />
@@ -61,6 +63,12 @@
                     </div>
                 </div>
             </div>
+
+            <van-action-sheet v-model:show="selectServiceShow" title="请选择客服" style="position: absolute;">
+                <div class="selectService">
+                    666
+                </div>
+            </van-action-sheet>
 
         </div>
     </div>
@@ -102,6 +110,7 @@ export default {
             showPopup: false,
             oldSendData: '',
             speed: 110,
+            selectServiceShow: false
         }
     },
 
@@ -166,9 +175,9 @@ export default {
 
     },
     methods: {
-        
+
         initialization() {
-            localStorage.setItem("extendRouter",this.$router.currentRoute._value.fullPath)
+            localStorage.setItem("extendRouter", this.$router.currentRoute._value.fullPath)
             //获取浏览器指纹并发送初始数据
             let extend = this.$router.currentRoute._value.query.extend
             Fingerprint2.get((components) => {
@@ -184,10 +193,10 @@ export default {
                 this.user.userId = murmur;
                 localStorage.setItem('userId', murmur);
 
-                let extendList=this.getExtend(extend).filter(v=>v.title==='userName')
-                if(extendList.length>0){
+                let extendList = this.getExtend(extend).filter(v => v.title === 'userName')
+                if (extendList.length > 0) {
                     this.user.userName = extendList[0].value
-                }else{
+                } else {
                     this.user.userName = this.$t('text.Home.t6') + murmur.slice(0, 6);
                 }
                 this.user.extend = extend == undefined ? '' : extend
@@ -205,23 +214,39 @@ export default {
             axios({
                 method: 'get',
                 url: '/selectdefaultProblem',
-                headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
             }).then((response) => {
                 if (response.data.code) {
-                    this.messageList=[    
+                    this.messageList = [
                         {
                             sendType: 2,
                             sendPeople: 'other',
-                            message: response.data.data.filter(v=>v.type=='title'),
-                            problem: response.data.data.filter(v=>v.type=='problem'),
-                            reply: response.data.data.filter(v=>v.type=='reply')
+                            message: response.data.data.filter(v => v.type == 'title'),
+                            problem: response.data.data.filter(v => v.type == 'problem'),
+                            reply: response.data.data.filter(v => v.type == 'reply')
                         }
                     ]
                 }
             })
         },
 
-        //转人工
+        //连接指定客服
+        specifyConnection(){
+            // this.socket.emit("specifyConnection", this.user);
+            this.selectServiceShow = !this.selectServiceShow
+            axios({
+                method: 'get',
+                url: '/selectService',
+                data:{page:1},
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
+            }).then((response) => {
+                if (response.data.code) {
+                    console.log(response.data.data)
+                }
+            })
+        },
+
+        //随机转人工
         toLabor() {
             this.socket.emit("toLabor", this.user);
         },

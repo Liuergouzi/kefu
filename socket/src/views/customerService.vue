@@ -310,7 +310,6 @@ export default {
         //用户连接成功通知
         this.socket.on("UserJoinSuccess", (data) => {
 
-            console.log(data)
             let extendIndex = this.getExtend(data.data.extend).findIndex(v => v.title === 'userName')
             if (extendIndex != -1) {
                 data.data.userName = this.getExtend(data.data.extend)[extendIndex].value
@@ -345,7 +344,6 @@ export default {
 
         //接收消息
         this.socket.on("reviceMessage", (data) => {
-            console.log(data)
             for (var i = 0; i < this.onlineUsers.length; i++) {
                 if (this.onlineUsers[i].data.userId == data.data.userId) {
                     //添加红点

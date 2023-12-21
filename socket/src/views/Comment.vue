@@ -70,7 +70,6 @@
                     let params = {
                         commentId: localStorage.getItem('userId')
                     }
-                    console.log(params)
                     axios({
                         method: 'get',
                         url: '/commentSelectById',
@@ -95,7 +94,6 @@
                     commentGrade: this.rateValue,
                     commentTime: this.getNowTime()
                 }
-                console.log(params)
                 axios({
                     method: 'post',
                     url: '/commentInsert',

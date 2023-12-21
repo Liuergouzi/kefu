@@ -281,6 +281,11 @@ textarea::-ms-input-placeholder {
     position:absolute !important;
 }
 
+.selectService{
+    padding: 20px;
+    padding-bottom: 50px;
+}
+
 
 /**分辨率适配**/
 @media screen and (max-width: 550px) {
