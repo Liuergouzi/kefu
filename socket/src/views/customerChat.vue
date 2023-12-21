@@ -178,11 +178,7 @@ export default {
             this.user.sendType = sendType;
             this.socket.emit("sendMessage", this.user);
             //将数据存入与这个用户的聊天信息列表
-            let obj = {}
-            obj.sendType = sendType;
-            obj.sendPeople = 'me'
-            obj.message = data;
-            this.messageList.push(obj)
+            this.messageList.push({sendType:sendType,sendPeople:'me',message:data})
 
             //清空输入框
             this.sendData = '';

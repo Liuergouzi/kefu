@@ -1,6 +1,5 @@
 var OptPool = require('./sqlPool');
 const nowTime = require("../utils/time");
-
 /**
  * 地址：https://www.cnblogs.com/fangsmile/p/6255872.html
  * asyn库高效写代码，因为这些代码之前写的，不想改，所以asyn没有用到，但后面的增删改查建议使用asyn
@@ -28,7 +27,7 @@ pool.getConnection(function (error, connection) {
  * @returns 自定义问题
  */
 
- function selectdefaultProblem() {
+function selectdefaultProblem() {
     var sql = `select * from problem;`;
     //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
@@ -250,6 +249,7 @@ function updateServiceFrequency(serviceId) {
  */
 
 function insertMessage(messageJson) {
+
     if (messageJson.hasOwnProperty("userId")) {
         var sql = `insert into message(sendId,receiveId,sendMessage,sendType,sendTime) values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${messageJson.time});`;
     }

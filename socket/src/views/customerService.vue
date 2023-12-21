@@ -559,12 +559,11 @@ export default {
             this.service.receiveId = this.selectUsers.data.receiveId;
             this.service.sendType = sendType;
             this.socket.emit("sendMessage", this.service);
+
             //将数据存入与这个用户的聊天信息列表
-            let obj = { sendType: sendType, sendPeople: 'me', message: data }
-            this.selectUsers.data.messageList.push(obj)
+            this.selectUsers.data.messageList.push({ sendType: sendType, sendPeople: 'me', message: data })
             if (this.selectUsers.data.isOffline) {
-                let obj = { sendType: 4, sendPeople: 'notice', message: this.$t('text.customerService.t22') }
-                this.selectUsers.data.messageList.push(obj)
+                this.selectUsers.data.messageList.push({ sendType: 4, sendPeople: 'notice', message: this.$t('text.customerService.t22') })
             }
             //清空输入框
             this.sendData = '';

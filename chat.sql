@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 21/12/2023 11:54:19
+ Date: 21/12/2023 16:32:10
 */
 
 SET NAMES utf8mb4;
@@ -101,7 +101,7 @@ CREATE TABLE `message`  (
   `sendMessage` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '发送的消息',
   `sendTime` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '发送时间',
   `receiveId` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '消息接受者的id',
-  `sendType` int(2) NOT NULL COMMENT '消息发送类型',
+  `sendType` int(2) NOT NULL COMMENT '消息发送类型/1文本/2自带表情/3图片',
   `isRetract` int(2) NULL DEFAULT 0 COMMENT '是否撤回/0未撤回/1撤回',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `messageSelect`(`sendId`, `receiveId`) USING BTREE

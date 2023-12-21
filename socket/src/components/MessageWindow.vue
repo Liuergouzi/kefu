@@ -190,14 +190,13 @@ export default {
                             let obj = message[i].isRetract == 1 ?
                                 {
                                     sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t8'),
-                                    sendTime: newTime, isRetract: message[i].isRetract
+                                    sendTime: newTime, isRetract: message[i].isRetract,id:message[i].id
                                 }
                                 :
                                 {
                                     sendType: message[i].sendType, sendPeople: 'me', message: message[i].sendMessage,
-                                    sendTime: newTime, isRetract: message[i].isRetract
+                                    sendTime: newTime, isRetract: message[i].isRetract,id:message[i].id
                                 }
-
                             this.messageList_copy.unshift(obj)
                         } else {
                             let obj
@@ -205,17 +204,17 @@ export default {
                                 obj = message[i].isRetract == 1 ?
                                     {
                                         sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t9'),
-                                        sendTime: newTime, isRetract: message[i].isRetract
+                                        sendTime: newTime, isRetract: message[i].isRetract,id:message[i].id
                                     }
                                     :
                                     {
                                         sendType: message[i].sendType, sendPeople: 'other', message: message[i].sendMessage,
-                                        sendTime: newTime, isRetract: message[i].isRetract
+                                        sendTime: newTime, isRetract: message[i].isRetract,id:message[i].id
                                     }
                             } else {
                                 obj = {
                                     sendType: message[i].sendType, sendPeople: 'other', message: message[i].sendMessage,
-                                    sendTime: newTime, isRetract: message[i].isRetract
+                                    sendTime: newTime, isRetract: message[i].isRetract,id:message[i].id
                                 }
                             }
 

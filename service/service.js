@@ -6,13 +6,16 @@ const state = require('./i18n'); //引入全局返回状态
 const nowTime = require("./utils/time.js");
 const express = require('express');	// 引入express
 const getIpArea = require("./utils/getIpArea")  //引入获取ip和地区工具
-const path = require("path");
-const UAParser = require('ua-parser-js');
 
+const path = require("path");
+const fs = require("fs");  //文件写入
+const config = require("./config.js");
+
+const UAParser = require('ua-parser-js');
 const app = express();
 app.use(express.json());	//中间件，解析表单中的 JSON 格式的数据
 app.use(express.urlencoded({ extended: true }));	//解析 URL-encoded 格式的请求体数据
-
+app.use(express.static(config.imageStaticDirectory));//将静态资源托管
 
 /**
  * 使用http协议 ，请注意使用https就将此段代码注释
@@ -358,6 +361,24 @@ io.on('connection', socket => {
     //发送消息
     socket.on("sendMessage", data => {
 
+        if (data.sendType == 2 && config.imageSaveLocal || data.sendType == 3 && config.imageSaveLocal) {
+            //过滤data:URL
+            let base64Data = data.message.replace(/^data:image\/\w+;base64,/, "");
+            let dataBuffer = new Buffer.from(base64Data, 'base64');
+            // 存储文件命名是使用当前时间，防止文件重名
+            let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + ".png";
+            try {
+                // 检查路径是否存在，如果不存在则创建路径  
+                if (!fs.existsSync(config.imageSaveUrl)) {
+                    fs.mkdirSync(config.imageSaveUrl, { recursive: true }); // 如果不存在，则创建路径  
+                }
+                fs.writeFileSync(config.imageStaticDirectory + saveUrl, dataBuffer);
+                data.message = config.imageIp + saveUrl
+            } catch (err) {
+                console.log('【文件保存错误】', err);
+            }
+        }
+
         data.time = nowTime.getNowTime();
         var newData = verification.newData(data);
         if (newData.code) {
@@ -382,7 +403,6 @@ io.on('connection', socket => {
 
     //撤回消息
     socket.on("retractMessage", data => {
-
         var newData = verification.newData(data);
         if (newData.code) {
             mysql.retractMessage(newData.data.messageId).then((sql_data) => {
