@@ -3,7 +3,13 @@
         <!--会话窗口-->
         <div class="customerChat">
             <div class="customerChatHead" :style="this.$store.state.bgColor">
-                <div>{{ $t('text.Home.t1') }}</div>
+                <div style="display: flex;">
+                    {{ user.serviceName }}
+                    <div class="specifyState">
+                        <div :class="user.isOnLine ? 'serviceStateGreenDot' : 'serviceStateRedDot'"></div>
+                        {{ user.isOnLine ? $t('text.customerService.t4') : $t('text.customerService.t5') }}
+                    </div>
+                </div>
                 <div class="customerChatHeadIcon">
                     <SetLanguage></SetLanguage>
                     <img src="../assets/images/closeSeesion.png" class="closeImg" @click="closeSeesion">
@@ -12,7 +18,7 @@
             <!--聊天内容-->
             <MessageWindow :messageList="messageList" class="customerChatMessage" id="customerChatWindow"
                 :sendId="this.$store.state.userData.userId" :receiveId="this.$store.state.userData.receiveId"
-                 @retractMessage="retractMessage"></MessageWindow>
+                @retractMessage="retractMessage"></MessageWindow>
             <!--聊天框底部-->
             <div class="customerChatFoot">
                 <div v-show="!allowSession" class="notAllowSeesion">
@@ -90,7 +96,7 @@ export default {
 
         //接收消息返回的id
         this.socket.on("sendMessageid", (data) => {
-            const index = this.findMessageIndex(this.messageList,item => item.sendPeople === 'me');
+            const index = this.findMessageIndex(this.messageList, item => item.sendPeople === 'me');
             if (index !== -1) {
                 this.messageList[index].id = data.data.id
             }
@@ -178,7 +184,7 @@ export default {
             this.user.sendType = sendType;
             this.socket.emit("sendMessage", this.user);
             //将数据存入与这个用户的聊天信息列表
-            this.messageList.push({sendType:sendType,sendPeople:'me',message:data})
+            this.messageList.push({ sendType: sendType, sendPeople: 'me', message: data })
 
             //清空输入框
             this.sendData = '';
@@ -208,7 +214,7 @@ export default {
 
     },
     computed: {
-        textareaHit(){
+        textareaHit() {
             return this.$t('text.customerChat.t3')
         }
     },

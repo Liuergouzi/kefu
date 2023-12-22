@@ -178,5 +178,11 @@
         "type": "OtherRetract",
         "message": "对方已撤回一条消息",
         "data": {}
+    },
+    "nullSpecifyService": {
+        "code": true,
+        "type": "nullSpecifyService",
+        "message": "当前客服不在线",
+        "data": {}
     }
 }

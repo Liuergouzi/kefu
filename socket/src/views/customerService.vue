@@ -24,9 +24,10 @@
                     :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue1="changeValue">
                 </MyInput>
 
-                <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">{{ $t('text.customerService.t3')
-                }}{{ service.serviceFrequency
-}}</div>
+                <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">
+                    {{ $t('text.customerService.t3')}}
+                    {{ service.serviceFrequency}}
+                </div>
                 <div style="margin-top: 13px; margin-left: 5px">
                     <van-switch v-model="stateChange" size="24px" v-on:click="changeOnLine">
                         <template #node>
@@ -88,7 +89,8 @@
                             <!--显示最新一条消息-->
                             <span class="infor">
                                 {{ item.data.sendType == '3' ? '[' + $t('text.customerService.t24') + ']' :
-                                    item.data.sendType == '2' ? '[' + $t('text.customerService.t25') + ']' : item.data.message }}
+                                    item.data.sendType == '2' ? '[' + $t('text.customerService.t25') + ']' : item.data.message
+                                }}
                             </span>
                             <!--显示小红点-->
                             <div v-show="item.data.UnRead > 0" class="un_read">
@@ -151,7 +153,8 @@
                                 <!--显示最新一条消息-->
                                 <span class="infor">
                                     {{ item.data.sendType == '3' ? '[' + $t('text.customerService.t24') + ']' :
-                                    item.data.sendType == '2' ? '[' + $t('text.customerService.t25') + ']' : item.data.message }}    
+                                        item.data.sendType == '2' ? '[' + $t('text.customerService.t25') + ']' :
+                                            item.data.message }}
                                 </span>
                                 <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="deleteOffLine(item)">
                                     <img src="../assets/images/redClose.png" style="width:12px;height:12px">
@@ -231,7 +234,8 @@
                 </div>
             </div>
             <!--右边内容-->
-            <ServiceRightPage v-if="isSelectSession" @submit="selectReplay($event)" :user="selectUsers" :serviceId="service.serviceId"></ServiceRightPage>
+            <ServiceRightPage v-if="isSelectSession" @submit="selectReplay($event)" :user="selectUsers"
+                :serviceId="service.serviceId"></ServiceRightPage>
             <CommentReply v-if="!isSelectSession"></CommentReply>
         </div>
     </div>
@@ -488,7 +492,7 @@ export default {
                         this.offlineLoading = false
                     }
                     this.offlineLoading = false
-                    if(showToast){
+                    if (showToast) {
                         this.$toast(this.$t('text.customerService.t26'));
                     }
                 }
@@ -659,6 +663,4 @@ export default {
 </script>
 
 
-<style scoped>
-@import url("../assets/css/CustomerService.css");
-</style>
+<style scoped>@import url("../assets/css/CustomerService.css");</style>

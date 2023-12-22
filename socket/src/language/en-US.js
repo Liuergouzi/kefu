@@ -7,7 +7,9 @@ const EN = {
         t4: "Please enter your question",
         t5: "  serve you",
         t6: "user",
-        t7: "The sent content cannot be empty"
+        t7: "The sent content cannot be empty",
+        t8: "Please select customer service",
+        t9: "select"
     },
     customerServiceLogin:{
         t1: "Customer service login",

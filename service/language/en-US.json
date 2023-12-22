@@ -178,5 +178,11 @@
         "type": "OtherRetract",
         "message": "The other party has withdrawn a message",
         "data": {}
+    },
+    "nullSpecifyService": {
+        "code": true,
+        "type": "nullSpecifyService",
+        "message": "The current customer service is not online",
+        "data": {}
     }
 }

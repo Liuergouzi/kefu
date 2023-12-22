@@ -40,7 +40,7 @@
                     <!--工具栏-->
                     <div class="customerChatToolList">
                         <ul>
-                            <li v-on:click="specifyConnection" style="position: relative">
+                            <li v-on:click="openSpecify" style="position: relative">
                                 <img src="../assets/images/labour.png" />
                             </li>
                             <li v-on:click="toLabor" style="position: relative">
@@ -64,9 +64,25 @@
                 </div>
             </div>
 
-            <van-action-sheet v-model:show="selectServiceShow" title="请选择客服" style="position: absolute;">
-                <div class="selectService">
-                    666
+            <van-action-sheet v-model:show="specifyServiceShow" title="请选择客服" style="position: absolute;">
+                <div class="specifyService">
+                    <van-list v-model:loading="specifyLoading" :finished="specifyFinished"
+                        :finished-text="$t('text.customerService.t23')" @load="getSpecifyData">
+                        <div v-for="item in specifyServiceList" :key="item" class="specifyDiv">
+                            <div class="specifyLeft">
+                                <img :src="item.serviceHead" class="specifyHead">
+                                <div class="specifyName">{{ item.serviceName }}</div>
+                                <div class="specifyState">
+                                    <div :class="item.isOnLine ? 'serviceStateGreenDot' : 'serviceStateRedDot'"></div>
+                                    {{ item.isOnLine ? $t('text.customerService.t4') : $t('text.customerService.t5') }}
+                                </div>
+                            </div>
+
+                            <div class="specifyJoin" :style="this.$store.state.bgColor"
+                                v-on:click="specifyConnection(item)">选择</div>
+
+                        </div>
+                    </van-list>
                 </div>
             </van-action-sheet>
 
@@ -110,7 +126,11 @@ export default {
             showPopup: false,
             oldSendData: '',
             speed: 110,
-            selectServiceShow: false
+            specifyServiceShow: false,
+            specifyServiceList: [],
+            specifyLoading: false,
+            specifyFinished: false,
+            specifyPage: 1,
         }
     },
 
@@ -164,15 +184,31 @@ export default {
             this.socketRoom = data.data.socketRoom;
             this.$toast(data.data.serviceName + this.$t('text.Home.t5'));
             //数据存储到localStorage
-            this.user.socketRoom = this.socketRoom;
-            this.user.receiveId = data.data.receiveId;
-            localStorage.setItem('userData', JSON.stringify(this.user));
+            let obj = JSON.parse(JSON.stringify(this.user))
+            obj.socketRoom = this.socketRoom;
+            obj.receiveId = data.data.receiveId;
+            obj.serviceName = data.data.serviceName;
+            obj.isOnLine = true
+            localStorage.setItem('userData', JSON.stringify(obj));
             //设置vuex
-            this.$store.state.userData = this.user;
+            this.$store.state.userData = obj;
             //页面跳转
             this.$router.push({ path: '/customerChat', replace: false })
         });
 
+        //监听连接指定客服，不在线的情况下
+        this.socket.on("nullSpecifyService", (data) => {
+            //数据存储到localStorage
+            let obj = JSON.parse(JSON.stringify(this.user))
+            obj.receiveId = data.data.receiveId;
+            obj.serviceName = data.data.serviceName;
+            obj.isOnLine = false
+            localStorage.setItem('userData', JSON.stringify(obj));
+            //设置vuex
+            this.$store.state.userData = obj;
+            //页面跳转
+            this.$router.push({ path: '/customerChat', replace: false })
+        })
     },
     methods: {
 
@@ -230,20 +266,43 @@ export default {
             })
         },
 
-        //连接指定客服
-        specifyConnection(){
-            // this.socket.emit("specifyConnection", this.user);
-            this.selectServiceShow = !this.selectServiceShow
+        //加载客服列表数据
+        getSpecifyData() {
+            this.specifyLoading = true
             axios({
                 method: 'post',
                 url: '/selectService',
-                data:{page:1},
+                data: { page: this.specifyPage },
                 headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
             }).then((response) => {
                 if (response.data.code) {
-                    console.log(response.data.data)
+                    this.specifyServiceList = [...this.specifyServiceList, ...response.data.data]
+                    this.specifyPage = this.specifyPage + 1
+                    if (response.data.data.length < 10) {
+                        this.specifyFinished = true
+                        this.specifyLoading = false
+                    }
+                    this.specifyLoading = false
                 }
+            }).catch(() => {
+                this.specifyLoading = false
             })
+        },
+
+        //打开客服选择列表
+        openSpecify() {
+            this.specifyServiceShow = !this.specifyServiceShow
+            this.specifyServiceList = []
+            this.specifyPage = 1
+            this.specifyFinished = false
+        },
+
+        //连接指定客服
+        specifyConnection(item) {
+            let obj = JSON.parse(JSON.stringify(this.user))
+            obj.serviceId = item.serviceId
+            obj.serviceName = item.serviceName
+            this.socket.emit("specifyConnection", obj);
         },
 
         //随机转人工

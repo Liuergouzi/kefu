@@ -251,7 +251,7 @@ io.on('connection', socket => {
         if (newData.code) {
             if (services.length > 0) {
                 //随机分配客服
-                index = Math.floor(Math.random() * services.length);
+                let index = Math.floor(Math.random() * services.length);
                 //判断是否超出最大同时可接待人数
                 if (services[index].userList.length < services[index].serviceMax) {
                     //防止同个用户同个浏览器多开窗口连接到同一个客服
@@ -286,6 +286,55 @@ io.on('connection', socket => {
                 socket.emit("error", state.__("nullService"));
             }
 
+        } else {
+            socket.emit("error", newData);
+        }
+    })
+
+    //用户指定连接某个客服
+    socket.on("specifyConnection", data => {
+        var newData = verification.newData(data);
+        if (newData.code) {
+            let index = services.findIndex(v => v.serviceId === data.serviceId);
+            //客服在线
+            if (index >= 0) {
+                //判断是否超出最大同时可接待人数
+                if (services[index].userList.length < services[index].serviceMax) {
+                    //防止同个用户同个浏览器多开窗口连接到同一个客服
+                    let userList = services[index].userList.filter((v) => v.userId == data.userId)
+                    if (userList.length == 0) {
+                        //改变客服接待次数
+                        services[index].serviceFrequency = services[index].serviceFrequency + 1;
+                        //返回用户通知
+                        let returns = state.__("joinSuccess");
+                        returns.data.serviceName = services[index].serviceName;
+                        returns.data.socketRoom = services[index].socketId;
+                        returns.data.receiveId = services[index].serviceId;
+                        socket.emit("linkServiceSuccess", returns);
+                    } else {
+                        //让另一个窗口下线
+                        socket.to(userList[0].socketId).emit("Offline", state.__("DuplicateConnection"))
+                    }
+                } else if (waitUsers.filter((v) => v.userSocketId == socket.id).length == 0) {
+                    //把等待的用户的socketId存进来
+                    let waitUserTemp = { serviceSocketId: services[index].socketId, userSocketId: socket.id }
+                    waitUsers.push(waitUserTemp)
+                    //客服最大连接人数已满，返回通知用户进行排队
+                    let returns = state.__("ServiceFull");
+                    returns.data.waitCount = waitUsers.length;
+                    returns.data.serviceName = services[index].serviceName;
+                    returns.data.socketRoom = services[index].socketId;
+                    returns.data.receiveId = services[index].serviceId;
+                    socket.emit("ServiceFull", returns);
+                }
+            }
+            //客服不在线,返回标识，让用户进入离线会话
+            if (index < 0) {
+                let returns = state.__("nullSpecifyService");
+                returns.data.serviceName = data.serviceName;
+                returns.data.receiveId = data.serviceId;
+                socket.emit("nullSpecifyService", state.__("nullSpecifyService"));
+            } 
         } else {
             socket.emit("error", newData);
         }
@@ -748,6 +797,13 @@ app.post('/selectService', function (req, res) {
             if (sql_data) {
                 let returns = state.__("success");
                 returns.data = sql_data;
+                services.forEach(element1 => {
+                    returns.data.forEach(element2 => {
+                        if (element1.serviceId == element2.serviceId) {
+                            element2.isOnLine = true
+                        }
+                    });
+                });
                 res.json(returns)
             } else {
                 res.json(state.__("false"))
