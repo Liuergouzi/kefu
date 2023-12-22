@@ -1,8 +1,8 @@
 const EN = {
-    webName: 'Wheel Brother Customer Service',
+    webName: 'Online Service',
     Home: {
         t1: "contact service",
-        t2: "I like to make wheels in a neat and orderly manner",
+        t2: "Point card recharge online platform",
         t3: "Send (s)",
         t4: "Please enter your question",
         t5: "  serve you",

@@ -795,7 +795,7 @@ app.post('/deleteFast', function (req, res) {
 app.post('/selectService', function (req, res) {
     var newData = verification.newData(req.body);
     if (newData.code) {
-        mysql.selectService(newData.data.page).then((sql_data) => {
+        mysql.selectService(newData.data.page,newData.data.serviceType).then((sql_data) => {
             if (sql_data) {
                 let returns = state.__("success");
                 returns.data = sql_data;

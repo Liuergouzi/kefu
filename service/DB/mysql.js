@@ -728,9 +728,13 @@ function deleteFast(id) {
  * @param {*} page 页数
  * @returns 返回10条客服数据列表
  */
-function selectService(page) {
+function selectService(page,serviceType) {
     var star = (page - 1) * 10;
-    var sql = `select serviceId,serviceName,serviceMax,serviceHead from service  limit ${star}, 10;`;
+    if(serviceType!='NULL'){
+        var sql = `select serviceId,serviceName,serviceMax,serviceHead from service where serviceType=${serviceType} limit ${star}, 10;`;
+    }else{
+        var sql = `select serviceId,serviceName,serviceMax,serviceHead from service limit ${star}, 10;`;
+    }
     //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {

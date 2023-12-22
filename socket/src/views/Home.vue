@@ -9,7 +9,7 @@
             <div class="userHead" :style="this.$store.state.bgColor">
 
                 <div class="userHeadInfo">
-                    <img class="userHeadImg" src="../assets/images/service_head.png">
+                    <img class="userHeadImg" src="../assets/images/logo.png">
                     <div class="userHeadTitle">
                         <div class="userHeadName">{{ $t('text.webName') }}</div>
                         <div class="userHeadDetail">{{ $t('text.Home.t2') }}</div>
@@ -131,6 +131,7 @@ export default {
             specifyLoading: false,
             specifyFinished: false,
             specifyPage: 1,
+            serviceType:null,
         }
     },
 
@@ -217,6 +218,10 @@ export default {
             localStorage.setItem("extendRouter", this.$router.currentRoute._value.fullPath)
             //获取浏览器指纹并发送初始数据
             let extend = this.$router.currentRoute._value.query.extend
+            let extendServiceType = this.getExtend(extend).filter(v => v.title === 'serviceType')
+            if(extendServiceType.length>0){
+                this.serviceType=extendServiceType[0].value
+            }
             Fingerprint2.get((components) => {
                 const values = components.map(function (component, index) {
                     if (index === 0) {
@@ -274,7 +279,7 @@ export default {
             axios({
                 method: 'post',
                 url: '/selectService',
-                data: { page: this.specifyPage },
+                data: { page: this.specifyPage,serviceType:this.serviceType },
                 headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
             }).then((response) => {
                 if (response.data.code) {

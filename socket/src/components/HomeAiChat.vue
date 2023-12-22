@@ -1,5 +1,6 @@
 <template>
     <div class="RightCont">
+        
         <!--消息接收-->
         <div :key="index" v-for="(item, index) in messageList_copy">
             <!--机器人-->
