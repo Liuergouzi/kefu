@@ -238,6 +238,7 @@ export default {
                 }
                 this.user.extend = extend == undefined ? '' : extend
                 this.socket.emit("visit", this.user);
+                this.getSpecifyData()
             })
 
             this.socket.emit("getPublicKey");

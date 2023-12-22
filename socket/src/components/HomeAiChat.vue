@@ -4,9 +4,6 @@
         <div :key="index" v-for="(item, index) in messageList_copy">
             <!--机器人-->
             <div class="customerServiceDiv" v-if="item.sendPeople == 'other'">
-                <div class="answerHead">
-                    <img src="../assets/images/robot.png" />
-                </div>
                 <div v-if="item.sendType == 1" class="answers">
                     <img class="jiao" src="../assets/images/other_radio.jpg" />
                     <div v-html="item.message"></div>

@@ -85,8 +85,9 @@
 }
 
 .nesHead img {
-    width: 44px;
-    height: 44px;
+    width: 37px;
+    height: 37px;
+    margin-top: 4px;
     border-radius: 50%;
 }
 
