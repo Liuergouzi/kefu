@@ -188,6 +188,7 @@ export default {
             obj.socketRoom = this.socketRoom;
             obj.receiveId = data.data.receiveId;
             obj.serviceName = data.data.serviceName;
+            obj.serviceHead = data.data.serviceHead;
             obj.isOnLine = true
             localStorage.setItem('userData', JSON.stringify(obj));
             //设置vuex

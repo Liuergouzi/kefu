@@ -262,6 +262,7 @@ io.on('connection', socket => {
                         //返回用户通知
                         let returns = state.__("joinSuccess");
                         returns.data.serviceName = services[index].serviceName;
+                        returns.data.serviceHead = services[index].serviceHead;
                         returns.data.socketRoom = services[index].socketId;
                         returns.data.receiveId = services[index].serviceId;
                         socket.emit("linkServiceSuccess", returns);
@@ -308,6 +309,7 @@ io.on('connection', socket => {
                         //返回用户通知
                         let returns = state.__("joinSuccess");
                         returns.data.serviceName = services[index].serviceName;
+                        returns.data.serviceHead = services[index].serviceHead;
                         returns.data.socketRoom = services[index].socketId;
                         returns.data.receiveId = services[index].serviceId;
                         socket.emit("linkServiceSuccess", returns);
@@ -334,7 +336,7 @@ io.on('connection', socket => {
                 returns.data.serviceName = data.serviceName;
                 returns.data.receiveId = data.serviceId;
                 socket.emit("nullSpecifyService", state.__("nullSpecifyService"));
-            } 
+            }
         } else {
             socket.emit("error", newData);
         }
@@ -647,7 +649,7 @@ app.post('/commentInsert', function (req, res) {
 })
 
 //查看自己留言
-app.get('/commentSelectById', function (req, res) {
+app.post('/commentSelectById', function (req, res) {
     var newData = verification.newData(req.body);
     if (newData.code) {
         mysql.commentSelectById(newData.data.commentId).then((sql_data) => {
@@ -805,6 +807,72 @@ app.post('/selectService', function (req, res) {
                     });
                 });
                 res.json(returns)
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+
+//存储离线消息
+app.post('/insertOfflineMessage', function (req, res) {
+    req.body.time = nowTime.getNowTime();
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.insertOfflineMessage(newData.data).then((sql_data) => {
+            if (sql_data) {
+                res.json(state.__("success"))
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+//查询离线消息
+app.post('/selectOfflineMessage', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.selectOfflineMessage(newData.data.serviceId, newData.data.page).then((sql_data) => {
+            if (sql_data) {
+                let returns = state.__("success");
+                returns.data = sql_data;
+                res.json(returns)
+            } else {
+                res.json(state.__("false"))
+            }
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+//查询离线消息总数
+app.post('/offlineMessageCount', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.offlineMessageCount(newData.data.serviceId).then((sql_data) => {
+            let returns = state.__("success");
+            returns.data = sql_data;
+            res.json(returns)
+        });
+    } else {
+        res.json(state.__("dataFalse"))
+    }
+})
+
+//取消设置离线消息
+app.post('/resetOfflineCount', function (req, res) {
+    var newData = verification.newData(req.body);
+    if (newData.code) {
+        mysql.resetOfflineCount(newData.data.userId).then((sql_data) => {
+            if (sql_data) {
+                res.json(state.__("success"))
             } else {
                 res.json(state.__("false"))
             }

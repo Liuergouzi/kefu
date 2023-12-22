@@ -18,7 +18,7 @@
             <!--聊天内容-->
             <MessageWindow :messageList="messageList" class="customerChatMessage" id="customerChatWindow"
                 :sendId="this.$store.state.userData.userId" :receiveId="this.$store.state.userData.receiveId"
-                @retractMessage="retractMessage"></MessageWindow>
+                @retractMessage="retractMessage" :serviceHead="user.serviceHead"></MessageWindow>
             <!--聊天框底部-->
             <div class="customerChatFoot">
                 <div v-show="!allowSession" class="notAllowSeesion">
@@ -62,12 +62,13 @@ import MessageWindow from '@/components/MessageWindow.vue';
 import SendEmote from '@/components/SendEmote.vue';
 import SendImage from '@/components/SendImage.vue';
 import SetLanguage from '@/components/SetLanguage.vue';
+import axios from 'axios';
 export default {
     components: {
         MessageWindow,
         SendEmote,
         SendImage,
-        SetLanguage
+        SetLanguage,
     },
     data() {
         return {
@@ -179,10 +180,20 @@ export default {
             if (sendType === 2 && this.$route.path === '/customerChat') {
                 this.EmoteShow = !this.EmoteShow;
             }
-            //向socket发送数据请求
             this.user.message = data;
             this.user.sendType = sendType;
-            this.socket.emit("sendMessage", this.user);
+            if (this.user.isOnLine) {
+                //向socket发送数据请求
+                this.socket.emit("sendMessage", this.user);
+            } else {
+                //存进离线消息
+                axios({
+                    method: 'post',
+                    url: '/insertOfflineMessage',
+                    data:this.user,
+                    headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
+                }).then(() => { })
+            }
             //将数据存入与这个用户的聊天信息列表
             this.messageList.push({ sendType: sendType, sendPeople: 'me', message: data })
 

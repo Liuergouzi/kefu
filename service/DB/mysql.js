@@ -271,9 +271,104 @@ function insertMessage(messageJson) {
             connection.release();
         })
     })
-
 }
 
+/**
+ * 离线信息存储
+ * @param {*} 聊天信息json数据，形式为：{}
+ * @returns 返回id
+ */
+
+function insertOfflineMessage(messageJson) {
+
+    var sql = `insert into message(sendId,receiveId,sendMessage,sendType,sendTime,isUserOffline) 
+    values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${messageJson.time},'1');`;
+    //使用promise将内部函数的返回值传出去
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            const result = connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(result.insertId)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
+/**
+ * 离线信息查询
+ */
+
+function selectOfflineMessage(serviceId,page) {
+    var star = (page - 1) * 20;
+    var sql = `select * from message JOIN user ON message.sendId=user.userId where
+    message.receiveId=${serviceId} and message.isUserOffline='1' order by sendTime desc limit ${star}, 20;`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            const result = connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
+/**
+ * 离线信息查询总数
+ */
+
+function offlineMessageCount(serviceId) {
+    var sql = `select count(id) from message where receiveId=${serviceId} and isUserOffline='1'`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            const result = connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(result[0]['count(id)'])
+                }
+            })
+            connection.release();
+        })
+    })
+}
+
+/**
+ * 取消设置离线信息
+ */
+
+function resetOfflineCount(userId) {
+    var sql = `update message set isUserOffline='0' where sendId=${userId} ;`;
+    //使用promise将内部函数的返回值传出去
+
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            const result = connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message)
+                    resolve(false)
+                } else {
+                    resolve(true)
+                }
+            })
+            connection.release();
+        })
+    })
+}
 
 
 /**
@@ -677,7 +772,11 @@ module.exports = {
     addFast,
     editFast,
     deleteFast,
-    selectService
+    selectService,
+    insertOfflineMessage,
+    selectOfflineMessage,
+    offlineMessageCount,
+    resetOfflineCount
 }
 
 

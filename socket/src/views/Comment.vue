@@ -71,7 +71,7 @@
                         commentId: localStorage.getItem('userId')
                     }
                     axios({
-                        method: 'get',
+                        method: 'post',
                         url: '/commentSelectById',
                         data: params,
                         headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}

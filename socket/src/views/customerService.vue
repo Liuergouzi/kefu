@@ -5,7 +5,7 @@
             <!--左-->
             <div class="serviceHeadLeft">
                 <div class="serviceHeadImg">
-                    <img src="../assets/images/service_head.png" />
+                    <img :src="service.serviceHead" />
                 </div>
                 <!--昵称及修改昵称-->
                 <div v-if="!changeServiceName" class="serviceHeadName" v-on:mouseenter="changeServiceName = true">
@@ -25,8 +25,8 @@
                 </MyInput>
 
                 <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">
-                    {{ $t('text.customerService.t3')}}
-                    {{ service.serviceFrequency}}
+                    {{ $t('text.customerService.t3') }}
+                    {{ service.serviceFrequency }}
                 </div>
                 <div style="margin-top: 13px; margin-left: 5px">
                     <van-switch v-model="stateChange" size="24px" v-on:click="changeOnLine">
@@ -53,6 +53,13 @@
 
             <!--右-->
             <div class="serviceHeadRight">
+                <div style="position: relative;padding-right: 15px;">
+                    <img src="../assets/images/message.png" style="width: 25px;height: 25px;"
+                        @click="offMsgDialogShow = !offMsgDialogShow">
+                    <div v-show="offMessageCount > 0" class="off_read">
+                        {{ offMessageCount > 99 ? "99+" : offMessageCount }}
+                    </div>
+                </div>
                 <SetLanguage></SetLanguage>
                 <div style="margin-top:5px">
                     <van-popover v-model:show="isPopover" :actions="[{ text: this.$t('text.customerService.t17') }]"
@@ -62,6 +69,26 @@
                         </template>
                     </van-popover>
                 </div>
+                <van-dialog v-model:show="offMsgDialogShow" style="color: black;" confirm-button-color="#30bcbc"
+                    closeOnPopstate width="400px">
+                    <div class="offMessageList">
+                        <van-list v-model:loading="userOfflineMessage.offlineLoading"
+                            :finished="userOfflineMessage.offlineFinished" :finished-text="$t('text.customerService.t23')"
+                            @load="selectOfflineMessage">
+                            <div v-for="item in userOfflineMessageList" :key="item" class="offMessageItem"
+                                @click="goToUserOffMsg(item)">
+                                <div>{{ item.data.userName }}:</div>
+                                <div style="padding-left: 10px;">
+                                    <div style="padding: 10px 0px;" v-if="item.data.sendType == '1'">{{ item.data.sendMessage
+                                    }}</div>
+                                    <img style="padding: 10px 0px;max-width: 50px;margin-right: 50px;" v-else
+                                        :src="item.data.sendMessage" />
+                                    <div style="color: gray;font-size: 12px;">{{ item.data.sendTime }}</div>
+                                </div>
+                            </div>
+                        </van-list>
+                    </div>
+                </van-dialog>
             </div>
 
         </div>
@@ -126,20 +153,60 @@
                     </li>
                 </ul> -->
 
+                <!--离线会话列表-->
+                <ul>
+                    <div v-show="selectUserOffMsgList.length > 0" class="conLeftTopOffLine"
+                        v-on:click="offMessageShow = !offMessageShow">
+                        <div>
+                            <span v-show="offMessageShow">▼</span>
+                            <span v-show="!offMessageShow">▲</span>
+                            {{ $t('text.customerService.t9') }}
+                        </div>
+                        <img @click.stop="userOfflineMessage.offlinePage = 1; getOffline(true)"
+                            src="../assets/images/refresh.png" style="width: 18px;height:18px;margin-right: 10px;">
+                    </div>
+                    <!--显示离线连接列表-->
+                    <li v-show="offMessageShow" :key="index" v-for="(item, index) in selectUserOffMsgList"
+                        class="offlineUlStyle" v-on:click="selectSession(item, true)"
+                        v-on:mouseenter="item.CloseSession = true" :class="{ isSelect2: item.data.isSelectSession }"
+                        v-on:mouseleave="item.CloseSession = false">
+                        <div class="liLeft">
+                            <img src="../assets/images/visitor.png" />
+                        </div>
+                        <div class="liRight">
+                            <!--显示用户名-->
+                            <span class="intername">{{ item.data.userName }}</span>
+                            <!--显示最新一条消息-->
+                            <span class="infor">
+                                {{ item.data.sendType == '3' ? '[' + $t('text.customerService.t24') + ']' :
+                                    item.data.sendType == '2' ? '[' + $t('text.customerService.t25') + ']' :
+                                        item.data.message }}
+                            </span>
+                            <!--显示小红点-->
+                            <div v-show="item.data.UnRead > 0" class="un_read">
+                                {{ item.data.UnRead > 99 ? "99+" : item.data.UnRead }}
+                            </div>
+                            <span class="closeSession" v-show="item.CloseSession" v-on:click.stop="deleteOffLine(item)">
+                                <img src="../assets/images/redClose.png" style="width:12px;height:12px">
+                                {{ $t('text.customerService.t10') }}
+                            </span>
+                        </div>
+                    </li>
+                </ul>
+
                 <!--离线用户列表-->
                 <ul>
-
                     <div v-show="offlineUsers.length > 0" class="conLeftTopOffLine" v-on:click="offlineShow = !offlineShow">
                         <div>
                             <span v-show="offlineShow">▼</span>
                             <span v-show="!offlineShow">▲</span>
-                            {{ $t('text.customerService.t9') }}
+                            {{ $t('text.customerService.t27') }}
                         </div>
-                        <img @click.stop="offlinePage = 1; getOffline(true)" src="../assets/images/refresh.png"
-                            style="width: 18px;height:18px;margin-right: 10px;">
+                        <img @click.stop="userOfflineList.offlinePage = 1; getOffline(true)"
+                            src="../assets/images/refresh.png" style="width: 18px;height:18px;margin-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
-                    <van-list v-model:loading="offlineLoading" :finished="offlineFinished"
+                    <van-list v-model:loading="userOfflineList.offlineLoading" :finished="userOfflineList.offlineFinished"
                         :finished-text="$t('text.customerService.t23')" @load="getOffline">
                         <li v-show="offlineShow" :key="index" v-for="(item, index) in offlineUsers" class="offlineUlStyle"
                             v-on:click="selectSession(item, true)" v-on:mouseenter="item.CloseSession = true"
@@ -200,7 +267,7 @@
                 <!--聊天内容-->
                 <MessageWindow v-if="isSelectSession" id="RightCont" :messageList="selectUsers.data.messageList"
                     :sendId="service.serviceId" :receiveId="selectUsers.data.receiveId" isService
-                    @retractMessage="retractMessage" :isOffline="this.selectUsers.data.isOffline">
+                    @retractMessage="retractMessage" :isOffline="this.selectUsers.data.isOffline" :serviceHead="service.serviceHead">
                 </MessageWindow>
                 <!--聊天框底部-->
                 <div class="RightFoot">
@@ -300,10 +367,22 @@ export default {
             offlineShow: true,
             isSelectSession: false,
             expressionShow: false,
-            offlineLoading: false,
-            offlineFinished: false,
-            offlinePage: 1,
-            retractItem: {}
+            retractItem: {},
+            userOfflineList: {
+                offlineLoading: false,
+                offlinePage: 1,
+                offlineFinished: false
+            },
+            userOfflineMessageList: [],
+            selectUserOffMsgList: [],
+            offMessageCount: 0,
+            offMessageShow: true,
+            userOfflineMessage: {
+                offlineLoading: false,
+                offlinePage: 1,
+                offlineFinished: false
+            },
+            offMsgDialogShow: false
         }
     },
 
@@ -436,6 +515,8 @@ export default {
                     if (this.stateChange)
                         this.socket.emit("serviceOnline", this.service);
                 }
+
+                this.getOffMessageCount()
             } else {
                 alert(this.$t('text.customerService.t20'))
                 this.loginOut();
@@ -468,11 +549,11 @@ export default {
 
         //获取离线列表
         getOffline(showToast) {
-            this.offlineLoading = true
+            this.userOfflineList.offlineLoading = true
             axios({
                 method: 'post',
                 url: '/chatListSelect',
-                data: { serviceId: this.service.serviceId, page: this.offlinePage },
+                data: { serviceId: this.service.serviceId, page: this.userOfflineList.offlinePage },
                 headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
             }).then((response) => {
                 if (response.data.code) {
@@ -486,18 +567,63 @@ export default {
                         requestList.push({ data: element })
                     });
                     this.offlineUsers = [...this.offlineUsers, ...requestList]
-                    this.offlinePage = this.offlinePage + 1
+                    this.userOfflineList.offlinePage = this.userOfflineList.offlinePage + 1
                     if (response.data.data.length < 20) {
-                        this.offlineFinished = true
-                        this.offlineLoading = false
+                        this.userOfflineList.offlineFinished = true
+                        this.userOfflineList.offlineLoading = false
                     }
-                    this.offlineLoading = false
+                    this.userOfflineList.offlineLoading = false
                     if (showToast) {
                         this.$toast(this.$t('text.customerService.t26'));
                     }
                 }
             }).catch(() => {
-                this.offlineLoading = false
+                this.userOfflineList.offlineLoading = false
+            })
+        },
+
+        //查询离线消息
+        selectOfflineMessage() {
+            this.userOfflineMessage.offlineLoading = true
+            axios({
+                method: 'post',
+                url: '/selectOfflineMessage',
+                data: { serviceId: this.service.serviceId, page: this.userOfflineMessage.offlinePage },
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
+            }).then((response) => {
+                if (response.data.code) {
+                    let requestList = []
+                    response.data.data.forEach(element => {
+                        element.message = element.sendMessage
+                        element.messageList = []
+                        element.receiveId = element.userId
+                        element.socketRoom = ''
+                        element.isSelectSession = false
+                        requestList.push({ data: element })
+                    });
+                    this.userOfflineMessageList = [...this.userOfflineMessageList, ...requestList]
+                    if (response.data.data.length < 20) {
+                        this.userOfflineMessage.offlineFinished = true
+                        this.userOfflineMessage.offlineLoading = false
+                    }
+                    this.userOfflineMessage.offlineLoading = false
+                }
+            }).catch(() => {
+                this.userOfflineMessage.offlineLoading = false
+            })
+        },
+
+        //查询离线消息总数
+        getOffMessageCount() {
+            axios({
+                method: 'post',
+                url: '/offlineMessageCount',
+                data: { serviceId: this.service.serviceId },
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
+            }).then((response) => {
+                if (response.data.code) {
+                    this.offMessageCount = response.data.data
+                }
             })
         },
 
@@ -537,12 +663,35 @@ export default {
             for (var j = 0; j < this.offlineUsers.length; j++) {
                 this.offlineUsers[j].data.isSelectSession = false
             }
+            console.log(obj)
             obj.data.isSelectSession = true
             obj.data.isOffline = isOffline
             //进行初始化
             this.selectUsers = {}
-            //拷贝选择的用户进入新列表    
+            //拷贝选择的用户进入新列表
             this.selectUsers = Object.assign({}, obj)
+        },
+
+        goToUserOffMsg(item) {
+            this.selectSession(item, true)
+            this.offMsgDialogShow = !this.offMsgDialogShow
+            this.selectUserOffMsgList = [item]
+            //取消红点
+            axios({
+                method: 'post',
+                url: '/resetOfflineCount',
+                data: {userId:item.data.userId },
+                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
+            }).then((response) => {
+                if (response.data.code) {
+                    const timer =setTimeout(() => {
+                        this.selectOfflineMessage()
+                       this.getOffMessageCount() 
+                       clearTimeout(timer)
+                    }, 1000);
+                    console.log(response.data.data)
+                }
+            })
         },
 
         //客服发送消息

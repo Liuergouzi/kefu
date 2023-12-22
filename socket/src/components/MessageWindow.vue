@@ -21,7 +21,7 @@
 
                 <div class="answerHead">
                     <img v-if="isService" src="../assets/images/visitor.png" />
-                    <img v-else src="../assets/images/service_head.png" />
+                    <img v-else :src="serviceHead" />
                 </div>
 
                 <div v-if="item.sendType == 1 && item.isRetract != 1" class="answers">
@@ -63,7 +63,7 @@
                     </template>
                 </van-popover>
                 <div class="nesHead">
-                    <img v-if="isService" src="../assets/images/service_head.png" />
+                    <img v-if="isService" :src="serviceHead" />
                     <img v-else src="../assets/images/visitor.png" />
                 </div>
             </div>
@@ -97,7 +97,8 @@ export default {
         sendId: String,
         receiveId: String,
         isService: Boolean,
-        isOffline:Boolean
+        isOffline:Boolean,
+        serviceHead:String
     },
     data() {
         return {

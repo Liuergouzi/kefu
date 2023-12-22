@@ -288,6 +288,22 @@
     padding-top: 1px;
 }
 
+.off_read {
+    display: inline-block;
+    position: absolute;
+    top: -4px;
+    left: 15px;
+    height: 16px;
+    width: 17px;
+    border-radius: 50%;
+    line-height: 17px;
+    text-align: center;
+    background: #DA2339;
+    color: #fff;
+    font-size: 12px;
+    padding-top: 1px;
+}
+
 .isSelect {
     background: #e6f7f6;
 }
@@ -413,4 +429,16 @@
     color: white;
     font-size: 14px;
     text-decoration: underline;
+}
+
+.offMessageItem{
+    background: #eee;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px 0px;
+}
+.offMessageList{
+    padding: 10px 20px;
+    max-height: 500px;
+    overflow: auto;
 }

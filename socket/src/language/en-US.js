@@ -44,7 +44,8 @@ const EN = {
         t23: "There's no more",
         t24: "picture",
         t25: "expression",
-        t26: "Refresh successful"
+        t26: "Refresh successful",
+        t27: "Offline users",
     },
     customerChat:{
         t1: "close",
