@@ -6,7 +6,7 @@ const EN = {
     },
     Home: {
         t1: "contact service",
-        t2: "Point card recharge online platform",
+        t2: "Wheel Brother website online platform",
         t3: "Send (s)",
         t4: "Please enter your question",
         t5: "  serve you",
@@ -94,6 +94,7 @@ const EN = {
         t2: "",
         t3: "cancellation",
         t4: "Please cancel the queue first",
+        t5: "Please select human customer service:"
     },
     MessageWindow:{
         t1:"Load more",
