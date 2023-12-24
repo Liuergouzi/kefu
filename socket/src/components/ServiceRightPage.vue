@@ -131,7 +131,7 @@
         <van-dialog v-model:show="deleteDialogShow" :title="$t('text.ServiceRightPage.t18')" show-cancel-button style="color: black;"
             confirm-button-color="red" closeOnPopstate @confirm="deleteFastConfirm">
             <div style="padding:10px 20px">
-                <p style="text-align: center;color: red;">{{$t('text.ServiceRightPage.t20')}}</p>
+                <p style="text-align: center;color: red;">{{$t('text.ServiceRightPage.t19')}}</p>
             </div>
         </van-dialog>
     </div>
@@ -140,7 +140,7 @@
 <script>
 import config from '@/config';
 import CryptoJS from 'crypto-js'
-import axios from 'axios';
+import {selectFast,addFast,editFast,deleteFast} from '../http/api'
 export default {
     name: 'ServiceRightPage',
     props: {
@@ -203,65 +203,37 @@ export default {
         },
         //查询快捷回复
         selectFastData() {
-            axios({
-                method: 'post',
-                url: '/selectFast',
-                data: { serviceId: this.serviceId },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    let list = []
-                    let parent = response.data.data.filter(v => v.parentId === null)
-                    let sonItem = response.data.data.filter(v => v.parentId != null)
-                    parent.forEach(element => {
-                        list.push({
-                            id: element.id,
-                            title: element.title,
-                            sonItem: sonItem.filter(v => v.parentId === element.id)
-                        })
-                    });
-                    this.fastReplay = list
-                }
+            selectFast({ serviceId: this.serviceId }).then((response) => {
+                let list = []
+                let parent = response.filter(v => v.parentId === null)
+                let sonItem = response.filter(v => v.parentId != null)
+                parent.forEach(element => {
+                    list.push({
+                        id: element.id,
+                        title: element.title,
+                        sonItem: sonItem.filter(v => v.parentId === element.id)
+                    })
+                });
+                this.fastReplay = list
             })
         },
         //快捷回复增删改
         addFastConfirm() {
-            axios({
-                method: 'post',
-                url: '/addFast',
-                data: { serviceId: this.serviceId, parentId: this.addFastParentId, title: this.addFastValue },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    this.$toast(this.$t('text.ServiceRightPage.t21'))
-                    this.selectFastData()
-                }
+            addFast({ serviceId: this.serviceId, parentId: this.addFastParentId, title: this.addFastValue }).then(() => {
+                this.$toast(this.$t('text.ServiceRightPage.t21'))
+                this.selectFastData()
             })
         },
         editFastConfirm() {
-            axios({
-                method: 'post',
-                url: '/editFast',
-                data: { id: this.editFastItem.id, title: this.editFastItem.title },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    this.$toast(this.$t('text.ServiceRightPage.t22'))
-                    this.selectFastData()
-                }
+            editFast({ id: this.editFastItem.id, title: this.editFastItem.title }).then(() => {
+                this.$toast(this.$t('text.ServiceRightPage.t22'))
+                this.selectFastData()
             })
         },
         deleteFastConfirm() {
-            axios({
-                method: 'post',
-                url: '/deleteFast',
-                data: { id: this.editFastItem.id, },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    this.$toast(this.$t('text.ServiceRightPage.t23'))
-                    this.selectFastData()
-                }
+            deleteFast({ id: this.editFastItem.id, }).then(() => {
+                this.$toast(this.$t('text.ServiceRightPage.t23'))
+                this.selectFastData()
             })
         },
 

@@ -96,7 +96,7 @@ import JSEncrypt from 'jsencrypt';
 import SetLanguage from '@/components/SetLanguage.vue';
 import HomeAiChat from '@/components/HomeAiChat.vue';
 let encryptor = new JSEncrypt();
-import axios from 'axios';
+import {selectdefaultProblem,selectService} from '../http/api'
 import config from '@/config';
 import CryptoJS from 'crypto-js'
 
@@ -108,7 +108,7 @@ export default {
     },
     data() {
         return {
-            isDisplay: false,
+            isDisplay: true,
             bgColor: '#30bcbc',
             socket: this.$store.state.socket,
             user: {
@@ -254,43 +254,30 @@ export default {
             });
 
             //查询问题
-            axios({
-                method: 'get',
-                url: '/selectdefaultProblem',
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    this.messageList = [
+            selectdefaultProblem().then(response=>{
+                this.messageList = [
                         {
                             sendType: 2,
                             sendPeople: 'other',
-                            message: response.data.data.filter(v => v.type == 'title'),
-                            problem: response.data.data.filter(v => v.type == 'problem'),
-                            reply: response.data.data.filter(v => v.type == 'reply')
+                            message: response.filter(v => v.type == 'title'),
+                            problem: response.filter(v => v.type == 'problem'),
+                            reply: response.filter(v => v.type == 'reply')
                         }
                     ]
-                }
             })
         },
 
         //加载客服列表数据
         getSpecifyData() {
             this.specifyLoading = true
-            axios({
-                method: 'post',
-                url: '/selectService',
-                data: { page: this.specifyPage,serviceType:this.serviceType },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    this.specifyServiceList = [...this.specifyServiceList, ...response.data.data]
-                    this.specifyPage = this.specifyPage + 1
-                    if (response.data.data.length < 10) {
-                        this.specifyFinished = true
-                        this.specifyLoading = false
-                    }
+            selectService({ page: this.specifyPage,serviceType:this.serviceType }).then(response=>{
+                this.specifyServiceList = [...this.specifyServiceList, ...response]
+                this.specifyPage = this.specifyPage + 1
+                if (response.length < 10) {
+                    this.specifyFinished = true
                     this.specifyLoading = false
                 }
+                this.specifyLoading = false
             }).catch(() => {
                 this.specifyLoading = false
             })

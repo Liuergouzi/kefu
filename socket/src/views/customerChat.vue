@@ -62,7 +62,7 @@ import MessageWindow from '@/components/MessageWindow.vue';
 import SendEmote from '@/components/SendEmote.vue';
 import SendImage from '@/components/SendImage.vue';
 import SetLanguage from '@/components/SetLanguage.vue';
-import axios from 'axios';
+import {insertOfflineMessage} from '../http/api'
 export default {
     components: {
         MessageWindow,
@@ -185,18 +185,15 @@ export default {
             if (this.user.isOnLine) {
                 //向socket发送数据请求
                 this.socket.emit("sendMessage", this.user);
+                //将数据存入与这个用户的聊天信息列表
+                this.messageList.push({ sendType: sendType, sendPeople: 'me', message: data })
             } else {
                 //存进离线消息
-                axios({
-                    method: 'post',
-                    url: '/insertOfflineMessage',
-                    data:this.user,
-                    headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-                }).then(() => { })
+                insertOfflineMessage(this.user).then(() => {
+                    //将数据存入与这个用户的聊天信息列表
+                    this.messageList.push({ sendType: sendType, sendPeople: 'me', message: data })
+                })
             }
-            //将数据存入与这个用户的聊天信息列表
-            this.messageList.push({ sendType: sendType, sendPeople: 'me', message: data })
-
             //清空输入框
             this.sendData = '';
             //让聊天窗口回到底部

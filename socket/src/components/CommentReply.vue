@@ -48,27 +48,17 @@
 </template>
 
 <script>
-import axios from 'axios';
+import {commentSelect,commentReply} from '../http/api'
 export default {
     name: 'CommentReply',
     mounted() {
 
         this.service = Object.assign({}, JSON.parse(localStorage.getItem('serviceData')))
 
-        let params = { page: 1 }
-        axios({
-            method: 'post',
-            url: '/commentSelect',
-            data: params,
-            headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-        }).then((response) => {
-            if (response.data.code) {
-                this.messageList = response.data.data;
-                if (response.data.data.length == 10) {
-                    this.totalPage = this.totalPage + 1
-                }
-            } else {
-                this.$toast(this.$t('text.CommentReply.t7'))
+        commentSelect({ page: 1 }).then((response) => {
+            this.messageList = response;
+            if (response.length == 10) {
+                this.totalPage = this.totalPage + 1
             }
         })
     },
@@ -92,19 +82,9 @@ export default {
                 commentService: this.service.serviceName,
                 commentReply: this.serviceMessage
             }
-            axios({
-                method: 'post',
-                url: '/commentReply',
-                data: params,
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    this.$toast(this.$t('text.CommentReply.t8'))
-                    this.messageList
-                    this.serviceMessage = "";
-                } else {
-                    this.$toast(this.$t('text.CommentReply.t9'))
-                }
+            commentReply(params).then(() => {
+                this.$toast(this.$t('text.CommentReply.t8'))
+                this.serviceMessage = "";
             })
         },
 
@@ -138,18 +118,8 @@ export default {
         //监听，页数切换
         currentPage: {
             handler() {
-                let params = { page: this.currentPage }
-                axios({
-                    method: 'post',
-                    url: '/commentSelect',
-                    data: params,
-                    headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-                }).then((response) => {
-                    if (response.data.code) {
-                        this.messageList = response.data.data;
-                    } else {
-                        this.$toast(this.$t('text.CommentReply.t12'))
-                    }
+                commentSelect({ page: this.currentPage }).then((response) => {
+                    this.messageList = response
                 })
             }
         }

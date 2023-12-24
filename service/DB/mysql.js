@@ -280,9 +280,8 @@ function insertMessage(messageJson) {
  */
 
 function insertOfflineMessage(messageJson) {
-
     var sql = `insert into message(sendId,receiveId,sendMessage,sendType,sendTime,isUserOffline) 
-    values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${messageJson.time},'1');`;
+    values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${"'"+messageJson.time+"'"},'1');`;
     //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -730,7 +729,7 @@ function deleteFast(id) {
  */
 function selectService(page,serviceType) {
     var star = (page - 1) * 10;
-    if(serviceType!='NULL'){
+    if(serviceType){
         var sql = `select serviceId,serviceName,serviceMax,serviceHead from service where serviceType=${serviceType} limit ${star}, 10;`;
     }else{
         var sql = `select serviceId,serviceName,serviceMax,serviceHead from service limit ${star}, 10;`;

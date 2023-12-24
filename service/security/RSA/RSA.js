@@ -1,7 +1,7 @@
 const NodeRSA = require('node-rsa');    //引入rsa
 const fs = require('fs');   //引入文件操作
 const path = require("path");
-const state = require("../../i18n")  //引入全局返回状态
+const state = require("../../language/i18n")  //引入全局返回状态
 // const { publicDecrypt } = require('crypto');
 
 const privateKey = fs.readFileSync(path.join(__dirname, './private.pem'));   //读取私钥

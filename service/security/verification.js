@@ -1,7 +1,7 @@
 const mysql = require('mysql');      //请求mysql
 const xss = require('xss');      //引入xss防止xss攻击
 const RSA = require("./RSA/RSA.js");     //引入数据加解密
-const state = require("../i18n");      //引入全局返回状态
+const state = require("../language/i18n");      //引入全局返回状态
 
 
 

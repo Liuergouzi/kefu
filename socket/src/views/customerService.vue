@@ -316,7 +316,7 @@ import SendImage from '@/components/SendImage.vue';
 import ServiceRightPage from '@/components/ServiceRightPage.vue';
 import CommentReply from '@/components/CommentReply.vue';
 import SetLanguage from '@/components/SetLanguage.vue';
-import axios from 'axios';
+import {chatListSelect,selectOfflineMessage,offlineMessageCount,resetOfflineCount} from '../http/api'
 import config from '@/config';
 import CryptoJS from 'crypto-js'
 
@@ -550,32 +550,25 @@ export default {
         //获取离线列表
         getOffline(showToast) {
             this.userOfflineList.offlineLoading = true
-            axios({
-                method: 'post',
-                url: '/chatListSelect',
-                data: { serviceId: this.service.serviceId, page: this.userOfflineList.offlinePage },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    let requestList = []
-                    response.data.data.forEach(element => {
-                        element.message = element.sendmessage
-                        element.messageList = []
-                        element.receiveId = element.userId
-                        element.socketRoom = ''
-                        element.isSelectSession = false
-                        requestList.push({ data: element })
-                    });
-                    this.offlineUsers = [...this.offlineUsers, ...requestList]
-                    this.userOfflineList.offlinePage = this.userOfflineList.offlinePage + 1
-                    if (response.data.data.length < 20) {
-                        this.userOfflineList.offlineFinished = true
-                        this.userOfflineList.offlineLoading = false
-                    }
+            chatListSelect({ serviceId: this.service.serviceId, page: this.userOfflineList.offlinePage }).then(response=>{
+                let requestList = []
+                response.forEach(element => {
+                    element.message = element.sendmessage
+                    element.messageList = []
+                    element.receiveId = element.userId
+                    element.socketRoom = ''
+                    element.isSelectSession = false
+                    requestList.push({ data: element })
+                });
+                this.offlineUsers = [...this.offlineUsers, ...requestList]
+                this.userOfflineList.offlinePage = this.userOfflineList.offlinePage + 1
+                if (response.length < 20) {
+                    this.userOfflineList.offlineFinished = true
                     this.userOfflineList.offlineLoading = false
-                    if (showToast) {
-                        this.$toast(this.$t('text.customerService.t26'));
-                    }
+                }
+                this.userOfflineList.offlineLoading = false
+                if (showToast) {
+                    this.$toast(this.$t('text.customerService.t26'));
                 }
             }).catch(() => {
                 this.userOfflineList.offlineLoading = false
@@ -585,29 +578,22 @@ export default {
         //查询离线消息
         selectOfflineMessage() {
             this.userOfflineMessage.offlineLoading = true
-            axios({
-                method: 'post',
-                url: '/selectOfflineMessage',
-                data: { serviceId: this.service.serviceId, page: this.userOfflineMessage.offlinePage },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    let requestList = []
-                    response.data.data.forEach(element => {
-                        element.message = element.sendMessage
-                        element.messageList = []
-                        element.receiveId = element.userId
-                        element.socketRoom = ''
-                        element.isSelectSession = false
-                        requestList.push({ data: element })
-                    });
-                    this.userOfflineMessageList = [...this.userOfflineMessageList, ...requestList]
-                    if (response.data.data.length < 20) {
-                        this.userOfflineMessage.offlineFinished = true
-                        this.userOfflineMessage.offlineLoading = false
-                    }
+            selectOfflineMessage({ serviceId: this.service.serviceId, page: this.userOfflineMessage.offlinePage }).then(response=>{
+                let requestList = []
+                response.forEach(element => {
+                    element.message = element.sendMessage
+                    element.messageList = []
+                    element.receiveId = element.userId
+                    element.socketRoom = ''
+                    element.isSelectSession = false
+                    requestList.push({ data: element })
+                });
+                this.userOfflineMessageList = [...this.userOfflineMessageList, ...requestList]
+                if (response.length < 20) {
+                    this.userOfflineMessage.offlineFinished = true
                     this.userOfflineMessage.offlineLoading = false
                 }
+                this.userOfflineMessage.offlineLoading = false
             }).catch(() => {
                 this.userOfflineMessage.offlineLoading = false
             })
@@ -615,15 +601,8 @@ export default {
 
         //查询离线消息总数
         getOffMessageCount() {
-            axios({
-                method: 'post',
-                url: '/offlineMessageCount',
-                data: { serviceId: this.service.serviceId },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    this.offMessageCount = response.data.data
-                }
+            offlineMessageCount({ serviceId: this.service.serviceId }).then((response) => {
+                this.offMessageCount = response
             })
         },
 
@@ -663,7 +642,6 @@ export default {
             for (var j = 0; j < this.offlineUsers.length; j++) {
                 this.offlineUsers[j].data.isSelectSession = false
             }
-            console.log(obj)
             obj.data.isSelectSession = true
             obj.data.isOffline = isOffline
             //进行初始化
@@ -677,20 +655,12 @@ export default {
             this.offMsgDialogShow = !this.offMsgDialogShow
             this.selectUserOffMsgList = [item]
             //取消红点
-            axios({
-                method: 'post',
-                url: '/resetOfflineCount',
-                data: {userId:item.data.userId },
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    const timer =setTimeout(() => {
-                        this.selectOfflineMessage()
-                       this.getOffMessageCount() 
-                       clearTimeout(timer)
-                    }, 1000);
-                    console.log(response.data.data)
-                }
+            resetOfflineCount({userId:item.data.userId }).then(() => {
+                const timer =setTimeout(() => {
+                    this.selectOfflineMessage()
+                    this.getOffMessageCount() 
+                    clearTimeout(timer)
+                }, 1000);
             })
         },
 

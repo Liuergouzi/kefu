@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')     //引入token依赖
 const crypto = require('crypto')        //引入需要用到MD5的模块
-const state = require("../i18n")  //引入全局返回状态
+const state = require("../language/i18n")  //引入全局返回状态
 const md5 = crypto.createHash('md5')    //使用MD5
 
 

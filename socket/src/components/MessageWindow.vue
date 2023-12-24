@@ -88,7 +88,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import {selectMessage} from '../http/api'
 export default {
     name: 'MessageWindow',
     emits: ['retractMessage'],
@@ -117,17 +117,8 @@ export default {
             isService: this.isService
         }
         //先请求查看是否有历史消息
-        axios({
-            method: 'post',
-            url: '/selectMessage',
-            data: params,
-            headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-        }).then((response) => {
-            if (response.data.code) {
-                if (response.data.data.length == 0) {
-                    this.lastSession = false
-                }
-            } else {
+        selectMessage(params).then((response) => {
+            if (response.length == 0) {
                 this.lastSession = false
             }
         })
@@ -168,14 +159,9 @@ export default {
                 receiveId: this.receiveId,
                 isService: this.isService
             }
-            axios({
-                method: 'post',
-                url: '/selectMessage',
-                data: params,
-                headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-            }).then((response) => {
-                if (response.data.code) {
-                    let message = response.data.data
+            selectMessage(params).then(
+                (response) => {
+                    let message = response
                     let lasTime = new Date()
                     this.messageList_copy.length = 0
                     for (var i = message.length - 1; i >= 0; i--) {
@@ -227,11 +213,8 @@ export default {
                     this.idIsSelect.push(obj)
                     this.lastSession = false
                     this.isShowHistoryTime = true
-                } else {
-                    this.lastSession = false
-                    this.$toast(response.data.message);
                 }
-            })
+            )
         },
         //时间对比是否超过1小时，否则彼此之间不显示时间
         isOverTime(time1, time2) {
@@ -259,19 +242,9 @@ export default {
                         receiveId: this.receiveId,
                         isService: this.isService
                     }
-                    axios({
-                        method: 'post',
-                        url: '/selectMessage',
-                        data: params,
-                        headers: { 'Accept-Language': localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN' }
-                    }).then((response) => {
-                        if (response.data.code) {
-                            if (response.data.data== 0) {
-                                this.lastSession = false
-                            }
-                        } else {
+                    selectMessage(params).then((response) => {
+                        if (response.length== 0) {
                             this.lastSession = false
-                            this.$toast(response.data.message);
                         }
                     })
                 }

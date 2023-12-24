@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import {updateServiceName,updateServiceMax} from '../http/api'
 export default {
     name: 'MyInput',
     props: {
@@ -32,19 +32,8 @@ export default {
         serviceName: {
             handler(newValue) {
                 if (newValue != "" && newValue.indexOf(" ") < 0) {
-                    let params = {
-                        serviceName: newValue,
-                        serviceId: this.serviceId
-                    }
-                    axios({
-                        method: 'post',
-                        url: '/updateServiceName',
-                        data: params,
-                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
-                    }).then((response) => {
-                        if (response.data.code) {
-                            this.$emit('changeValue1', newValue, 1);
-                        }
+                    updateServiceName({serviceName: newValue,serviceId: this.serviceId}).then(() => {
+                        this.$emit('changeValue1', newValue, 1);
                     })
                 }
             }
@@ -53,19 +42,8 @@ export default {
         serviceMax: {
             handler(newValue) {
                 if (typeof(newValue)=='number') {
-                    let params = {
-                        serviceMax: newValue,
-                        serviceId: this.serviceId
-                    }
-                    axios({
-                        method: 'post',
-                        url: '/updateServiceMax',
-                        data: params,
-                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
-                    }).then((response) => {
-                        if (response.data.code) {
-                            this.$emit('changeValue1', newValue, 2);
-                        }
+                    updateServiceMax({serviceMax: newValue,serviceId: this.serviceId}).then(() => {
+                        this.$emit('changeValue1', newValue, 2);
                     })
                 }
             }

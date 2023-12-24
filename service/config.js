@@ -14,7 +14,9 @@ module.exports = {
     
     host: 'localhost',                                                  //MySQL主机 
     user: 'root',                                                       //MySQL认证用户名 
-    password: 'root',                                                   //MySQL认证用户密码 
+    password: '123456',                                                   //MySQL认证用户密码 
     database: 'chat',                                                   //MySQL数据库名称
-    port: '3306'                                                        //MySQL端口号 
+    port: '3306',                                                       //MySQL端口号 
+
+    ignorePath:['/verificationToken']
 }

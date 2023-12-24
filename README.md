@@ -61,7 +61,7 @@
 +	环境说明：node版本最低16，有些依赖要求最低版本为16，低于16可能会报错。service为node后端，socket为vue前端，后端端口号3030，前端端口号9528。数据库使用mysql，数据库名chat，如果mysql不兼容导入错误，先创建一个空数据库，把chat.sql打开复制，在mysql可视化工具里粘贴进行sql执行。代码默认是使用http协议，如需使用https协议请看下面部署说明。
 +	找到service\config.js文件，更换你自己的数据库账号密码  
 +	以上都修改好了之后：  
-	 	cd 进入service文件夹：  安装依赖：npm install  ；运行：node service.js  
+	 	cd 进入service文件夹：  安装依赖：npm install  ；运行：node serve 
 		cd进入socket文件夹：    运行：npm run serve   ；安装依赖：npm install  ；打包：npm run build 
 +	运行起来或打包之后，用户端访问路径为：http://localhost:9528/#/  客服端访问路径为： http://localhost:9528/#/customerService  
 -------------------------------------------------------------------------------------------------

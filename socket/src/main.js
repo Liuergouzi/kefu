@@ -7,16 +7,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import axios from 'axios'
-import config from './config'
+import {verificationToken} from "./http/api"
 
-if (config.environment == 'dev') {
-	axios.defaults.baseURL = '/api'		//设置默认请求地址
-} else if (config.environment == 'build') {
-	axios.defaults.baseURL = config.apiUrl  //设置默认请求地址
-}
-
-axios.defaults.headers = { 'content-type': 'application/json'}
 
 //按需引入vant
 import 'vant/lib/index.css'
@@ -61,18 +53,12 @@ router.beforeEach((to, from, next) => {
 	//客服页面拦截，没登录就返回登录界面
 	if (to.path == "/customerService") {
 		//token时间及正确性验证
-		axios({
-			method: 'post',
-			url: '/verificationToken',
-			data: params
-		}).then((response) => {
-			if (response.data.code) {
-				next();
-				return;
-			} else {
-				next('/customerServiceLogin');
-				return;
-			}
+		verificationToken(params).then(() => {
+			next();
+			return;
+		}).catch(()=>{
+			next('/customerServiceLogin');
+			return;
 		})
 	}
 	//用户聊天页面拦截
@@ -93,6 +79,6 @@ router.beforeEach((to, from, next) => {
 
 })
 
-createApp(App).use(store).use(router).use(i18n).use(Button).use(Switch).use(Popup).use(Slider)
+createApp(App).use(Button).use(Switch).use(Popup).use(Slider)
 .use(Pagination).use(Icon).use(Toast).use(NoticeBar).use(Popover).use(Dialog).use(Rate).use(List)
-.use(Field).use(ActionSheet).mount('#app')
+.use(Field).use(ActionSheet).use(store).use(router).use(i18n).mount('#app')

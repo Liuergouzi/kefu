@@ -1,5 +1,9 @@
 const EN = {
     webName: 'Online Service',
+    Common: {
+        t1: "Do not operate frequently",
+        t2: "Service exception"
+    },
     Home: {
         t1: "contact service",
         t2: "Point card recharge online platform",

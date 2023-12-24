@@ -25,7 +25,7 @@ CREATE TABLE `comment`  (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键Id',
   `commentId` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '留言者的id',
   `commentContent` mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '留言内容',
-  `commentTime` datetime(0) NOT NULL COMMENT '留言时间',
+  `commentTime` datetime NOT NULL COMMENT '留言时间',
   `commentGrade` varchar(4) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '留言评价星星',
   `commentState` int(2) NOT NULL DEFAULT 0 COMMENT '留言是否回复/0未回复/1已回复',
   `commentService` varchar(16) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '回复留言的客服名称',

@@ -104,7 +104,6 @@ export default {
     watch: {
         messageList(){
             this.messageList_copy= this.messageList
-            console.log("aa",this.messageList_copy)
         }
         
     }

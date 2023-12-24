@@ -48,7 +48,7 @@
 
 
 <script>
-    import axios from 'axios';
+    import {commentSelectById,commentInsert} from '../http/api'
     export default {
         name: 'LeaveWord',
         props: {
@@ -70,17 +70,8 @@
                     let params = {
                         commentId: localStorage.getItem('userId')
                     }
-                    axios({
-                        method: 'post',
-                        url: '/commentSelectById',
-                        data: params,
-                        headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
-                    }).then((response) => {
-                        if (response.data.code) {
-                            this.messageList = response.data.data;
-                        } else {
-                            this.$toast(this.$t('text.Comment.t9'))
-                        }
+                    commentSelectById(params).then(response=>{
+                        this.messageList = response;
                     })
                 }
             },
@@ -94,18 +85,9 @@
                     commentGrade: this.rateValue,
                     commentTime: this.getNowTime()
                 }
-                axios({
-                    method: 'post',
-                    url: '/commentInsert',
-                    data: params,
-                    headers: {'Accept-Language':  localStorage.getItem('language') == 'en-US' ? 'en-US' : 'zh-CN'}
-                }).then((response) => {
-                    if (response.data.code) {
-                        this.$toast(this.$t('text.Comment.t10'))
-                        this.customerMessage = "";
-                    } else {
-                        this.$toast(this.$t('text.Comment.t11'))
-                    }
+                commentInsert(params).then(()=>{
+                    this.$toast(this.$t('text.Comment.t10'))
+                    this.customerMessage = "";
                 })
             },
 
