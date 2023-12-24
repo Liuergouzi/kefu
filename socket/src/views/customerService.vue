@@ -392,7 +392,6 @@ export default {
 
         //用户连接成功通知
         this.socket.on("UserJoinSuccess", (data) => {
-
             let extendIndex = this.getExtend(data.data.extend).findIndex(v => v.title === 'userName')
             if (extendIndex != -1) {
                 data.data.userName = this.getExtend(data.data.extend)[extendIndex].value

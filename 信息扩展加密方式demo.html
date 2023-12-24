@@ -1,0 +1,27 @@
+<!--
+ * @轮子的作者: 轮子哥
+ * @Date: 2023-12-22 17:56:38
+ * @LastEditTime: 2023-12-22 18:04:40
+-->
+<div id="encrypted"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+<script>  
+    let data = {  
+        "userName": "轮子哥",  
+        "手机号": "15012345678",  
+        "性别": "男",  
+        "bb": "cc"  
+    };  
+    let message = JSON.stringify(data);  
+    let key = "我们只生产轮子，不是轮子的搬运工";  
+    let iv = "我家门前有两个轮子，一个是轮子，另一个也是轮子";  
+      
+    let encrypted = CryptoJS.AES.encrypt(message, key, {  
+        iv: iv,  
+        mode: CryptoJS.mode.CBC,  
+        padding: CryptoJS.pad.Pkcs7  
+    });  
+    var encryptedDom= document.querySelector("#encrypted") 
+    encryptedDom.innerHTML=encrypted.toString()
+    console.log(encrypted.toString());  
+</script>

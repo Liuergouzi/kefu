@@ -142,11 +142,11 @@ export default {
             if (JSON.parse(localStorage.getItem('userData')) != null) {
                 //此处修改对象会丢失响应式监听，不会触发视图更新，因此要显式拷贝对象
                 this.user = Object.assign({}, JSON.parse(localStorage.getItem('userData')))
+                this.socket.emit('userJoin', this.user)
             } else {
                 alert(this.$t('text.customerChat.t5'))
                 this.$router.push({ path: '/', replace: true })
             }
-            this.socket.emit('userJoin', this.user)
         },
 
         //寻找相匹配数组最后一个的索引

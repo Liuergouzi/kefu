@@ -40,20 +40,10 @@
 
 -------------------------------------------------------------------------------------------------
 ### 5.信息扩展 
-+	 通过在网站首页路径添如：'http://localhost:9528/#/extend=U2FsdGVkX1+wRkrtqZWOo1sHUZju4yVBHomgLTVsKr5vPX6PSrgsxKBzWsk646kDqPjFOHd29nvAMHt/1rWakekgwoM+UgKSc5wp8E1p6AuPFqmNXGEGEkMAAjJxansV'，格式必须是'?extend=xxxxxxxxx'的格式
-+	 示例：
-+	 	（1）自定义传值：{"userName":"轮子哥","手机号":"15012345678","性别":"男","bb":"cc"},注意必须要是对象的形式
-+	 	（2）下载安装引入crypto-js依赖
-+	 	（3）执行下面代码，"我们只生产轮子，不是轮子的搬运工" 和 "我家门前有两个轮子，一个是轮子，另一个也是轮子"这是两个key，你可以在socket\src\config.js中进行修改，需要相对应。
-+			let encrypted = CryptoJS.AES.encrypt(
-			JSON.stringify({"userName":"轮子哥","手机号":"15012345678","性别":"男","bb":"cc"}), "我们只生产轮子，不是轮子的搬运工", {
-            	iv: "我家门前有两个轮子，一个是轮子，另一个也是轮子",
-            	mode: CryptoJS.mode.CBC,
-            	padding: CryptoJS.pad.Pkcs7
-     		});
-			console.log(encrypted)
-+		(4)把获取出来的结果拼接到路径上面'http://localhost:9528/#/' +'?extend=U2FsdGVkX1+wRkrtqZWOo1sHUZju4yVBHomgLTVsKr5vPX6PSrgsxKBzWsk646kDqPjFOHd29nvAMHt/1rWakekgwoM+UgKSc5wp8E1p6AuPFqmNXGEGEkMAAjJxansV'
-+	你传进来的值会在客服端查看用户时右侧面板的信息栏显示，其中"userName"字段会覆盖原有的默认用户名称字段，其它均作为自定义数据展示
++	 通过在网站首页路径添如：'http://localhost:9528/#/?extend=U2FsdGVkX19Cu72hsUuXB3HswRh0dwhfXfd8h7lblZnSnCIz/nQVzj1Niqt94tcTrlnZ8T08ljc/LdmTYWXQC4nw2l1MnFmA8okbGezLsxDst4rHp3B/6Y/rM6R/JzoG'，格式必须是'?extend=xxxxxxxxx'的格式
++	 示例文件在“信息扩展加密方式demo.html”里面，请自行查看
++	 把获取出来的结果拼接到路径上面'http://localhost:9528/#/' +'?extend=U2FsdGVkX19Cu72hsUuXB3HswRh0dwhfXfd8h7lblZnSnCIz/nQVzj1Niqt94tcTrlnZ8T08ljc/LdmTYWXQC4nw2l1MnFmA8okbGezLsxDst4rHp3B/6Y/rM6R/JzoG'
++	你传进来的值会在客服端查看用户时右侧面板的信息栏显示，其中"userName"字段会覆盖原有的默认用户名称字段，type字段会指定加载指定类型的客服，其它均作为自定义数据展示
 -------------------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------------
