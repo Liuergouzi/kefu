@@ -191,7 +191,7 @@ export default {
             obj.serviceName = data.data.serviceName;
             obj.serviceHead = data.data.serviceHead;
             obj.isOnLine = true
-            obj.extend =this.$router.currentRoute._value.query.extend.replace(/ /g,"+")
+            obj.extend =this.$router.currentRoute._value.query.extend?.replace(/ /g,"+")
             localStorage.setItem('userData', JSON.stringify(obj));
             //设置vuex
             this.$store.state.userData = obj;
@@ -206,7 +206,7 @@ export default {
             obj.receiveId = data.data.receiveId;
             obj.serviceName = data.data.serviceName;
             obj.isOnLine = false
-            obj.extend =this.$router.currentRoute._value.query.extend.replace(/ /g,"+")
+            obj.extend =this.$router.currentRoute._value.query.extend?.replace(/ /g,"+")
             localStorage.setItem('userData', JSON.stringify(obj));
             //设置vuex
             this.$store.state.userData = obj;
@@ -219,7 +219,7 @@ export default {
         initialization() {
             localStorage.setItem("extendRouter", this.$router.currentRoute._value.fullPath)
             //获取浏览器指纹并发送初始数据
-            let extend = this.$router.currentRoute._value.query.extend.replace(/ /g,"+")
+            let extend = this.$router.currentRoute._value.query.extend?.replace(/ /g,"+")
             let extendData = this.getExtend(extend)
             let extendServiceType=extendData.filter(v => v.title === 'serviceType')
             let extendList = extendData.filter(v => v.title === 'userName')
