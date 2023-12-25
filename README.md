@@ -1,7 +1,7 @@
 <!--
  * @轮子的作者: 轮子哥
  * @Date: 2023-12-20 10:47:23
- * @LastEditTime: 2023-12-22 10:37:45
+ * @LastEditTime: 2023-12-25 09:56:55
 -->
 ### 1.介绍
 
@@ -43,7 +43,7 @@
 +	 通过在网站首页路径添如：'http://localhost:9528/#/?extend=U2FsdGVkX19Cu72hsUuXB3HswRh0dwhfXfd8h7lblZnSnCIz/nQVzj1Niqt94tcTrlnZ8T08ljc/LdmTYWXQC4nw2l1MnFmA8okbGezLsxDst4rHp3B/6Y/rM6R/JzoG'，格式必须是'?extend=xxxxxxxxx'的格式
 +	 示例文件在“信息扩展加密方式demo.html”里面，请自行查看
 +	 把获取出来的结果拼接到路径上面'http://localhost:9528/#/' +'?extend=U2FsdGVkX19Cu72hsUuXB3HswRh0dwhfXfd8h7lblZnSnCIz/nQVzj1Niqt94tcTrlnZ8T08ljc/LdmTYWXQC4nw2l1MnFmA8okbGezLsxDst4rHp3B/6Y/rM6R/JzoG'
-+	你传进来的值会在客服端查看用户时右侧面板的信息栏显示，其中"userName"字段会覆盖原有的默认用户名称字段，type字段会指定加载指定类型的客服，其它均作为自定义数据展示
++	你传进来的值会在客服端查看用户时右侧面板的信息栏显示，其中"userName"字段会覆盖原有的默认用户名称字段，serviceType字段会指定加载指定类型的客服，其它均作为自定义数据展示
 -------------------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------------

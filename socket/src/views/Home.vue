@@ -30,7 +30,7 @@
 
             <!--信息窗口-->
             <HomeAiChat :messageList="messageList" id="userMessage" class="userMessage" @waitCancel="waitCancel"
-                style="display:inline-block" :specifyServiceList="specifyServiceList">
+                style="display:inline-block" :specifyServiceList="specifyServiceList" @specifyConnection="specifyConnection">
             </HomeAiChat>
 
             <!--底部发送-->
