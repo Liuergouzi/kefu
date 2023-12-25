@@ -1,11 +1,11 @@
 <!--
  * @轮子的作者: 轮子哥
  * @Date: 2023-12-20 10:47:23
- * @LastEditTime: 2023-12-25 09:56:55
+ * @LastEditTime: 2023-12-25 16:11:35
 -->
 ### 1.介绍
 
-+	基于vue+node+socket+vant+mysql实现的在线客服系统，前后端分离，浏览器指纹作为访客唯一id，内置chatGPT智能回复，采用RSA加解密数据，
++	基于vue+node+socket+vant+mysql实现的在线客服系统，前后端分离，浏览器指纹作为访客唯一id，采用RSA加解密数据，
 	防sql注入，xss，可发送图片表情、查询历史消息、留言、踢人、排队等待，更多功能等待后续更新。简单快速部署，基本每隔几行我都有写备注，可读性强，
 	目前功能不是很多，欢迎进行二次开发
 
@@ -53,18 +53,24 @@
 +	以上都修改好了之后：  
 	 	cd 进入service文件夹：  安装依赖：npm install  ；运行：node serve 
 		cd进入socket文件夹：    运行：npm run serve   ；安装依赖：npm install  ；打包：npm run build 
-+	运行起来或打包之后，用户端访问路径为：http://localhost:9528/#/  客服端访问路径为： http://localhost:9528/#/customerService  
++	运行起来或打包之后，用户端访问路径为：http://localhost:9528/#/  客服端访问路径为： http://localhost:9528/#/customerService 
++	部署之后将客服使用a标签打开就行了 
+
+	`<a href="https://ctrlc.cc/kefu/index.html#/" onclick="window.open(this.href, '_blank', 'width=400,height=700'); return false;">打开示例</a>`
+
+	<a href="https://ctrlc.cc/kefu/index.html#/" onclick="window.open(this.href, '_blank', 'width=400,height=700'); return false;">点我直接打开客服示例</a>
 -------------------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------------
 ### 7.服务器部署说明
 +	找到socket\src\config.js文件，确保environment为build，apiUrl更换为： http://xx.你的ip地址.xx:3030，一定要使用ip地址，不要使用localhost
 +   部署时不要把后端丢在网站目录下面
++	图片默认保存在数据库，部署到服务器需要更改的话，请自行打开service/config.js修改配置
 -------------------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------------
 ### 8.服务器https协议部署说明
-+	找到socket\src\config.js文件，确保apiUrl的后端路径是https协议，如：https://xx.xx.xx.xx:3030
++	找到socket\src\config.js文件，确保apiUrl的后端路径是https协议，如：https://xx.xx.com:3030
 +	找到service\service.js文件，有注释提示，将指定http那部分代码注释掉，然后取消https那部分代码的注释
 +   在service.js中找到代码：
 	const options = {

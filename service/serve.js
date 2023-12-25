@@ -1,12 +1,22 @@
+/*
+ * @轮子的作者: 轮子哥
+ * @Date: 2023-12-25 14:42:56
+ * @LastEditTime: 2023-12-25 16:00:51
+ */
 const express = require('express');	// 引入express
 
 const config = require("./config.js");
 const app = express();
-app.use(express.json());	//中间件，解析表单中的 JSON 格式的数据
-app.use(express.urlencoded({ extended: true }));	//解析 URL-encoded 格式的请求体数据
+// app.use(express.json());	//中间件，解析表单中的 JSON 格式的数据
+// app.use(express.urlencoded({ extended: true }));	//解析 URL-encoded 格式的请求体数据
+const bodyParser = require('body-parser');  //请求体中间件,解析表单中的 JSON 格式的数据
+app.use(bodyParser.json({limit:'3mb'}));  //设置请求最大大小
+app.use(bodyParser.urlencoded({ limit:'3mb', extended: true })); //设置解析请求最大大小
+
 app.use(express.static(config.imageStaticDirectory));//将静态资源托管
 const state = require('./language/i18n'); //引入全局返回状态  
-const verification = require("./security/verification.js");  //引入数据校验
+const verification = require("./security/verification.js");  //引入数据校验 
+
 
 /**
  * 使用http协议 ，请注意使用https就将此段代码注释

@@ -2,6 +2,8 @@ const mysql = require("../DB/mysql.js");      //引入mysql
 const token = require("../security/token.js");  //引入token
 const state = require('../language/i18n'); //引入全局返回状态   
 const nowTime = require("../utils/time.js");
+const config = require("../config.js");
+const fs = require("fs");  //文件写入
 
 module.exports = class controller {
     constructor(app) {
@@ -198,6 +200,21 @@ module.exports = class controller {
 
         //存储离线消息
         this.app.post('/insertOfflineMessage', function (req, res) {
+
+            if (req.body.sendType == '2' && config.imageSaveLocal || req.body.sendType == '3' && config.imageSaveLocal) {
+                //过滤data:URL
+                let base64Data = req.body.message.replace(/^data:image\/\w+;base64,/, "");
+                let dataBuffer = new Buffer.from(base64Data, 'base64');
+                // 存储文件命名是使用当前时间，防止文件重名
+                let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + ".png";
+                try {
+                    fs.writeFileSync(config.imageStaticDirectory + saveUrl, dataBuffer);
+                    req.body.message ="'" +config.imageIp + saveUrl+"'"
+                } catch (err) {
+                    console.log('【文件保存错误】', err);
+                }
+            }
+
             req.body.time = nowTime.getNowTime();
             mysql.insertOfflineMessage(req.body).then((sql_data) => {
                 if (sql_data) {
