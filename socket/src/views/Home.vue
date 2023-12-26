@@ -201,10 +201,12 @@ export default {
 
         //监听连接指定客服，不在线的情况下
         this.socket.on("nullSpecifyService", (data) => {
+            console.log(data)
             //数据存储到localStorage
             let obj = JSON.parse(JSON.stringify(this.user))
             obj.receiveId = data.data.receiveId;
             obj.serviceName = data.data.serviceName;
+            obj.serviceHead = data.data.serviceHead;
             obj.isOnLine = false
             obj.extend =this.$router.currentRoute._value.query.extend?.replace(/ /g,"+")
             localStorage.setItem('userData', JSON.stringify(obj));
@@ -299,6 +301,7 @@ export default {
             let obj = JSON.parse(JSON.stringify(this.user))
             obj.serviceId = item.serviceId
             obj.serviceName = item.serviceName
+            obj.serviceHead =item.serviceHead
             this.socket.emit("specifyConnection", obj);
         },
 

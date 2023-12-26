@@ -485,7 +485,7 @@ function chatListSelect(serviceId, page) {
  */
 
 function selectMessage(sendId, receiveId, isService) {
-    if (String(isService) == 'true') {
+    if (isService==="'true'") {
         var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId} order by sendTime asc;`;
     } else {
         var sql = `

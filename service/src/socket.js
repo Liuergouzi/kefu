@@ -262,6 +262,7 @@ module.exports = class controller {
                         let returns = state.__("nullSpecifyService");
                         returns.data.serviceName = data.serviceName;
                         returns.data.receiveId = data.serviceId;
+                        returns.data.serviceHead = data.serviceHead;
                         socket.emit("nullSpecifyService", state.__("nullSpecifyService"));
                     }
                 } else {
