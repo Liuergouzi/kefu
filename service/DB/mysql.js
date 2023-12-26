@@ -409,9 +409,9 @@ function retractMessage(messageId) {
 function insertChatList(userJson) {
     var sql = `insert into offlinelist(userId,serviceId,userName,ip,area,device,extend,userState,isProhibit,updateTime) 
     values(${userJson.userId},${userJson.receiveId},${userJson.userName},${userJson.ip},${userJson.area},
-           ${userJson.device},${userJson.extend},${userJson.userState},${userJson.isProhibit},${"'" + nowTime.getNowTime() + "'"}) 
+           ${userJson.device},${userJson.extend?userJson.extend:"''"},${userJson.userState},${userJson.isProhibit},${userJson.updateTime}) 
     ON DUPLICATE KEY UPDATE userName=${userJson.userName},ip=${userJson.ip},area=${userJson.area},device=${userJson.device},
-           extend=${userJson.extend},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${"'" + nowTime.getNowTime() + "'"};`;
+           extend=${userJson.extend?userJson.extend:"''"},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${userJson.updateTime};`;
 
     //使用promise将内部函数的返回值传出去
 

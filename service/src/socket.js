@@ -411,6 +411,8 @@ module.exports = class controller {
 
                         if (user.length > 0) {
                             //设置更新离线列表
+                            let insertData=user[0]
+                            insertData.updateTime=nowTime.getNowTime()
                             mysql.insertChatList(verification.newData(user[0]).data)
                             //通知客服
                             let returns = state.__("Offline");

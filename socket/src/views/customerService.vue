@@ -484,7 +484,7 @@ export default {
             //删除在线列表，加入离线列表
             let offline = this.onlineUsers.filter((v) => v.data.userId == data.data.userId)[0]
             if (offline != undefined) {
-                this.offlineUsers.push(this.onlineUsers.filter((v) => v.data.userId == data.data.userId)[0])
+                this.offlineUsers.unshift(this.onlineUsers.filter((v) => v.data.userId == data.data.userId)[0])
                 this.onlineUsers = this.onlineUsers.filter((v) => v.data.userId != data.data.userId)
             }
         });
