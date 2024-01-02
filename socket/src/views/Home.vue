@@ -30,7 +30,8 @@
 
             <!--信息窗口-->
             <HomeAiChat :messageList="messageList" id="userMessage" class="userMessage" @waitCancel="waitCancel"
-                style="display:inline-block" :specifyServiceList="specifyServiceList" @specifyConnection="specifyConnection">
+                style="display:inline-block" :specifyServiceList="specifyServiceList"
+                @specifyConnection="specifyConnection">
             </HomeAiChat>
 
             <!--底部发送-->
@@ -96,7 +97,7 @@ import JSEncrypt from 'jsencrypt';
 import SetLanguage from '@/components/SetLanguage.vue';
 import HomeAiChat from '@/components/HomeAiChat.vue';
 let encryptor = new JSEncrypt();
-import {selectdefaultProblem,selectService} from '../http/api'
+import { selectdefaultProblem, selectService } from '../http/api'
 import config from '@/config';
 import CryptoJS from 'crypto-js'
 
@@ -131,7 +132,7 @@ export default {
             specifyLoading: false,
             specifyFinished: false,
             specifyPage: 1,
-            serviceType:null,
+            serviceType: null,
         }
     },
 
@@ -174,10 +175,17 @@ export default {
 
         //访问注册
         this.socket.on("visitReturn", (data) => {
+            localStorage.setItem('token', data.token.data);
             this.user = JSON.parse(data.data)
+            this.selectdefaultProblem()
+            this.getSpecifyData()
         });
+
         this.socket.on("visitInsertReturn", (data) => {
+            localStorage.setItem('token', data.token.data);
             this.user = JSON.parse(JSON.stringify(data.data))
+            this.selectdefaultProblem()
+            this.getSpecifyData()
         });
 
         //连接客服成功通知
@@ -191,7 +199,7 @@ export default {
             obj.serviceName = data.data.serviceName;
             obj.serviceHead = data.data.serviceHead;
             obj.isOnLine = true
-            obj.extend =this.$router.currentRoute._value.query.extend?.replace(/ /g,"+")
+            obj.extend = this.$router.currentRoute._value.query.extend?.replace(/ /g, "+")
             localStorage.setItem('userData', JSON.stringify(obj));
             //设置vuex
             this.$store.state.userData = obj;
@@ -207,7 +215,7 @@ export default {
             obj.serviceName = data.data.serviceName;
             obj.serviceHead = data.data.serviceHead;
             obj.isOnLine = false
-            obj.extend =this.$router.currentRoute._value.query.extend?.replace(/ /g,"+")
+            obj.extend = this.$router.currentRoute._value.query.extend?.replace(/ /g, "+")
             localStorage.setItem('userData', JSON.stringify(obj));
             //设置vuex
             this.$store.state.userData = obj;
@@ -220,12 +228,12 @@ export default {
         initialization() {
             localStorage.setItem("extendRouter", this.$router.currentRoute._value.fullPath)
             //获取浏览器指纹并发送初始数据
-            let extend = this.$router.currentRoute._value.query.extend?.replace(/ /g,"+")
+            let extend = this.$router.currentRoute._value.query.extend?.replace(/ /g, "+")
             let extendData = this.getExtend(extend)
-            let extendServiceType=extendData.filter(v => v.title === 'serviceType')
+            let extendServiceType = extendData.filter(v => v.title === 'serviceType')
             let extendList = extendData.filter(v => v.title === 'userName')
-            if(extendServiceType.length>0){
-                this.serviceType=extendServiceType[0].value
+            if (extendServiceType.length > 0) {
+                this.serviceType = extendServiceType[0].value
             }
             Fingerprint2.get((components) => {
                 const values = components.map(function (component, index) {
@@ -247,7 +255,6 @@ export default {
                 }
                 this.user.extend = extend == undefined ? '' : extend
                 this.socket.emit("visit", this.user);
-                this.getSpecifyData()
             })
 
             this.socket.emit("getPublicKey");
@@ -256,25 +263,28 @@ export default {
                 let publicKey = JSON.stringify(data.data).replace(/\\r\\n/g, '');
                 encryptor.setPublicKey(publicKey);
             });
+        },
 
-            //查询问题
-            selectdefaultProblem().then(response=>{
+        //查询问题
+        selectdefaultProblem() {
+            selectdefaultProblem().then(response => {
                 this.messageList = [
-                        {
-                            sendType: 2,
-                            sendPeople: 'other',
-                            message: response.filter(v => v.type == 'title'),
-                            problem: response.filter(v => v.type == 'problem'),
-                            reply: response.filter(v => v.type == 'reply')
-                        }
-                    ]
+                    {
+                        sendType: 2,
+                        sendPeople: 'other',
+                        message: response.filter(v => v.type == 'title'),
+                        problem: response.filter(v => v.type == 'problem'),
+                        reply: response.filter(v => v.type == 'reply')
+                    }
+                ]
             })
         },
+
 
         //加载客服列表数据
         getSpecifyData() {
             this.specifyLoading = true
-            selectService({ page: this.specifyPage,serviceType:this.serviceType }).then(response=>{
+            selectService({ page: this.specifyPage, serviceType: this.serviceType }).then(response => {
                 this.specifyServiceList = [...this.specifyServiceList, ...response]
                 this.specifyPage = this.specifyPage + 1
                 if (response.length < 10) {

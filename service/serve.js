@@ -1,7 +1,7 @@
 /*
  * @轮子的作者: 轮子哥
  * @Date: 2023-12-25 09:04:54
- * @LastEditTime: 2023-12-26 10:12:07
+ * @LastEditTime: 2024-01-02 17:58:14
  */
 const express = require('express');	// 引入express
 
@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ limit:'3mb', extended: true })); //设置解析�
 app.use(express.static(config.imageStaticDirectory));//将静态资源托管
 const state = require('./language/i18n'); //引入全局返回状态  
 const verification = require("./security/verification.js");  //引入数据校验
-
+const verificationToken =require("./security/token.js")
 /**
  * 使用http协议 ，请注意使用https就将此段代码注释
  */
@@ -62,21 +62,29 @@ const i18nMiddleware = (req, res, next) => {
     }
     if (req.method == 'POST') {
         const newDataPost = verification.newData(req.body);
-        if (newDataPost.code) {
-            req.body = newDataPost.data
-            next()
-        } else {
-            res.json(state.__("dataFalse"))
+        if(!verificationToken.verificationToken(req.headers['t-authorization']).code){
+            res.json(state.__("verificationTokenTimeOut"))
+            return
         }
+        if (!newDataPost.code) {
+            res.json(state.__("dataFalse"))
+            return
+        } 
+        req.body = newDataPost.data
+        next()
     }
     if (req.method == 'GET') {
         const newDataGet = verification.newData(req.query);
-        if (newDataGet.code) {
-            req.query = newDataGet.data
-            next()
-        } else {
-            res.json(state.__("dataFalse"))
+        if(!verificationToken.verificationToken(req.headers['t-authorization']).code){
+            res.json(state.__("verificationTokenTimeOut"))
+            return
         }
+        if (!newDataGet.code) {
+            res.json(state.__("dataFalse"))
+            return
+        } 
+        req.query = newDataGet.data
+        next()
     }
 }
 app.use(i18nMiddleware)

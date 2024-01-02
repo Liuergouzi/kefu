@@ -184,7 +184,7 @@
                             <span v-show="!offMessageShow">▲</span>
                             {{ $t('text.customerService.t9') }}
                         </div>
-                        <img @click.stop="userOfflineMessage.offlinePage = 1; getOffline(true)"
+                        <img @click.stop="userOfflineMessage.offlinePage = 1;offlineUsers=[]; getOffline(true)"
                             src="../assets/images/refresh.png" style="width: 18px;height:18px;margin-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
@@ -224,7 +224,7 @@
                             <span v-show="!offlineShow">▲</span>
                             {{ $t('text.customerService.t27') }}
                         </div>
-                        <img @click.stop="userOfflineList.offlinePage = 1; getOffline(true)"
+                        <img @click.stop="userOfflineList.offlinePage = 1;offlineUsers=[]; getOffline(true)"
                             src="../assets/images/refresh.png" style="width: 18px;height:18px;margin-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->

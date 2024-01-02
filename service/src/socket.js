@@ -10,14 +10,14 @@ const nowTime = require("../utils/time.js");
 const config = require("../config.js");
 
 module.exports = class controller {
-    
+
     constructor(io) {
         this.io = io;
-        this.services=[];//记录所有加入的客服
-        this.users=[];//记录所有加入的用户
-        this.waitUsers=[]//记录排队等待的用户
+        this.services = [];//记录所有加入的客服
+        this.users = [];//记录所有加入的用户
+        this.waitUsers = []//记录排队等待的用户
     }
-    getServices(){
+    getServices() {
         return this.services
     }
 
@@ -48,12 +48,14 @@ module.exports = class controller {
                             //传回用户数据
                             let returns = state.__("success");
                             returns.data = data;
+                            returns.token = token.createToken(data);
                             socket.emit("visitReturn", returns);
                         } else {
                             //进行用户注册
                             mysql.insertUser(newData);
                             let returns = state.__("success");
                             returns.data = datas;
+                            returns.token = token.createToken(data);
                             socket.emit("visitInsertReturn", returns);
                         }
                     });
@@ -262,7 +264,7 @@ module.exports = class controller {
                         let returns = state.__("nullSpecifyService");
                         returns.data.serviceName = data.serviceName;
                         returns.data.receiveId = data.serviceId;
-                        returns.data.serviceHead =data.serviceHead
+                        returns.data.serviceHead = data.serviceHead
                         socket.emit("nullSpecifyService", state.__("nullSpecifyService"));
                     }
                 } else {
@@ -344,7 +346,7 @@ module.exports = class controller {
                     //过滤data:URL
                     let base64Data = data.message.replace(/^data:image\/\w+;base64,/, "");
                     let dataBuffer = new Buffer.from(base64Data, 'base64');
-                    if (dataBuffer.length > 1024 * 1024 * 3) { 
+                    if (dataBuffer.length > 1024 * 1024 * 3) {
                         socket.emit("error", "图片不能超过3m")
                         return
                     }
@@ -415,8 +417,8 @@ module.exports = class controller {
 
                         if (user.length > 0) {
                             //设置更新离线列表
-                            let insertData=user[0]
-                            insertData.updateTime=nowTime.getNowTime()
+                            let insertData = user[0]
+                            insertData.updateTime = nowTime.getNowTime()
                             mysql.insertChatList(verification.newData(user[0]).data)
                             //通知客服
                             let returns = state.__("Offline");

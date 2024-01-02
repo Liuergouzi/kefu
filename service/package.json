@@ -12,6 +12,7 @@
     "ip2region": "^2.3.0",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
+    "node-cache": "^5.1.2",
     "node-rsa": "^1.1.1",
     "socket.io": "^4.5.3",
     "ua-parser-js": "^1.0.36",

@@ -1,8 +1,13 @@
+/*
+ * @轮子的作者: 轮子哥
+ * @Date: 2023-12-25 09:04:54
+ * @LastEditTime: 2024-01-02 17:53:30
+ */
 const jwt = require('jsonwebtoken')     //引入token依赖
 const crypto = require('crypto')        //引入需要用到MD5的模块
 const state = require("../language/i18n")  //引入全局返回状态
 const md5 = crypto.createHash('md5')    //使用MD5
-
+const nodeCache = require("../src/nodeCache");
 
 let str = '潮州有一个怀揣着梦想的轮子哥相信在不断内卷中会创造出一个个惊艳绝伦的轮子';   //自定义签名字键
 secret = md5.update(str).digest('hex')
@@ -17,11 +22,15 @@ secret = md5.update(str).digest('hex')
 function createToken(payload) {
 
     try {
-        payload=JSON.parse(payload);
-        payload.time = new Date().getTime() + 86400000;//设置时效一天
+        payload = JSON.parse(payload);
+        payload.time = new Date().getTime() + 86400000 * 2.5;//设置过期时长两天半
         let token = jwt.sign(payload, secret);
-        let returns=state.__("createTokenSuccess");
-        returns.data=token;
+        let returns = state.__("createTokenSuccess");
+        returns.data = token;
+        if(payload.serviceId)
+        nodeCache.setCache(payload.serviceId, payload.serviceId)
+        if(payload.userId)
+        nodeCache.setCache(payload.userId, payload.userId)
         return returns;
     } catch (e) {
         // console.log("【轮子哥】生成token失败")
@@ -34,8 +43,6 @@ function createToken(payload) {
 
 /**
  * 校验token,
- * 此方法不安全，仅做了时间验证，实际上需要将token放入缓存中，再跟缓存对比，或者将token解密后将值与数据库进行匹配
- * 这里考虑到此方法常调用，过多的安全验证势必会以丢失性能为代价，根据个人需求随缘来做吧，这里我就懒得去实现了，有时间再扩展完善
  * @param {*} token 需要校验的token，string类型
  * @returns 返回token校验结果
  */
@@ -43,7 +50,14 @@ function createToken(payload) {
 function verificationToken(token) {
     try {
         let json = jwt.verify(token, secret)
-        if (json.time > new Date().getTime()) {
+        let flag=false
+        if(json.serviceId){
+            flag=nodeCache.getCache(json.serviceId)
+        }
+        if(json.userId){
+            flag=nodeCache.getCache(json.userId)
+        }
+        if (json.time > new Date().getTime() && flag ) {
             return state.__("verificationTokenSuccess");
         } else {
             return state.__("verificationTokenTimeOut");
@@ -64,8 +78,8 @@ function verificationToken(token) {
 function decryptToken(token) {
     try {
         let json = jwt.verify(token, secret);
-        let returns=state.__("decryptTokenSuccess");
-        returns.data=json;
+        let returns = state.__("decryptTokenSuccess");
+        returns.data = json;
         return returns;
     } catch (err) {
         return state.__("decryptTokenError");

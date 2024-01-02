@@ -29,6 +29,9 @@
 
 ###	mysql数据库
 	npm install mysql -i --save
+
+###	node-cache内存缓存库
+	npm install node-cache -i --save
 	
 ### 异步控制流
     npm install async
