@@ -6,7 +6,7 @@ const EN = {
     },
     Home: {
         t1: "contact service",
-        t2: "Wheel Brother website online platform",
+        t2: "Point card recharge online platform",
         t3: "Send (s)",
         t4: "Please enter your question",
         t5: "  serve you",
@@ -50,6 +50,9 @@ const EN = {
         t25: "expression",
         t26: "Refresh successful",
         t27: "Offline users",
+        t28: "Search username",
+        t29: "Search",
+        t30: "Search result is empty"
     },
     customerChat:{
         t1: "close",
@@ -101,7 +104,9 @@ const EN = {
         t2: "You have connected to customer service, let's start consulting! (Long press on the message to recall it)",
         t3: "withdraw",
         t4: "The user has connected, start replying! (Click on the message to recall the message)",
-        t5: "The user is offline, but you can still have a conversation and the other party can view it through historical messages"
+        t5: "The user is offline, but you can still have a conversation and the other party can view it through historical messages",
+        t6: "This is a message that the other party has withdrawn, but you can still click to view it",
+        t7: "preview pictures"
     },
     MyInput:{
         t1:"Modify nickname",

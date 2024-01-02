@@ -1,10 +1,10 @@
 <template>
     <div class="userBody">
-        <div id="btn_open" class="openChat" v-on:click="isDisplay = !isDisplay">
+        <!-- <div id="btn_open" class="openChat" v-on:click="isDisplay = !isDisplay">
             <i class="openChatIcon"></i>
             <i class="openChatline"></i>
             <span class="openChatText">{{ $t('text.Home.t1') }}</span>
-        </div>
+        </div> -->
         <div class="userWindow" id="userWindow" v-show="isDisplay">
             <div class="userHead" :style="this.$store.state.bgColor">
 
@@ -23,7 +23,7 @@
                     <!--<img class="headTap" src="../assets/images/enlarge.png">-->
                     <SetLanguage></SetLanguage>
                     <input class="headTap" type="color" v-on:click="changeBg" v-model="bgColor">
-                    <img class="headTap" src="../assets/images/close.png" v-on:click="isDisplay = !isDisplay">
+                    <!-- <img class="headTap" src="../assets/images/close.png" v-on:click="isDisplay = !isDisplay"> -->
                 </span>
 
             </div>
@@ -201,7 +201,6 @@ export default {
 
         //监听连接指定客服，不在线的情况下
         this.socket.on("nullSpecifyService", (data) => {
-            console.log(data)
             //数据存储到localStorage
             let obj = JSON.parse(JSON.stringify(this.user))
             obj.receiveId = data.data.receiveId;
@@ -301,7 +300,7 @@ export default {
             let obj = JSON.parse(JSON.stringify(this.user))
             obj.serviceId = item.serviceId
             obj.serviceName = item.serviceName
-            obj.serviceHead =item.serviceHead
+            obj.serviceHead = item.serviceHead
             this.socket.emit("specifyConnection", obj);
         },
 

@@ -200,10 +200,9 @@ module.exports = class controller {
 
         //存储离线消息
         this.app.post('/insertOfflineMessage', function (req, res) {
-
             if (req.body.sendType == '2' && config.imageSaveLocal || req.body.sendType == '3' && config.imageSaveLocal) {
                 //过滤data:URL
-                let base64Data = req.body.message.replace(/^data:image\/\w+;base64,/, "");
+                let base64Data = req.body.message.replace(/'/g,"").replace(/^data:image\/\w+;base64,/, "");
                 let dataBuffer = new Buffer.from(base64Data, 'base64');
                 // 存储文件命名是使用当前时间，防止文件重名
                 let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + ".png";
@@ -214,7 +213,7 @@ module.exports = class controller {
                     console.log('【文件保存错误】', err);
                 }
             }
-
+            
             req.body.time = nowTime.getNowTime();
             mysql.insertOfflineMessage(req.body).then((sql_data) => {
                 if (sql_data) {
@@ -258,7 +257,20 @@ module.exports = class controller {
             });
         })
 
+        //客服查询用户
+        this.app.post('/selectUserName', function (req, res) {
+            mysql.selectUserName(req.body.userName,req.body.serviceId).then((sql_data) => {
+                if (sql_data) {
+                    let returns = state.__("success");
+                    returns.data = sql_data;
+                    res.json(returns)
+                } else {
+                    res.json(state.__("false"))
+                }
+            });
+        })
 
+        
 
     }
 }

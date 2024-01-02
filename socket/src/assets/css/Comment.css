@@ -149,6 +149,7 @@
     right: 0;
     bottom: 0;
     height: auto;
+    cursor: pointer;
 }
 
 .messageContent {

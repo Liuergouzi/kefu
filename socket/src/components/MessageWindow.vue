@@ -32,22 +32,21 @@
                     <img class="jiao" src="../assets/images/other_radio.jpg" />
                     <img v-bind:src="item.message" />
                 </div>
-                <div v-else-if="item.sendType == 3 && item.isRetract != 1" class="SendImage">
+                <div v-else-if="item.sendType == 3 && item.isRetract != 1" class="SendImage" @click="imagePreview(item.message)">
                     <img v-bind:src="item.message" />
                 </div>
 
                 <div v-if="item.isRetract == 1" class="retract" :style="this.$store.state.bgColor"
                     @click="item.isRetract = 0">
-                    这是对方撤回的消息,但你仍可以点击查看
+                    {{ $t('text.MessageWindow.t6') }}
                 </div>
 
             </div>
 
 
             <!--自己-->
-            <div class="myselfDiv" v-if="item.sendPeople == 'me'" @touchstart="gotouchstart(item)"
-                @touchmove="gotouchmove()" @touchend="gotouchend()" @mousedown="gotouchstart(item)" @mouseup="gotouchend">
-                <van-popover v-model:show="item.showRetract" :actions="actions" @select="retractSelect(item)">
+            <div class="myselfDiv" v-if="item.sendPeople == 'me'">
+                <van-popover v-model:show="item.showRetract" :actions="item.sendType == 3?actionsTwo:actions" @select="retractSelect($event,item)">
                     <template #reference>
                         <div v-if="item.sendType == 1" class="news">
                             <img class="jiao" src="../assets/images/radio.jpg" />
@@ -89,6 +88,9 @@
 
 <script>
 import {selectMessage} from '../http/api'
+import { ImagePreview } from 'vant';
+import 'vant/es/image-preview/style';
+
 export default {
     name: 'MessageWindow',
     emits: ['retractMessage'],
@@ -102,7 +104,7 @@ export default {
     },
     data() {
         return {
-            lastSession: true,
+            lastSession: false,
             idIsSelect: [],
             //此处对于子组件与父组件之间的传值需要拷贝一下，父组件传值子组件实际上还是引用地址，不能直接去修改
             messageList_copy: this.messageList,
@@ -111,45 +113,18 @@ export default {
         }
     },
     mounted() {
-        let params = {
-            sendId: this.sendId,
-            receiveId: this.receiveId,
-            isService: this.isService
-        }
-        //先请求查看是否有历史消息
-        selectMessage(params).then((response) => {
-            if (response.length == 0) {
-                this.lastSession = false
-            }
-        })
+        this.selectMessage()
     },
-    methods: {
-
-        //开始长按
-        gotouchstart(item) {
-            clearTimeout(this.timeOutEvent); //清除定时器
-            this.timeOutEvent = 0;
-            this.timeOutEvent = setTimeout(function () {
-                //执行长按要执行的内容，
-                this.$nextTick(() => {
-                    item.showRetract = true
-                })
-
-            }.bind(this), 1500); //这里设置定时
-        },
-        //手释放，如果在500毫秒内就释放，则取消长按事件，此时可以执行onclick应该执行的事件
-        gotouchend() {
-            clearTimeout(this.timeOutEvent);
-        },
-        //如果手指有移动，则取消所有事件，此时说明用户只是要移动而不是长按
-        gotouchmove() {
-            clearTimeout(this.timeOutEvent); //清除定时器
-            this.timeOutEvent = 0;
-        },
+    methods: {        
 
         //消息撤回
-        retractSelect(item) {
-            return this.$emit('retractMessage', item)
+        retractSelect(event,item) {
+            if(event.id==1){
+                return this.$emit('retractMessage', item)
+            }
+            if(event.id==2){
+                this.imagePreview(item.message)
+            }
         },
 
         //查询历史消息
@@ -223,6 +198,10 @@ export default {
             const diff = t1 - t2; // 计算时间差值
             const hours = Math.abs(diff / 1000 / 60 / 60); // 计算小时数
             return hours > 1;
+        },
+        //图片预览
+        imagePreview(src){
+            ImagePreview({images:[src],closeable: true,})
         }
     },
 
@@ -237,16 +216,7 @@ export default {
                     this.lastSession = false
                 }
                 if (listTemp.length == 0 && this.lastSession) {
-                    let params = {
-                        sendId: this.sendId,
-                        receiveId: this.receiveId,
-                        isService: this.isService
-                    }
-                    selectMessage(params).then((response) => {
-                        if (response.length== 0) {
-                            this.lastSession = false
-                        }
-                    })
+                    this.selectMessage()
                 }
             }
         },
@@ -262,7 +232,13 @@ export default {
             return [
                 { text: this.$t('text.MessageWindow.t3') },
             ];
-        }
+        },
+        actionsTwo() {
+            return [
+                { id:1,text: this.$t('text.MessageWindow.t3') },
+                { id:2,text: this.$t('text.MessageWindow.t7') },
+            ];
+        },
     }
 }
 </script>

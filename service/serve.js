@@ -1,7 +1,7 @@
 /*
  * @轮子的作者: 轮子哥
- * @Date: 2023-12-25 14:42:56
- * @LastEditTime: 2023-12-25 16:00:51
+ * @Date: 2023-12-25 09:04:54
+ * @LastEditTime: 2023-12-26 10:12:07
  */
 const express = require('express');	// 引入express
 
@@ -15,8 +15,7 @@ app.use(bodyParser.urlencoded({ limit:'3mb', extended: true })); //设置解析�
 
 app.use(express.static(config.imageStaticDirectory));//将静态资源托管
 const state = require('./language/i18n'); //引入全局返回状态  
-const verification = require("./security/verification.js");  //引入数据校验 
-
+const verification = require("./security/verification.js");  //引入数据校验
 
 /**
  * 使用http协议 ，请注意使用https就将此段代码注释

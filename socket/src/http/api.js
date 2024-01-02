@@ -170,3 +170,12 @@ export function deleteFast(data) {
         data: data
     });
 }
+
+//客服查询用户
+export function selectUserName(data) {
+    return request({
+        url: "/selectUserName",
+        method: "post",
+        data: data
+    });
+}

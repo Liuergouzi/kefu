@@ -13,8 +13,8 @@ p{
 /*底部客服对话框*/
 .userWindow {
     position: fixed;
-    right: 200px;
-    bottom: 80px;
+    right: calc(50% - 200px);
+    top: calc(50% - 300px);
     width: 400px;
     height: 600px;
     border-radius: 4px;

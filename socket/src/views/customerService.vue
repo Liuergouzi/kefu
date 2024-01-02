@@ -54,7 +54,7 @@
             <!--右-->
             <div class="serviceHeadRight">
                 <div style="position: relative;padding-right: 15px;">
-                    <img src="../assets/images/message.png" style="width: 25px;height: 25px;"
+                    <img src="../assets/images/message.png" style="width: 25px;height: 25px;cursor: pointer"
                         @click="offMsgDialogShow = !offMsgDialogShow">
                     <div v-show="offMessageCount > 0" class="off_read">
                         {{ offMessageCount > 99 ? "99+" : offMessageCount }}
@@ -79,7 +79,8 @@
                                 @click="goToUserOffMsg(item)">
                                 <div>{{ item.data.userName }}:</div>
                                 <div style="padding-left: 10px;">
-                                    <div style="padding: 10px 0px;" v-if="item.data.sendType == '1'">{{ item.data.sendMessage
+                                    <div style="padding: 10px 0px;" v-if="item.data.sendType == '1'">{{
+                                        item.data.sendMessage
                                     }}</div>
                                     <img style="padding: 10px 0px;max-width: 50px;margin-right: 50px;" v-else
                                         :src="item.data.sendMessage" />
@@ -96,6 +97,27 @@
         <div class="context">
             <!--左边内容-->
             <div class="conLeft">
+
+                <!--搜素框-->
+                <van-search v-model="searchUserNameValue" show-action :placeholder="$t('text.customerService.t28')"
+                    @clear="console.log('aa')" @search="onSearchUserName" :clearable="false">
+                    <template #action>
+                        <div @click="onSearchUserName">{{ $t('text.customerService.t29') }}</div>
+                    </template>
+                </van-search>
+                <!--显示搜索的列表-->
+                <ul>
+                    <li :key="index" v-for="(item, index) in searchUserNameList" style="cursor: pointer;height: 50px;"
+                        class="searchUserNameHover" v-on:click="selectSession(item, false)">
+                        <div class="liLeft">
+                            <img src="../assets/images/visitor.png" style="height: 35px;" />
+                        </div>
+                        <div class="liRight" style="display: flex;align-items: center;">
+                            {{ item.data.userName }}
+                        </div>
+                    </li>
+                </ul>
+
                 <!--在线用户列表-->
                 <ul>
                     <div v-show="onlineUsers.length > 0" class="conLeftTop" v-on:click="onlineShow = !onlineShow">
@@ -153,7 +175,7 @@
                     </li>
                 </ul> -->
 
-                <!--离线会话列表-->
+                <!--离线消息会话列表-->
                 <ul>
                     <div v-show="selectUserOffMsgList.length > 0" class="conLeftTopOffLine"
                         v-on:click="offMessageShow = !offMessageShow">
@@ -267,7 +289,8 @@
                 <!--聊天内容-->
                 <MessageWindow v-if="isSelectSession" id="RightCont" :messageList="selectUsers.data.messageList"
                     :sendId="service.serviceId" :receiveId="selectUsers.data.receiveId" isService
-                    @retractMessage="retractMessage" :isOffline="this.selectUsers.data.isOffline" :serviceHead="service.serviceHead">
+                    @retractMessage="retractMessage" :isOffline="this.selectUsers.data.isOffline"
+                    :serviceHead="service.serviceHead">
                 </MessageWindow>
                 <!--聊天框底部-->
                 <div class="RightFoot">
@@ -316,7 +339,7 @@ import SendImage from '@/components/SendImage.vue';
 import ServiceRightPage from '@/components/ServiceRightPage.vue';
 import CommentReply from '@/components/CommentReply.vue';
 import SetLanguage from '@/components/SetLanguage.vue';
-import {chatListSelect,selectOfflineMessage,offlineMessageCount,resetOfflineCount} from '../http/api'
+import { chatListSelect, selectOfflineMessage, offlineMessageCount, resetOfflineCount, selectUserName } from '../http/api'
 import config from '@/config';
 import CryptoJS from 'crypto-js'
 
@@ -382,7 +405,10 @@ export default {
                 offlinePage: 1,
                 offlineFinished: false
             },
-            offMsgDialogShow: false
+            offMsgDialogShow: false,
+            searchUserNameValue: '',
+            searchUserNameList: [],
+
         }
     },
 
@@ -549,7 +575,7 @@ export default {
         //获取离线列表
         getOffline(showToast) {
             this.userOfflineList.offlineLoading = true
-            chatListSelect({ serviceId: this.service.serviceId, page: this.userOfflineList.offlinePage }).then(response=>{
+            chatListSelect({ serviceId: this.service.serviceId, page: this.userOfflineList.offlinePage }).then(response => {
                 let requestList = []
                 response.forEach(element => {
                     element.message = element.sendmessage
@@ -577,7 +603,7 @@ export default {
         //查询离线消息
         selectOfflineMessage() {
             this.userOfflineMessage.offlineLoading = true
-            selectOfflineMessage({ serviceId: this.service.serviceId, page: this.userOfflineMessage.offlinePage }).then(response=>{
+            selectOfflineMessage({ serviceId: this.service.serviceId, page: this.userOfflineMessage.offlinePage }).then(response => {
                 let requestList = []
                 response.forEach(element => {
                     element.message = element.sendMessage
@@ -647,6 +673,8 @@ export default {
             this.selectUsers = {}
             //拷贝选择的用户进入新列表
             this.selectUsers = Object.assign({}, obj)
+            //让聊天窗口回到底部
+            this.toBottom(128)
         },
 
         goToUserOffMsg(item) {
@@ -654,10 +682,10 @@ export default {
             this.offMsgDialogShow = !this.offMsgDialogShow
             this.selectUserOffMsgList = [item]
             //取消红点
-            resetOfflineCount({userId:item.data.userId }).then(() => {
-                const timer =setTimeout(() => {
+            resetOfflineCount({ userId: item.data.userId }).then(() => {
+                const timer = setTimeout(() => {
                     this.selectOfflineMessage()
-                    this.getOffMessageCount() 
+                    this.getOffMessageCount()
                     clearTimeout(timer)
                 }, 1000);
             })
@@ -727,6 +755,29 @@ export default {
             }
             localStorage.setItem('serviceData', JSON.stringify(this.service))
         },
+
+        //客服搜素用户
+        onSearchUserName() {
+            if (this.searchUserNameValue?.trim().length == 0) {
+                return
+            }
+            selectUserName({ userName: this.searchUserNameValue, serviceId: this.service.serviceId }).then((data) => {
+                if (data.length == 0) {
+                    this.$toast(this.$t('text.customerService.t30'));
+                }
+                let requestList = []
+                data.forEach(element => {
+                    element.message = element.sendmessage
+                    element.messageList = []
+                    element.receiveId = element.userId
+                    element.socketRoom = ''
+                    requestList.push({ data: element })
+                });
+                this.searchUserNameList = requestList
+            })
+        },
+
+        //解析扩展值
         getExtend(extend) {
             if (extend && extend != '') {
                 try {
@@ -781,4 +832,6 @@ export default {
 </script>
 
 
-<style scoped>@import url("../assets/css/CustomerService.css");</style>
+<style scoped>
+@import url("../assets/css/CustomerService.css");
+</style>

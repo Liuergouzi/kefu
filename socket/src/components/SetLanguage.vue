@@ -84,6 +84,7 @@ computed: {
 .icon {
     width: 20px;
     height: 20px;
+    cursor: pointer;
 }
 
 .notes {

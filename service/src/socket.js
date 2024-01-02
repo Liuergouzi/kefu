@@ -262,7 +262,7 @@ module.exports = class controller {
                         let returns = state.__("nullSpecifyService");
                         returns.data.serviceName = data.serviceName;
                         returns.data.receiveId = data.serviceId;
-                        returns.data.serviceHead = data.serviceHead;
+                        returns.data.serviceHead =data.serviceHead
                         socket.emit("nullSpecifyService", state.__("nullSpecifyService"));
                     }
                 } else {
@@ -344,6 +344,10 @@ module.exports = class controller {
                     //过滤data:URL
                     let base64Data = data.message.replace(/^data:image\/\w+;base64,/, "");
                     let dataBuffer = new Buffer.from(base64Data, 'base64');
+                    if (dataBuffer.length > 1024 * 1024 * 3) { 
+                        socket.emit("error", "图片不能超过3m")
+                        return
+                    }
                     // 存储文件命名是使用当前时间，防止文件重名
                     let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + ".png";
                     try {

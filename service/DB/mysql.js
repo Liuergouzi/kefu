@@ -1,5 +1,4 @@
 var OptPool = require('./sqlPool');
-const nowTime = require("../utils/time");
 /**
  * 地址：https://www.cnblogs.com/fangsmile/p/6255872.html
  * asyn库高效写代码，因为这些代码之前写的，不想改，所以asyn没有用到，但后面的增删改查建议使用asyn
@@ -29,7 +28,6 @@ pool.getConnection(function (error, connection) {
 
 function selectdefaultProblem() {
     var sql = `select * from problem;`;
-    //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -55,7 +53,6 @@ function selectdefaultProblem() {
 
 function selectUser(userId) {
     var sql = `select * from user where userId=${userId};`;
-    //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -84,7 +81,6 @@ function insertUser(userJson) {
 
     var sql = `insert into user(userId,userName,ip,area,device,extend) 
     values(${userJson.userId},${userJson.userName},${userJson.ip},${userJson.area},${userJson.device},${userJson.extend});`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -109,7 +105,6 @@ function insertUser(userJson) {
 function updateUser(userJson, id) {
     var sql = `update user set userName=${userJson.userName}, ip=${userJson.ip},area=${userJson.area},device=${userJson.device},extend=${userJson.extend} 
     where id=${"'" + id + "'"};`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -135,7 +130,6 @@ function updateUser(userJson, id) {
 
 function serviceLogin(loginJson) {
     var sql = `select * from service where serviceAccount=${loginJson.serviceAccount} and servicePassword=${loginJson.servicePassword};`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -170,7 +164,6 @@ function serviceLogin(loginJson) {
 
 function updateServiceName(serviceName, serviceId) {
     var sql = `update service set serviceName=${serviceName} where serviceId=${serviceId} ;`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -222,7 +215,6 @@ function updateServiceMax(serviceMax, serviceId) {
 
 function updateServiceFrequency(serviceId) {
     var sql = `update service set serviceFrequency=serviceFrequency+1 where serviceId=${serviceId} ;`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -249,14 +241,12 @@ function updateServiceFrequency(serviceId) {
  */
 
 function insertMessage(messageJson) {
-
     if (messageJson.hasOwnProperty("userId")) {
         var sql = `insert into message(sendId,receiveId,sendMessage,sendType,sendTime) values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${messageJson.time});`;
     }
     if (messageJson.hasOwnProperty("serviceId")) {
         var sql = `insert into message(sendId,receiveId,sendMessage,sendType,sendTime) values(${messageJson.serviceId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${messageJson.time});`;
     }
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -282,7 +272,7 @@ function insertMessage(messageJson) {
 function insertOfflineMessage(messageJson) {
     var sql = `insert into message(sendId,receiveId,sendMessage,sendType,sendTime,isUserOffline) 
     values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${"'"+messageJson.time+"'"},'1');`;
-    //使用promise将内部函数的返回值传出去
+
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             const result = connection.query(sql, (error, result) => {
@@ -306,7 +296,6 @@ function selectOfflineMessage(serviceId,page) {
     var star = (page - 1) * 20;
     var sql = `select * from message JOIN user ON message.sendId=user.userId where
     message.receiveId=${serviceId} and message.isUserOffline='1' order by sendTime desc limit ${star}, 20;`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -329,7 +318,6 @@ function selectOfflineMessage(serviceId,page) {
 
 function offlineMessageCount(serviceId) {
     var sql = `select count(id) from message where receiveId=${serviceId} and isUserOffline='1'`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -352,7 +340,6 @@ function offlineMessageCount(serviceId) {
 
 function resetOfflineCount(userId) {
     var sql = `update message set isUserOffline='0' where sendId=${userId} ;`;
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -379,8 +366,6 @@ function resetOfflineCount(userId) {
 function retractMessage(messageId) {
 
     var sql = `update message set isRetract='1' where id=${messageId} ;`;
-
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -412,8 +397,6 @@ function insertChatList(userJson) {
            ${userJson.device},${userJson.extend?userJson.extend:"''"},${userJson.userState},${userJson.isProhibit},${userJson.updateTime}) 
     ON DUPLICATE KEY UPDATE userName=${userJson.userName},ip=${userJson.ip},area=${userJson.area},device=${userJson.device},
            extend=${userJson.extend?userJson.extend:"''"},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${userJson.updateTime};`;
-
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -460,7 +443,7 @@ function chatListSelect(serviceId, page) {
     where offlinelist.serviceId = ${serviceId}
     order by offlinelist.updatetime desc
     limit ${star}, 20;`;
-    //使用promise将内部函数的返回值传出去
+
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -485,7 +468,7 @@ function chatListSelect(serviceId, page) {
  */
 
 function selectMessage(sendId, receiveId, isService) {
-    if (isService==="'true'") {
+    if (isService == "'true'") {
         var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId} order by sendTime asc;`;
     } else {
         var sql = `
@@ -498,8 +481,6 @@ function selectMessage(sendId, receiveId, isService) {
             or (sendId = ${receiveId} and receiveId = ${sendId})
         order by sendTime asc`;
     }
-
-    //使用promise将内部函数的返回值传出去
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -527,8 +508,6 @@ function selectMessage(sendId, receiveId, isService) {
  */
 function commentInsert(commentJson) {
     var sql = `insert into comment(commentId,commentContent,commentGrade,commentTime) values(${commentJson.commentId},${commentJson.commentContent},${commentJson.commentGrade},${commentJson.commentTime});`;
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -553,8 +532,6 @@ function commentInsert(commentJson) {
  */
 function commentSelectById(commentId) {
     var sql = `select * from comment where commentId=${commentId}  order by id desc;`;
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -581,7 +558,6 @@ function commentSelectById(commentId) {
 function commentSelect(page) {
     var star = (page - 1) * 10;
     var sql = `select * from comment  order by id desc limit ${star}, 10;`;
-    //使用promise将内部函数的返回值传出去
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -606,8 +582,6 @@ function commentSelect(page) {
  */
 function commentReply(replyJson) {
     var sql = `update comment set commentState='1' , commentService=${replyJson.commentService} , commentReply=${replyJson.commentReply} where id=${replyJson.id} ;`;
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -632,8 +606,6 @@ function commentReply(replyJson) {
  */
 function selectFast(serviceId) {
     var sql = `select * from fast where serviceId=${serviceId} and isDelete !='1';`;
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -656,8 +628,6 @@ function selectFast(serviceId) {
  */
 function addFast(fastJson) {
     var sql = `insert into fast(serviceId,parentId,title) values(${fastJson.serviceId},${fastJson.parentId},${fastJson.title});`;
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -680,8 +650,6 @@ function addFast(fastJson) {
  */
 function editFast(fastJson) {
     var sql = `update fast set title=${fastJson.title} where id=${fastJson.id} ;`;
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -704,8 +672,6 @@ function editFast(fastJson) {
  */
 function deleteFast(id) {
     var sql = `update fast set isDelete='1' where id=${id} ;`;
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -734,8 +700,6 @@ function selectService(page,serviceType) {
     }else{
         var sql = `select serviceId,serviceName,serviceMax,serviceHead from service limit ${star}, 10;`;
     }
-    //使用promise将内部函数的返回值传出去
-
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -751,6 +715,28 @@ function selectService(page,serviceType) {
     })
 }
 
+
+/**
+ * 客服查询用户
+ * @param {*} userName 用户名称，serviceId 客服id
+ * @returns 返回离线数据列表
+ */
+function selectUserName(userName,serviceId) {
+    var sql = `select * from offlinelist where userName rlike ${userName} and serviceId=${serviceId};`;
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+}
 
 //暴露方法
 module.exports = {
@@ -779,7 +765,8 @@ module.exports = {
     insertOfflineMessage,
     selectOfflineMessage,
     offlineMessageCount,
-    resetOfflineCount
+    resetOfflineCount,
+    selectUserName
 }
 
 

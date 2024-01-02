@@ -442,3 +442,7 @@
     max-height: 500px;
     overflow: auto;
 }
+
+.searchUserNameHover:hover{
+    background-color: #eee;
+}

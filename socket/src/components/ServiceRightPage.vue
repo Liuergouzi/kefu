@@ -297,11 +297,11 @@ export default {
                     text: this.$t('text.ServiceRightPage.t7'),
                     state: false,
                 },
-                {
-                    id: 3,
-                    text: this.$t('text.ServiceRightPage.t8'),
-                    state: false,
-                },
+                // {
+                //     id: 3,
+                //     text: this.$t('text.ServiceRightPage.t8'),
+                //     state: false,
+                // },
             ]
         }
     }
