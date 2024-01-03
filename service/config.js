@@ -6,8 +6,8 @@
 /**
  * 公共配置文件
  */
-module.exports = {
-    imageSaveLocal: false,                                              //图片是否保存在指定目录，false直接存储在数据库
+ module.exports = {
+    imageSaveLocal: false,                                              //图片是否保存在指定目录，false直接存储在数据库,部署服务器时必须要填全路径
     imageStaticDirectory: "./public",                                   //静态托管路径，即下面保存图片目录的上级目录，部署服务器时此路径必须为全路径
     imageSaveUrl: "/upload",                                            //图片保存路径，最终路径为："./public/upload"
     imageIp: "http://localhost:3030",                                   //图片保存到数据库路径前缀，获取太麻烦了,干脆自己手动填，最终路径为："http://localhost:3030/upload/xxx.png"

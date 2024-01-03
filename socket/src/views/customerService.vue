@@ -548,12 +548,18 @@ export default {
 
         //退出登录，删除token  
         loginOut() {
+            if (this.stateChange) {
+                //客服下线
+                this.socket.emit("serviceOffline", this.service);
+            }
             //删除vuex
             // this.$store.state.token = null;
+            //刷新页面
+            setTimeout(()=>{this.$router.go(0)},200)
             //删除localStorage
             localStorage.setItem('token', null);
             //去登录页面
-            this.$router.push({ path: '/customerServiceLogin', replace: true })
+            setTimeout(()=>{this.$router.push({ path: '/customerServiceLogin', replace: true })},800)
         },
         //列表弹出选择
         onSelect() {
