@@ -184,7 +184,7 @@
                             <span v-show="!offMessageShow">▲</span>
                             {{ $t('text.customerService.t9') }}
                         </div>
-                        <img @click.stop="userOfflineMessage.offlinePage = 1;offlineUsers=[]; getOffline(true)"
+                        <img @click.stop="userOfflineMessage.offlinePage = 1; offlineUsers = []; getOffline(true)"
                             src="../assets/images/refresh.png" style="width: 18px;height:18px;margin-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
@@ -224,7 +224,7 @@
                             <span v-show="!offlineShow">▲</span>
                             {{ $t('text.customerService.t27') }}
                         </div>
-                        <img @click.stop="userOfflineList.offlinePage = 1;offlineUsers=[]; getOffline(true)"
+                        <img @click.stop="userOfflineList.offlinePage = 1; offlineUsers = []; getOffline(true)"
                             src="../assets/images/refresh.png" style="width: 18px;height:18px;margin-right: 10px;">
                     </div>
                     <!--显示离线连接列表-->
@@ -324,9 +324,9 @@
                 </div>
             </div>
             <!--右边内容-->
-            <ServiceRightPage v-if="isSelectSession" @submit="selectReplay($event)" :user="selectUsers"
-                :serviceId="service.serviceId"></ServiceRightPage>
-            <CommentReply v-if="!isSelectSession"></CommentReply>
+            <ServiceRightPage @submit="selectReplay($event)" :user="selectUsers" :serviceId="service.serviceId">
+            </ServiceRightPage>
+
         </div>
     </div>
 </template>
@@ -337,7 +337,6 @@ import MessageWindow from '@/components/MessageWindow.vue';
 import SendEmote from '@/components/SendEmote.vue';
 import SendImage from '@/components/SendImage.vue';
 import ServiceRightPage from '@/components/ServiceRightPage.vue';
-import CommentReply from '@/components/CommentReply.vue';
 import SetLanguage from '@/components/SetLanguage.vue';
 import { chatListSelect, selectOfflineMessage, offlineMessageCount, resetOfflineCount, selectUserName } from '../http/api'
 import config from '@/config';
@@ -351,7 +350,6 @@ export default {
         SendEmote,
         SendImage,
         ServiceRightPage,
-        CommentReply,
         SetLanguage
     },
 

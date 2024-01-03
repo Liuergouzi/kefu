@@ -1,7 +1,7 @@
 /*
  * @轮子的作者: 轮子哥
  * @Date: 2023-12-25 09:04:54
- * @LastEditTime: 2024-01-02 17:53:30
+ * @LastEditTime: 2024-01-03 09:57:53
  */
 const jwt = require('jsonwebtoken')     //引入token依赖
 const crypto = require('crypto')        //引入需要用到MD5的模块
@@ -27,16 +27,29 @@ function createToken(payload) {
         let token = jwt.sign(payload, secret);
         let returns = state.__("createTokenSuccess");
         returns.data = token;
-        if(payload.serviceId)
-        nodeCache.setCache(payload.serviceId, payload.serviceId)
-        if(payload.userId)
-        nodeCache.setCache(payload.userId, payload.userId)
+        if(payload.serviceId){
+            nodeCache.setCache(payload.serviceId, payload.serviceId)
+        }
         return returns;
     } catch (e) {
-        // console.log("【轮子哥】生成token失败")
         return state.__("createTokenError");
     }
-
+}
+//防止伪造，用户只能添加用户缓存
+function createTokenUser(payload) {
+    try {
+        payload = JSON.parse(payload);
+        payload.time = new Date().getTime() + 86400000 * 2.5;//设置过期时长两天半
+        let token = jwt.sign(payload, secret);
+        let returns = state.__("createTokenSuccess");
+        returns.data = token;
+        if(payload.userId){
+            nodeCache.setCache(payload.userId, payload.userId)
+        }
+        return returns;
+    } catch (e) {
+        return state.__("createTokenError");
+    }
 }
 
 
@@ -51,14 +64,17 @@ function verificationToken(token) {
     try {
         let json = jwt.verify(token, secret)
         let flag=false
+        let returns = state.__("verificationTokenSuccess");
         if(json.serviceId){
             flag=nodeCache.getCache(json.serviceId)
+            returns.isService = true
         }
         if(json.userId){
             flag=nodeCache.getCache(json.userId)
+            returns.isService = false
         }
         if (json.time > new Date().getTime() && flag ) {
-            return state.__("verificationTokenSuccess");
+            return returns;
         } else {
             return state.__("verificationTokenTimeOut");
         }
@@ -91,6 +107,7 @@ function decryptToken(token) {
 //暴露方法
 module.exports = {
     createToken,
+    createTokenUser,
     decryptToken,
     verificationToken
 }

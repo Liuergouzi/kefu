@@ -1,16 +1,9 @@
 <template>
     <div class="infoBox">
-        <!--工具栏-->
-        <div class="serviceTool">
-            <div v-for="(item, index) in serviceTool" :key="index" :class="[
-                'service_tool',
-                item.id == current_state ? 'active_tool' : '',
-            ]" v-on:click="changeToolPage(item)">
-                {{ item.text }}
-            </div>
-        </div>
         <!--留言回复-->
-        <div v-show="current_state == 1" class="infoContent">
+        <div class="infoContent">
+            <img @click="getComment(true)" src="../assets/images/refresh.png"
+                style="width: 18px;height: 18px;position: absolute;top: 0;right: 33px;">
             <div class="messageRecord">
                 <div v-for="(item, index) in messageList" :key="index" class="messageDiv">
                     <div class="messageTime">{{ getTransTime(item.commentTime) }}</div>
@@ -40,39 +33,31 @@
             </div>
             <van-pagination v-model="currentPage" :page-count="totalPage"></van-pagination>
         </div>
-        <!--对接页面-->
-        <div v-show="current_state == 2" class="infoContent">
-            {{ $t('text.CommentReply.t6') }}
-        </div>
     </div>
 </template>
 
 <script>
-import {commentSelect,commentReply} from '../http/api'
+import { commentSelect, commentReply } from '../http/api'
 export default {
     name: 'CommentReply',
     mounted() {
 
         this.service = Object.assign({}, JSON.parse(localStorage.getItem('serviceData')))
-
-        commentSelect({ page: 1 }).then((response) => {
-            this.messageList = response;
-            if (response.length == 10) {
-                this.totalPage = this.totalPage + 1
-            }
-        })
+        this.getComment()
     },
     methods: {
-        //切换客服工具
-        changeToolPage(serviceTool) {
-            this.serviceTool.map((a) => {
-                if (a.id == serviceTool.id) {
-                    a.state = true;
-                    this.current_state = a.id;
-                } else {
-                    a.state = false;
+
+        //获取留言
+        getComment(flag) {
+            commentSelect({ page: 1 }).then((response) => {
+                this.messageList = response;
+                if (response.length == 10&&!flag) {
+                    this.totalPage = this.totalPage + 1
                 }
-            });
+                if(flag){
+                    this.$toast(this.$t('text.customerService.t26'));
+                }
+            })
         },
 
         //回复留言
@@ -125,20 +110,6 @@ export default {
         }
     },
     computed: {
-        serviceTool() {
-            return [
-                {
-                    id: 1,
-                    text: this.$t('text.CommentReply.t10'),
-                    state: true,
-                },
-                {
-                    id: 2,
-                    text: this.$t('text.CommentReply.t11'),
-                    state: false,
-                },
-            ]
-        }
     },
 }
 </script>

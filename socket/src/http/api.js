@@ -90,10 +90,19 @@ export function insertOfflineMessage(data) {
     });
 }
 
-//查询历史聊天记录
-export function selectMessage(params) {
+//用户查询历史聊天记录
+export function userHistoryMessage(params) {
     return request({
-        url: "/selectMessage",
+        url: "/userHistoryMessage",
+        method: "get",
+        params: params
+    });
+}
+
+//客服查询历史聊天记录
+export function serviceHistoryMessage(params) {
+    return request({
+        url: "/serviceHistoryMessage",
         method: "get",
         params: params
     });

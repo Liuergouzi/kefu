@@ -1,6 +1,6 @@
 const mysql = require("../DB/mysql.js");      //引入mysql
 const token = require("../security/token.js");  //引入token
-const state = require('../language/i18n'); //引入全局返回状态   
+const state = require('../language/i18n.js'); //引入全局返回状态   
 const nowTime = require("../utils/time.js");
 const config = require("../config.js");
 const fs = require("fs");  //文件写入
@@ -30,7 +30,7 @@ module.exports = class controller {
             });
         })
 
-        //修改名称接口
+        //修改客服名称接口
         this.app.post('/updateServiceName', function (req, res) {
                 mysql.updateServiceName(req.body.serviceName, req.body.serviceId).then((sql_data) => {
                     if (sql_data) {
@@ -52,9 +52,22 @@ module.exports = class controller {
             });
         })
 
-        //历史聊天记录查询
-        this.app.get('/selectMessage', function (req, res) {
-            mysql.selectMessage(req.query.sendId, req.query.receiveId, req.query.isService).then((sql_data) => {
+        //用户历史聊天记录查询
+        this.app.get('/userHistoryMessage', function (req, res) {
+            mysql.userHistoryMessage(req.query.sendId, req.query.receiveId).then((sql_data) => {
+                if (sql_data) {
+                    let returns = state.__("success");
+                    returns.data = sql_data;
+                    res.json(returns)
+                } else {
+                    res.json(state.__("false"))
+                }
+            });
+        })
+
+        //客服历史聊天记录查询
+        this.app.get('/serviceHistoryMessage', function (req, res) {
+            mysql.serviceHistoryMessage(req.query.sendId, req.query.receiveId).then((sql_data) => {
                 if (sql_data) {
                     let returns = state.__("success");
                     returns.data = sql_data;

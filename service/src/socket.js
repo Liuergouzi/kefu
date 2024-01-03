@@ -48,14 +48,14 @@ module.exports = class controller {
                             //传回用户数据
                             let returns = state.__("success");
                             returns.data = data;
-                            returns.token = token.createToken(data);
+                            returns.token = token.createTokenUser(data);
                             socket.emit("visitReturn", returns);
                         } else {
                             //进行用户注册
                             mysql.insertUser(newData);
                             let returns = state.__("success");
                             returns.data = datas;
-                            returns.token = token.createToken(data);
+                            returns.token = token.createTokenUser(data);
                             socket.emit("visitInsertReturn", returns);
                         }
                     });

@@ -271,7 +271,7 @@ function insertMessage(messageJson) {
 
 function insertOfflineMessage(messageJson) {
     var sql = `insert into message(sendId,receiveId,sendMessage,sendType,sendTime,isUserOffline) 
-    values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${"'"+messageJson.time+"'"},'1');`;
+    values(${messageJson.userId},${messageJson.receiveId},${messageJson.message},${messageJson.sendType},${"'" + messageJson.time + "'"},'1');`;
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -292,7 +292,7 @@ function insertOfflineMessage(messageJson) {
  * 离线信息查询
  */
 
-function selectOfflineMessage(serviceId,page) {
+function selectOfflineMessage(serviceId, page) {
     var star = (page - 1) * 20;
     var sql = `select * from message JOIN user ON message.sendId=user.userId where
     message.receiveId=${serviceId} and message.isUserOffline='1' order by sendTime desc limit ${star}, 20;`;
@@ -394,9 +394,9 @@ function retractMessage(messageId) {
 function insertChatList(userJson) {
     var sql = `insert into offlinelist(userId,serviceId,userName,ip,area,device,extend,userState,isProhibit,updateTime) 
     values(${userJson.userId},${userJson.receiveId},${userJson.userName},${userJson.ip},${userJson.area},
-           ${userJson.device},${userJson.extend?userJson.extend:"''"},${userJson.userState},${userJson.isProhibit},${userJson.updateTime}) 
+           ${userJson.device},${userJson.extend ? userJson.extend : "''"},${userJson.userState},${userJson.isProhibit},${userJson.updateTime}) 
     ON DUPLICATE KEY UPDATE userName=${userJson.userName},ip=${userJson.ip},area=${userJson.area},device=${userJson.device},
-           extend=${userJson.extend?userJson.extend:"''"},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${userJson.updateTime};`;
+           extend=${userJson.extend ? userJson.extend : "''"},userState=${userJson.userState},isProhibit=${userJson.isProhibit},updateTime=${userJson.updateTime};`;
 
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -466,12 +466,9 @@ function chatListSelect(serviceId, page) {
  * @param {*} sendId 发送者id,接收者id receiveId，形式为：string,string
  * @returns 查询到后，聊天json数据，否则返回false
  */
-
-function selectMessage(sendId, receiveId, isService) {
-    if (isService == "'true'") {
-        var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId} order by sendTime asc;`;
-    } else {
-        var sql = `
+//用户
+function userHistoryMessage(sendId, receiveId) {
+    var sql = `
         select 
             case when isRetract = '1' then '' else sendMessage end as sendMessage,
             id,sendId, receiveId,sendType,sendTime,isRetract
@@ -480,8 +477,24 @@ function selectMessage(sendId, receiveId, isService) {
             (sendId = ${sendId} and receiveId = ${receiveId})
             or (sendId = ${receiveId} and receiveId = ${sendId})
         order by sendTime asc`;
-    }
 
+    return new Promise((resolve, reject) => {
+        pool.getConnection(function (error, connection) {
+            connection.query(sql, (error, result) => {
+                if (error) {
+                    console.log('【SQL语法错误】', error.message);
+                    resolve(false);
+                } else {
+                    resolve(result)
+                }
+            })
+            connection.release();
+        })
+    })
+}
+//客服
+function serviceHistoryMessage(sendId, receiveId) {
+    var sql = `select * from message where sendId=${sendId} and receiveId=${receiveId} or sendId=${receiveId} and receiveId=${sendId} order by sendTime asc;`;
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
             connection.query(sql, (error, result) => {
@@ -497,7 +510,6 @@ function selectMessage(sendId, receiveId, isService) {
     })
 
 }
-
 
 
 
@@ -693,11 +705,11 @@ function deleteFast(id) {
  * @param {*} page 页数
  * @returns 返回10条客服数据列表
  */
-function selectService(page,serviceType) {
+function selectService(page, serviceType) {
     var star = (page - 1) * 10;
-    if(serviceType){
+    if (serviceType) {
         var sql = `select serviceId,serviceName,serviceMax,serviceHead from service where serviceType=${serviceType} limit ${star}, 10;`;
-    }else{
+    } else {
         var sql = `select serviceId,serviceName,serviceMax,serviceHead from service limit ${star}, 10;`;
     }
     return new Promise((resolve, reject) => {
@@ -721,7 +733,7 @@ function selectService(page,serviceType) {
  * @param {*} userName 用户名称，serviceId 客服id
  * @returns 返回离线数据列表
  */
-function selectUserName(userName,serviceId) {
+function selectUserName(userName, serviceId) {
     var sql = `select * from offlinelist where userName rlike ${userName} and serviceId=${serviceId};`;
     return new Promise((resolve, reject) => {
         pool.getConnection(function (error, connection) {
@@ -750,7 +762,8 @@ module.exports = {
     updateServiceFrequency,
     insertMessage,
     retractMessage,
-    selectMessage,
+    userHistoryMessage,
+    serviceHistoryMessage,
     commentInsert,
     commentSelectById,
     commentSelect,

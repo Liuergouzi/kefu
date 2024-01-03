@@ -1,7 +1,7 @@
 /*
  * @轮子的作者: 轮子哥
  * @Date: 2023-12-21 14:27:48
- * @LastEditTime: 2024-01-02 16:52:08
+ * @LastEditTime: 2024-01-03 10:33:26
  */
 /**
  * 公共配置文件
@@ -19,5 +19,22 @@ module.exports = {
     port: '3306',                                                       //MySQL端口号 
 
     ignorePath: ['/verificationToken'],                                 //忽略数据校验的接口
+    servicePath:                                                        //客服的接口
+        [
+            '/updateServiceName',
+            '/updateServiceMax',
+            '/chatListSelect',
+            '/commentSelect',
+            '/commentReply',
+            '/selectFast',
+            '/addFast',
+            '/editFast',
+            '/deleteFast',
+            '/selectOfflineMessage',
+            '/offlineMessageCount',
+            '/resetOfflineCount',
+            '/selectUserName',
+            '/serviceHistoryMessage'
+        ],                                             
     cacheTime: 60 * 60 * 24 * 2.5                                       //设置缓存过期时长两天半
 }

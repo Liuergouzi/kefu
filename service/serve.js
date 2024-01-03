@@ -1,7 +1,7 @@
 /*
  * @轮子的作者: 轮子哥
  * @Date: 2023-12-25 09:04:54
- * @LastEditTime: 2024-01-02 17:58:14
+ * @LastEditTime: 2024-01-03 10:25:28
  */
 const express = require('express');	// 引入express
 
@@ -60,10 +60,14 @@ const i18nMiddleware = (req, res, next) => {
     if (config.ignorePath.includes(req.path)) {
         next()
     }
+    let tokenData=verificationToken.verificationToken(req.headers['t-authorization'])
     if (req.method == 'POST') {
         const newDataPost = verification.newData(req.body);
-        if(!verificationToken.verificationToken(req.headers['t-authorization']).code){
+        if(!tokenData.code){
             res.json(state.__("verificationTokenTimeOut"))
+            return
+        }else if(!tokenData.isService&&config.servicePath.includes(req.path)){
+            res.json(state.__("accessDenied"))
             return
         }
         if (!newDataPost.code) {
@@ -75,8 +79,11 @@ const i18nMiddleware = (req, res, next) => {
     }
     if (req.method == 'GET') {
         const newDataGet = verification.newData(req.query);
-        if(!verificationToken.verificationToken(req.headers['t-authorization']).code){
+        if(!tokenData.code){
             res.json(state.__("verificationTokenTimeOut"))
+            return
+        }else if(!tokenData.isService&&config.servicePath.includes(req.path)){
+            res.json(state.__("accessDenied"))
             return
         }
         if (!newDataGet.code) {
@@ -101,5 +108,5 @@ const socket = require("./src/socket")
 const socketClass = new socket(io)
 socketClass.getSocket()
 
-const controller = require("./src/controller")
+const controller = require("./src/controller.js")
 new controller(app).getApi(socketClass)

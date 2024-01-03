@@ -184,5 +184,11 @@
         "type": "nullSpecifyService",
         "message": "当前客服不在线",
         "data": {}
+    },
+    "accessDenied": {
+        "code": false,
+        "type": "accessDenied",
+        "message": "拒绝访问",
+        "data": {}
     }
 }

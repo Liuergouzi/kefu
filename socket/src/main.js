@@ -1,7 +1,7 @@
 /*
  * @轮子的作者: 轮子哥
  * @Date: 2023-12-21 09:12:37
- * @LastEditTime: 2024-01-02 14:32:13
+ * @LastEditTime: 2024-01-03 09:34:58
  */
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -62,7 +62,6 @@ router.beforeEach((to, from, next) => {
 		})
 	}
 	//用户聊天页面拦截
-	//判断数据格式是否非空，是否正确，如果此处数据被伪造那也没关系~
 	else if (to.path == "/customerChat") {
 		var json = store.state.userData;
 		if (store.state.userData != {} && typeof (json) == "object" && Object.prototype.toString.call(json).toLowerCase() == "[object object]" && !json.length) {

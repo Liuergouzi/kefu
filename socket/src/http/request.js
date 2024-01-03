@@ -3,7 +3,6 @@ import { translate as $t } from "../language/index"
 import { Toast } from 'vant';
 import config from '../config';
 
-
 //创建axios
 const instance = axios.create({
     baseURL: config.environment == 'dev'?'/api':config.environment == 'build'?config.apiUrl:process.env.BASE_API,
@@ -74,12 +73,11 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(response => {
     if (response.data.code) {
         return response.data.data
-    } else {
+    }else {
         res = response
         showErrorMsg()
         return Promise.reject(response.data.message)
     }
-    //return response
 }, error => {
     if(error)
     showErrorMsg2()

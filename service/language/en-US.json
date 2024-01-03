@@ -184,5 +184,11 @@
         "type": "nullSpecifyService",
         "message": "The current customer service is not online",
         "data": {}
+    },
+    "accessDenied": {
+        "code": false,
+        "type": "accessDenied",
+        "message": "access Denied",
+        "data": {}
     }
 }

@@ -78,8 +78,10 @@
                             style="display: flex;justify-content: space-between;align-items: center;">
                             <p style="margin: 10px 0;">{{ item.title }}</p>
                             <div class="editFastOperate">
-                                <div class="editFastEdit" @click.stop="fastEdit(item)">{{ $t('text.ServiceRightPage.t13') }}</div>
-                                <div class="editFastDelete" @click.stop="fastDelete(item)">{{ $t('text.ServiceRightPage.t14') }}</div>
+                                <div class="editFastEdit" @click.stop="fastEdit(item)">{{ $t('text.ServiceRightPage.t13') }}
+                                </div>
+                                <div class="editFastDelete" @click.stop="fastDelete(item)">{{
+                                    $t('text.ServiceRightPage.t14') }}</div>
                             </div>
                         </div>
                         <ul v-show="currentEasy == item.id" style="position: relative">
@@ -88,13 +90,16 @@
                                     style="display: flex;justify-content: space-between;padding-bottom: 15px;">
                                     <p style="margin: 0px;">{{ son.title }}</p>
                                     <div class="editFastOperate">
-                                        <div class="editFastEdit" @click.stop="fastEdit(son)">{{ $t('text.ServiceRightPage.t13') }}</div>
-                                        <div class="editFastDelete" @click.stop="fastDelete(son)">{{ $t('text.ServiceRightPage.t14') }}</div>
+                                        <div class="editFastEdit" @click.stop="fastEdit(son)">{{
+                                            $t('text.ServiceRightPage.t13') }}</div>
+                                        <div class="editFastDelete" @click.stop="fastDelete(son)">{{
+                                            $t('text.ServiceRightPage.t14') }}</div>
                                     </div>
                                 </div>
                             </li>
                             <div style="display: flex;justify-content: center;">
-                                <button class="addFastBtn" id="serviceSendBtn" v-on:click="addDialogShow = !addDialogShow;addFastParentId=item.id"
+                                <button class="addFastBtn" id="serviceSendBtn"
+                                    v-on:click="addDialogShow = !addDialogShow; addFastParentId = item.id"
                                     :style="this.$store.state.bgColor">
                                     {{ $t('text.ServiceRightPage.t15') }}
                                 </button>
@@ -104,34 +109,36 @@
                 </ul>
             </template>
             <div style="display: flex;justify-content: center;padding-top: 20px;" v-if="isEditFast">
-                <button class="addFastBtn" id="serviceSendBtn" v-on:click="addDialogShow = !addDialogShow;addFastParentId=null"
-                    :style="this.$store.state.bgColor">
+                <button class="addFastBtn" id="serviceSendBtn"
+                    v-on:click="addDialogShow = !addDialogShow; addFastParentId = null" :style="this.$store.state.bgColor">
                     {{ $t('text.ServiceRightPage.t15') }}
                 </button>
             </div>
         </div>
+        <!--留言回复-->
+        <CommentReply v-show="current_state == 3" class="infoContent"></CommentReply>
         <!--对接页面-->
-        <div v-show="current_state == 3" class="infoContent">
+        <!-- <div v-show="current_state == 3" class="infoContent">
             <iframe style="width: 100%; height: 100%; border: 0px" src="https://ctrlc.cc/home/zfb/pay.html"></iframe>
-        </div>
-        <van-dialog v-model:show="addDialogShow" :title="$t('text.ServiceRightPage.t16')" show-cancel-button style="color: black;"
-            confirm-button-color="#30bcbc" closeOnPopstate @confirm="addFastConfirm">
+        </div> -->
+        <van-dialog v-model:show="addDialogShow" :title="$t('text.ServiceRightPage.t16')" show-cancel-button
+            style="color: black;" confirm-button-color="#30bcbc" closeOnPopstate @confirm="addFastConfirm">
             <div style="padding:10px 20px">
-                <van-field v-model="addFastValue" rows="1" show-word-limit maxlength="250" :placeholder="$t('text.ServiceRightPage.t19')" type="textarea"
-                    autosize />
+                <van-field v-model="addFastValue" rows="1" show-word-limit maxlength="250"
+                    :placeholder="$t('text.ServiceRightPage.t20')" type="textarea" autosize />
             </div>
         </van-dialog>
-        <van-dialog v-model:show="editDialogShow" :title="$t('text.ServiceRightPage.t17')" show-cancel-button style="color: black;"
-            confirm-button-color="#30bcbc" closeOnPopstate @confirm="editFastConfirm">
+        <van-dialog v-model:show="editDialogShow" :title="$t('text.ServiceRightPage.t17')" show-cancel-button
+            style="color: black;" confirm-button-color="#30bcbc" closeOnPopstate @confirm="editFastConfirm">
             <div style="padding:10px 20px">
-                <van-field v-model="editFastItem.title" rows="1" show-word-limit maxlength="250" :placeholder="$t('text.ServiceRightPage.t19')"
-                    type="textarea" autosize />
+                <van-field v-model="editFastItem.title" rows="1" show-word-limit maxlength="250"
+                    :placeholder="$t('text.ServiceRightPage.t20')" type="textarea" autosize />
             </div>
         </van-dialog>
-        <van-dialog v-model:show="deleteDialogShow" :title="$t('text.ServiceRightPage.t18')" show-cancel-button style="color: black;"
-            confirm-button-color="red" closeOnPopstate @confirm="deleteFastConfirm">
+        <van-dialog v-model:show="deleteDialogShow" :title="$t('text.ServiceRightPage.t18')" show-cancel-button
+            style="color: black;" confirm-button-color="red" closeOnPopstate @confirm="deleteFastConfirm">
             <div style="padding:10px 20px">
-                <p style="text-align: center;color: red;">{{$t('text.ServiceRightPage.t19')}}</p>
+                <p style="text-align: center;color: red;">{{ $t('text.ServiceRightPage.t19') }}</p>
             </div>
         </van-dialog>
     </div>
@@ -140,7 +147,8 @@
 <script>
 import config from '@/config';
 import CryptoJS from 'crypto-js'
-import {selectFast,addFast,editFast,deleteFast} from '../http/api'
+import { selectFast, addFast, editFast, deleteFast } from '../http/api'
+import CommentReply from './CommentReply.vue';
 export default {
     name: 'ServiceRightPage',
     props: {
@@ -155,12 +163,11 @@ export default {
             deleteDialogShow: false,
             addDialogShow: false,
             addFastValue: '',
-            addFastParentId:null,
+            addFastParentId: null,
             isEditFast: false,
             editFastItem: {},
             fastReplay: [],
-
-        }
+        };
     },
     methods: {
         sendMessage(data, type) {
@@ -172,12 +179,13 @@ export default {
                 if (a.id == serviceTool.id) {
                     a.state = true;
                     this.current_state = a.id;
-                } else {
+                }
+                else {
                     a.state = false;
                 }
                 //查询快捷回复数据
                 if (a.id == 2 && this.fastReplay.length == 0) {
-                    this.selectFastData()
+                    this.selectFastData();
                 }
             });
         },
@@ -185,7 +193,8 @@ export default {
         selectEasy(item) {
             if (item.id == this.currentEasy) {
                 this.currentEasy = 0;
-            } else {
+            }
+            else {
                 this.currentEasy = item.id;
             }
         },
@@ -194,65 +203,66 @@ export default {
         },
         //编辑快捷回复
         fastEdit(item) {
-            this.editDialogShow = true
-            this.editFastItem = JSON.parse(JSON.stringify(item))
+            this.editDialogShow = true;
+            this.editFastItem = JSON.parse(JSON.stringify(item));
         },
         fastDelete(item) {
-            this.deleteDialogShow = true
-            this.editFastItem = JSON.parse(JSON.stringify(item))
+            this.deleteDialogShow = true;
+            this.editFastItem = JSON.parse(JSON.stringify(item));
         },
         //查询快捷回复
         selectFastData() {
             selectFast({ serviceId: this.serviceId }).then((response) => {
-                let list = []
-                let parent = response.filter(v => v.parentId === null)
-                let sonItem = response.filter(v => v.parentId != null)
+                let list = [];
+                let parent = response.filter(v => v.parentId === null);
+                let sonItem = response.filter(v => v.parentId != null);
                 parent.forEach(element => {
                     list.push({
                         id: element.id,
                         title: element.title,
                         sonItem: sonItem.filter(v => v.parentId === element.id)
-                    })
+                    });
                 });
-                this.fastReplay = list
-            })
+                this.fastReplay = list;
+            });
         },
         //快捷回复增删改
         addFastConfirm() {
             addFast({ serviceId: this.serviceId, parentId: this.addFastParentId, title: this.addFastValue }).then(() => {
-                this.$toast(this.$t('text.ServiceRightPage.t21'))
-                this.selectFastData()
-            })
+                this.$toast(this.$t('text.ServiceRightPage.t21'));
+                this.selectFastData();
+            });
         },
         editFastConfirm() {
             editFast({ id: this.editFastItem.id, title: this.editFastItem.title }).then(() => {
-                this.$toast(this.$t('text.ServiceRightPage.t22'))
-                this.selectFastData()
-            })
+                this.$toast(this.$t('text.ServiceRightPage.t22'));
+                this.selectFastData();
+            });
         },
         deleteFastConfirm() {
             deleteFast({ id: this.editFastItem.id, }).then(() => {
-                this.$toast(this.$t('text.ServiceRightPage.t23'))
-                this.selectFastData()
-            })
+                this.$toast(this.$t('text.ServiceRightPage.t23'));
+                this.selectFastData();
+            });
         },
-
-
         //获取扩展内容
         getExtend(extend) {
             if (extend && extend != '') {
                 try {
-                    let data = this.aesDecrypt(extend)
+                    let data = this.aesDecrypt(extend);
                     if (data && data != '') {
-                        return this.convert(JSON.parse(data)).filter(v => v.title !== 'userName')
-                    } else {
-                        return []
+                        return this.convert(JSON.parse(data)).filter(v => v.title !== 'userName');
                     }
-                } catch (error) {
-                    return []
+                    else {
+                        return [];
+                    }
                 }
-            } else {
-                return []
+                catch (error) {
+                    return [];
+                }
+            }
+            else {
+                return [];
             }
         },
         convert(obj) {
@@ -265,7 +275,6 @@ export default {
             }
             return result;
         },
-
         //扩展内容加解密
         aesDecrypt(encryptedData) {
             let decrypted = CryptoJS.AES.decrypt(encryptedData, config.aesKey, {
@@ -297,17 +306,21 @@ export default {
                     text: this.$t('text.ServiceRightPage.t7'),
                     state: false,
                 },
+                {
+                    id: 3,
+                    text: this.$t('text.CommentReply.t10'),
+                    state: false,
+                },
                 // {
                 //     id: 3,
                 //     text: this.$t('text.ServiceRightPage.t8'),
                 //     state: false,
                 // },
-            ]
+            ];
         }
-    }
+    },
+    components: { CommentReply }
 }
 </script>
-<style scoped>
-@import url("../assets/css/ServiceRightPage.css");
-</style>
+<style scoped>@import url("../assets/css/ServiceRightPage.css");</style>
 
