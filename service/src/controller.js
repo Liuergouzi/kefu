@@ -32,13 +32,13 @@ module.exports = class controller {
 
         //修改客服名称接口
         this.app.post('/updateServiceName', function (req, res) {
-                mysql.updateServiceName(req.body.serviceName, req.body.serviceId).then((sql_data) => {
-                    if (sql_data) {
-                        res.json(state.__("success"))
-                    } else {
-                        res.json(state.__("false"))
-                    }
-                });
+            mysql.updateServiceName(req.body.serviceName, req.body.serviceId).then((sql_data) => {
+                if (sql_data) {
+                    res.json(state.__("success"))
+                } else {
+                    res.json(state.__("false"))
+                }
+            });
         })
 
         //修改最大接待次数接口
@@ -105,7 +105,7 @@ module.exports = class controller {
 
         //获取最新20条离线用户列表
         this.app.get('/chatListSelect', function (req, res) {
-            mysql.chatListSelect(req.query.serviceId, req.query.page.replace(/'/g,"")).then((sql_data) => {
+            mysql.chatListSelect(req.query.serviceId, req.query.page.replace(/'/g, "")).then((sql_data) => {
                 if (sql_data) {
                     let returns = state.__("success");
                     returns.data = sql_data;
@@ -119,7 +119,7 @@ module.exports = class controller {
 
         //留言分页
         this.app.get('/commentSelect', function (req, res) {
-            mysql.commentSelect(req.query.page.replace(/'/g,"")).then((sql_data) => {
+            mysql.commentSelect(req.query.page.replace(/'/g, "")).then((sql_data) => {
                 if (sql_data) {
                     let returns = state.__("success");
                     returns.data = sql_data;
@@ -214,19 +214,23 @@ module.exports = class controller {
         //存储离线消息
         this.app.post('/insertOfflineMessage', function (req, res) {
             if (req.body.sendType == '2' && config.imageSaveLocal || req.body.sendType == '3' && config.imageSaveLocal) {
-                //过滤data:URL
-                let base64Data = req.body.message.replace(/'/g,"").replace(/^data:image\/\w+;base64,/, "");
-                let dataBuffer = new Buffer.from(base64Data, 'base64');
-                // 存储文件命名是使用当前时间，防止文件重名
-                let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + ".png";
                 try {
+                    //过滤data:URL
+                    let base64Data = req.body.message.replace(/'/g, "").replace(/^data:image\/\w+;base64,/, "");
+                    let dataBuffer = new Buffer.from(base64Data, 'base64');
+                    // 存储文件命名是使用当前时间，防止文件重名
+                    let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime()+"0"+Math.floor(Math.random() * 100) + ".png";
+                    if (base64Data.length/4*3 > 1024 * 1024 * 3) {
+                        socket.emit("error", "图片不能超过3m")
+                        return
+                    }
                     fs.writeFileSync(config.imageStaticDirectory + saveUrl, dataBuffer);
-                    req.body.message ="'" +config.imageIp + saveUrl+"'"
+                    req.body.message = "'" + config.imageIp + saveUrl + "'"
                 } catch (err) {
                     console.log('【文件保存错误】', err);
                 }
             }
-            
+
             req.body.time = nowTime.getNowTime();
             mysql.insertOfflineMessage(req.body).then((sql_data) => {
                 if (sql_data) {
@@ -239,7 +243,7 @@ module.exports = class controller {
 
         //查询离线消息
         this.app.get('/selectOfflineMessage', function (req, res) {
-            mysql.selectOfflineMessage(req.query.serviceId, req.query.page.replace(/'/g,"")).then((sql_data) => {
+            mysql.selectOfflineMessage(req.query.serviceId, req.query.page.replace(/'/g, "")).then((sql_data) => {
                 if (sql_data) {
                     let returns = state.__("success");
                     returns.data = sql_data;
@@ -272,7 +276,7 @@ module.exports = class controller {
 
         //客服查询用户
         this.app.post('/selectUserName', function (req, res) {
-            mysql.selectUserName(req.body.userName,req.body.serviceId).then((sql_data) => {
+            mysql.selectUserName(req.body.userName, req.body.serviceId).then((sql_data) => {
                 if (sql_data) {
                     let returns = state.__("success");
                     returns.data = sql_data;
@@ -283,7 +287,7 @@ module.exports = class controller {
             });
         })
 
-        
+
 
     }
 }

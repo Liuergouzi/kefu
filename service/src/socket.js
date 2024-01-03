@@ -343,20 +343,16 @@ module.exports = class controller {
             socket.on("sendMessage", data => {
 
                 if (data.sendType == 2 && config.imageSaveLocal || data.sendType == 3 && config.imageSaveLocal) {
-                    //过滤data:URL
-                    let base64Data = data.message.replace(/^data:image\/\w+;base64,/, "");
-                    let dataBuffer = new Buffer.from(base64Data, 'base64');
-                    if (dataBuffer.length > 1024 * 1024 * 3) {
-                        socket.emit("error", "图片不能超过3m")
-                        return
-                    }
-                    // 存储文件命名是使用当前时间，防止文件重名
-                    let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + ".png";
                     try {
-                        // 检查路径是否存在，如果不存在则创建路径  
-                        if (!fs.existsSync(config.imageSaveUrl)) {
-                            fs.mkdirSync(config.imageSaveUrl, { recursive: true }); // 如果不存在，则创建路径  
+                        //过滤data:URL
+                        let base64Data = data.message.replace(/^data:image\/\w+;base64,/, "");
+                        let dataBuffer = new Buffer.from(base64Data, 'base64');
+                        if (base64Data.length/4*3 > 1024 * 1024 * 3) {
+                            socket.emit("error", "图片不能超过3m")
+                            return
                         }
+                        // 存储文件命名是使用当前时间，防止文件重名
+                        let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime()+"0"+Math.floor(Math.random() * 100) + ".png";
                         fs.writeFileSync(config.imageStaticDirectory + saveUrl, dataBuffer);
                         data.message = config.imageIp + saveUrl
                     } catch (err) {
