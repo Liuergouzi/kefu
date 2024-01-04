@@ -4,6 +4,7 @@ const state = require('../language/i18n.js'); //引入全局返回状态
 const nowTime = require("../utils/time.js");
 const config = require("../config.js");
 const fs = require("fs");  //文件写入
+const nodeCache = require("./nodeCache.js")
 
 module.exports = class controller {
     constructor(app) {
@@ -19,10 +20,17 @@ module.exports = class controller {
 
         //首页自定义问题查询
         this.app.get('/selectdefaultProblem', function (req, res) {
+            let returns = state.__("success");
+            const cacheData = nodeCache.getCache("selectdefaultProblem")
+            if (cacheData) {
+                returns.data = cacheData
+                res.json(returns)
+                return
+            }
             mysql.selectdefaultProblem().then((sql_data) => {
                 if (sql_data) {
-                    let returns = state.__("success");
                     returns.data = sql_data;
+                    nodeCache.setCache("selectdefaultProblem",sql_data)
                     res.json(returns)
                 } else {
                     res.json(state.__("false"))
@@ -219,8 +227,8 @@ module.exports = class controller {
                     let base64Data = req.body.message.replace(/'/g, "").replace(/^data:image\/\w+;base64,/, "");
                     let dataBuffer = new Buffer.from(base64Data, 'base64');
                     // 存储文件命名是使用当前时间，防止文件重名
-                    let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime()+"0"+Math.floor(Math.random() * 100) + ".png";
-                    if (base64Data.length/4*3 > 1024 * 1024 * 3) {
+                    let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + "0" + Math.floor(Math.random() * 100) + ".png";
+                    if (base64Data.length / 4 * 3 > 1024 * 1024 * 3) {
                         socket.emit("error", "图片不能超过3m")
                         return
                     }

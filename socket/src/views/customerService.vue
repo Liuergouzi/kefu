@@ -697,6 +697,7 @@ export default {
             //取消红点
             resetOfflineCount({ userId: item.data.userId }).then(() => {
                 const timer = setTimeout(() => {
+                    this.userOfflineMessageList=[]
                     this.selectOfflineMessage()
                     this.getOffMessageCount()
                     clearTimeout(timer)

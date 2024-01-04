@@ -436,7 +436,12 @@
     padding: 10px;
     border-radius: 10px;
     margin: 10px 0px;
+    cursor: pointer;
 }
+.offMessageItem:hover{
+    background-color: #dadada;
+}
+
 .offMessageList{
     padding: 10px 20px;
     max-height: 500px;
