@@ -308,6 +308,25 @@ module.exports = class controller {
                 }
             })
 
+            //客服修改名称
+            socket.on("updateServiceName", data => {
+                var newData = verification.newData(data);
+                if (newData.code) {
+                    const index = this.services.findIndex((v) => v.serviceId === data.serviceId)
+                    if (index < 0) return
+                    this.services[index].serviceName=data.serviceName
+                }
+            })
+
+            //客服修改最大接待次数
+            socket.on("updateServiceMax", data => {
+                var newData = verification.newData(data);
+                if (newData.code) {
+                    const index = this.services.findIndex((v) => v.serviceId === data.serviceId)
+                    if (index < 0) return
+                    this.services[index].serviceMax=data.serviceMax
+                }
+            })
 
             //让用户进入
             socket.on("userJoin", data => {
@@ -347,12 +366,12 @@ module.exports = class controller {
                         //过滤data:URL
                         let base64Data = data.message.replace(/^data:image\/\w+;base64,/, "");
                         let dataBuffer = new Buffer.from(base64Data, 'base64');
-                        if (base64Data.length/4*3 > 1024 * 1024 * 3) {
+                        if (base64Data.length / 4 * 3 > 1024 * 1024 * 3) {
                             socket.emit("error", "图片不能超过3m")
                             return
                         }
                         // 存储文件命名是使用当前时间，防止文件重名
-                        let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime()+"0"+Math.floor(Math.random() * 100) + ".png";
+                        let saveUrl = config.imageSaveUrl + '/' + (new Date()).getTime() + "0" + Math.floor(Math.random() * 100) + ".png";
                         fs.writeFileSync(config.imageStaticDirectory + saveUrl, dataBuffer);
                         data.message = config.imageIp + saveUrl
                     } catch (err) {

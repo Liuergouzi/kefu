@@ -68,5 +68,5 @@
 	    "babel-plugin-import": "^1.13.5",
 	
 
-###	vant组件官方地址https://vant-contrib.gitee.io/vant/#/zh-CN	
+###	vant组件官方地址https://vant-contrib.gitee.io/vant/v3/#/zh-CN
 

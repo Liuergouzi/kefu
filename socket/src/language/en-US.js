@@ -52,7 +52,8 @@ const EN = {
         t27: "Offline users",
         t28: "Search username",
         t29: "Search",
-        t30: "Search result is empty"
+        t30: "Search result is empty",
+        t31: "Please do not access the customer service end after agreeing to access the client in the browser"
     },
     customerChat:{
         t1: "close",

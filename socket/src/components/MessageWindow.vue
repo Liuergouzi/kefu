@@ -1,5 +1,5 @@
 <template>
-    <div class="RightCont">
+    <div class="RightCont" id="messageComponent">
         <div v-if="lastSession" class="noticeDiv">
             <div class="moreSession" v-on:click="selectMessage">
                 {{ $t('text.MessageWindow.t1') }}
@@ -108,8 +108,6 @@ export default {
     data() {
         return {
             lastSession: false,
-            idIsSelect: [],
-            //此处对于子组件与父组件之间的传值需要拷贝一下，父组件传值子组件实际上还是引用地址，不能直接去修改
             messageList_copy: this.messageList,
             isShowHistoryTime: false,
             timeOutEvent: 0,
@@ -132,6 +130,7 @@ export default {
 
         //查询历史消息
         selectMessage() {
+            // this.messageList_copy = []
             let params = {
                 sendId: this.sendId,
                 receiveId: this.receiveId
@@ -149,58 +148,55 @@ export default {
 
         //历史消息数据处理
         dataHandle(response) {
-            let message = response
+
             let lasTime = new Date()
             this.messageList_copy.length = 0
-            for (var i = message.length - 1; i >= 0; i--) {
+            response.reverse().forEach(item => {
                 let newTime
-                if (this.isOverTime(message[i].sendTime, lasTime)) {
-                    newTime = message[i].sendTime
-                    lasTime = message[i].sendTime
+                if (this.isOverTime(item.sendTime, lasTime)) {
+                    newTime = item.sendTime
+                    lasTime = item.sendTime
                 } else {
                     newTime = null
                 }
 
-                if (message[i].sendId == this.sendId) {
-                    let obj = message[i].isRetract == 1 ?
+                if (item.sendId == this.sendId) {
+                    let obj = item.isRetract == 1 ?
                         {
                             sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t8'),
-                            sendTime: newTime, isRetract: message[i].isRetract, id: message[i].id
+                            sendTime: newTime, isRetract: item.isRetract, id: item.id
                         }
                         :
                         {
-                            sendType: message[i].sendType, sendPeople: 'me', message: message[i].sendMessage,
-                            sendTime: newTime, isRetract: message[i].isRetract, id: message[i].id
+                            sendType: item.sendType, sendPeople: 'me', message: item.sendMessage,
+                            sendTime: newTime, isRetract: item.isRetract, id: item.id
                         }
                     this.messageList_copy.unshift(obj)
                 } else {
                     let obj
                     if (!this.isService) {
-                        obj = message[i].isRetract == 1 ?
+                        obj = item.isRetract == 1 ?
                             {
                                 sendType: 4, sendPeople: 'notice', message: this.$t('text.customerChat.t9'),
-                                sendTime: newTime, isRetract: message[i].isRetract, id: message[i].id
+                                sendTime: newTime, isRetract: item.isRetract, id: item.id
                             }
                             :
                             {
-                                sendType: message[i].sendType, sendPeople: 'other', message: message[i].sendMessage,
-                                sendTime: newTime, isRetract: message[i].isRetract, id: message[i].id
+                                sendType: item.sendType, sendPeople: 'other', message: item.sendMessage,
+                                sendTime: newTime, isRetract: item.isRetract, id: item.id
                             }
                     } else {
                         obj = {
-                            sendType: message[i].sendType, sendPeople: 'other', message: message[i].sendMessage,
-                            sendTime: newTime, isRetract: message[i].isRetract, id: message[i].id
+                            sendType: item.sendType, sendPeople: 'other', message: item.sendMessage,
+                            sendTime: newTime, isRetract: item.isRetract, id: item.id
                         }
                     }
 
                     this.messageList_copy.unshift(obj)
                 }
-            }
-            //对已经加载了消息的id记录下来
-            let obj = { receiveId: this.receiveId }
-            this.idIsSelect.push(obj)
-            this.lastSession = false
+            });
             this.isShowHistoryTime = true
+            this.toBottom(128)
         },
 
         //时间对比是否超过1小时，否则彼此之间不显示时间
@@ -214,22 +210,33 @@ export default {
         //图片预览
         imagePreview(src) {
             ImagePreview({ images: [src], closeable: true, })
-        }
+        },
+
+        //监听滑动
+        // onScroll(e) {
+        //     const scrollTop = e.target.scrollTop;
+        //     const scrollHeight = e.target.scrollHeight;
+        //     console.log(scrollTop,scrollHeight)
+        // },
+
+        //回到底部
+        toBottom(time) {
+            setTimeout(() => {
+                let RightCont = document.getElementById("messageComponent");
+                if (RightCont != null) {
+                    let scrollHeight2 = RightCont.scrollHeight;
+                    RightCont.scrollTop = scrollHeight2;
+                }
+            }, time);
+            clearTimeout();
+        },
     },
 
     watch: {
-        //此处需要根据客服的选择，进行实时刷新判断是否已经加载历史消息，否则可以多次加载消息，消息列表重复
+        //客服切换选择加载历史消息
         receiveId: {
             handler() {
-                let listTemp = this.idIsSelect.filter((v) => v.receiveId == this.receiveId)
-                if (listTemp.length == 0) {
-                    this.lastSession = true
-                } else {
-                    this.lastSession = false
-                }
-                if (listTemp.length == 0 && this.lastSession) {
-                    this.selectMessage()
-                }
+                this.selectMessage()
             }
         },
         //解决父组件传值拷贝不会更新
@@ -242,7 +249,7 @@ export default {
     computed: {
         actions() {
             return [
-                { text: this.$t('text.MessageWindow.t3') },
+                { id: 1, text: this.$t('text.MessageWindow.t3') },
             ];
         },
         actionsTwo() {

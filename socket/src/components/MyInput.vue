@@ -1,6 +1,11 @@
+<!--
+ * @轮子的作者: 轮子哥
+ * @Date: 2024-01-03 10:43:04
+ * @LastEditTime: 2024-01-04 11:19:02
+-->
 <template>
     <div>
-        <div class="input__x" v-if="line == 1">
+        <div class="input__x" v-if="line == 1"> 
             <input type="text" class="input__fill" v-model="serviceName">
             <label class="input__label">{{$t('text.MyInput.t1')}}</label>
         </div>
@@ -23,9 +28,12 @@ export default {
     },
     data() {
         return {
+            socket: this.$store.state.serviceSocket,
             serviceName: this.serviceNameProps,
             serviceMax: this.serviceMaxProps
         }
+    },
+    methods: {
     },
     watch: {
         //监听，自动post修改昵称
@@ -33,7 +41,8 @@ export default {
             handler(newValue) {
                 if (newValue != "" && newValue.indexOf(" ") < 0) {
                     updateServiceName({serviceName: newValue,serviceId: this.serviceId}).then(() => {
-                        this.$emit('changeValue1', newValue, 1);
+                        this.socket.emit("updateServiceName", {serviceName: newValue,serviceId: this.serviceId});
+                        this.$emit('changeValue', newValue, 1);
                     })
                 }
             }
@@ -43,7 +52,8 @@ export default {
             handler(newValue) {
                 if (typeof(newValue)=='number') {
                     updateServiceMax({serviceMax: newValue,serviceId: this.serviceId}).then(() => {
-                        this.$emit('changeValue1', newValue, 2);
+                        this.socket.emit("updateServiceMax", {serviceMax: newValue,serviceId: this.serviceId});
+                        this.$emit('changeValue', newValue, 2);
                     })
                 }
             }

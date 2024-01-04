@@ -12,7 +12,7 @@
                     {{ $t('text.customerService.t1') }}{{ service.serviceName }}
                 </div>
                 <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceName = false" :line="'1'"
-                    :serviceId="service.serviceId" :serviceNameProps="service.serviceName" @changeValue1="changeValue">
+                    :serviceId="service.serviceId" :serviceNameProps="service.serviceName" @changeValue="changeInputValue">
                 </MyInput>
 
                 <!--最大接待人数及修改-->
@@ -21,7 +21,7 @@
                     {{ $t('text.customerService.t2') }}{{ service.serviceMax }}
                 </div>
                 <MyInput v-else style="margin-top: 14px" v-on:mouseleave="changeServiceReception = false" :line="'2'"
-                    :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue1="changeValue">
+                    :serviceId="service.serviceId" :serviceMaxProps="service.serviceMax" @changeValue="changeInputValue">
                 </MyInput>
 
                 <div class="serviceHeadNameNone" style="margin-left:10px;margin-right:10px">
@@ -287,7 +287,7 @@
                     <div class="headName">{{ selectUsers.data.userName }}</div>
                 </div>
                 <!--聊天内容-->
-                <MessageWindow v-if="isSelectSession" id="RightCont" :messageList="selectUsers.data.messageList"
+                <MessageWindow v-if="isSelectSession" :messageList="selectUsers.data.messageList"
                     :sendId="service.serviceId" :receiveId="selectUsers.data.receiveId" isService
                     @retractMessage="retractMessage" :isOffline="this.selectUsers.data.isOffline"
                     :serviceHead="service.serviceHead">
@@ -444,8 +444,8 @@ export default {
 
             this.showNoticeBar = !this.showNoticeBar
             this.service.serviceFrequency = this.service.serviceFrequency + 1;
-            //设置30秒后自动取消通知条
-            setTimeout(this.showNotice, 30000);
+            //设置10秒后自动取消通知条
+            setTimeout(this.showNotice, 10000);
         });
 
         //接收消息
@@ -632,6 +632,11 @@ export default {
         getOffMessageCount() {
             offlineMessageCount({ serviceId: this.service.serviceId }).then((response) => {
                 this.offMessageCount = response
+            }).catch(error=>{
+                if(error.type=='accessDenied'){
+                    this.$toast(this.$t('text.customerService.t31'))
+                    setTimeout(this.loginOut(),1000)
+                }
             })
         },
 
@@ -681,6 +686,7 @@ export default {
             this.toBottom(128)
         },
 
+        //点击离线消息，左侧列表显示离线会话
         goToUserOffMsg(item) {
             this.selectSession(item, true)
             this.offMsgDialogShow = !this.offMsgDialogShow
@@ -752,7 +758,7 @@ export default {
         },
 
         //接收顶部input子组件返回
-        changeValue(value, index) {
+        changeInputValue(value, index) {
             switch (index) {
                 case 1: this.service.serviceName = value; break;
                 case 2: this.service.serviceMax = value; break;
@@ -820,7 +826,7 @@ export default {
         //回到底部
         toBottom(time) {
             setTimeout(() => {
-                let RightCont = document.getElementById("RightCont");
+                let RightCont = document.getElementById("messageComponent");
                 if (RightCont != null) {
                     let scrollHeight2 = RightCont.scrollHeight;
                     RightCont.scrollTop = scrollHeight2;

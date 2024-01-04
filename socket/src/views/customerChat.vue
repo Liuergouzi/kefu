@@ -16,7 +16,7 @@
                 </div>
             </div>
             <!--聊天内容-->
-            <MessageWindow :messageList="messageList" class="customerChatMessage" id="customerChatWindow"
+            <MessageWindow :messageList="messageList" class="customerChatMessage" 
                 :sendId="this.$store.state.userData.userId" :receiveId="this.$store.state.userData.receiveId"
                 @retractMessage="retractMessage" :serviceHead="user.serviceHead"></MessageWindow>
             <!--聊天框底部-->
@@ -211,7 +211,7 @@ export default {
         //回到底部
         toBottom(time) {
             setTimeout(() => {
-                let RightCont = document.getElementById("customerChatWindow");
+                let RightCont = document.getElementById("messageComponent");
                 if (RightCont != null) {
                     let scrollHeight2 = RightCont.scrollHeight;
                     RightCont.scrollTop = scrollHeight2;

@@ -76,7 +76,7 @@ instance.interceptors.response.use(response => {
     }else {
         res = response
         showErrorMsg()
-        return Promise.reject(response.data.message)
+        return Promise.reject(response.data)
     }
 }, error => {
     if(error)
