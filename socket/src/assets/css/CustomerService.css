@@ -446,3 +446,13 @@
 .searchUserNameHover:hover{
     background-color: #eee;
 }
+
+.cancelSearch{
+    text-align: center;
+    font-size: 12px;
+    margin: 0 10px;
+    padding: 3px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #eee;
+}

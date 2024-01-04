@@ -107,6 +107,9 @@
                 </van-search>
                 <!--显示搜索的列表-->
                 <ul>
+                    <div class="cancelSearch" v-if="searchUserNameList.length>0" @click="searchUserNameList=[];searchUserNameValue=''">
+                        取消搜索
+                    </div>
                     <li :key="index" v-for="(item, index) in searchUserNameList" style="cursor: pointer;height: 50px;"
                         class="searchUserNameHover" v-on:click="selectSession(item, false)">
                         <div class="liLeft">
