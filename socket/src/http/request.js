@@ -2,10 +2,10 @@ import axios from 'axios'
 import { translate as $t } from "../language/index"
 import { Toast } from 'vant';
 import config from '../config';
-
+import router from '@/router';
 //创建axios
 const instance = axios.create({
-    baseURL: config.environment == 'dev'?'/api':config.environment == 'build'?config.apiUrl:process.env.BASE_API,
+    baseURL: config.environment == 'dev' ? '/api' : config.environment == 'build' ? config.apiUrl : process.env.BASE_API,
     timeout: 10000
 })
 //节流
@@ -33,7 +33,7 @@ instance.interceptors.request.use(config => {
         cancel()
     }
 
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         let timer
         if (config.method == 'get') {
             //放行get请求
@@ -73,14 +73,19 @@ instance.interceptors.request.use(config => {
 instance.interceptors.response.use(response => {
     if (response.data.code) {
         return response.data.data
-    }else {
+    } else if (response.data.type=="accessDenied") { 
+        res = response
+        showErrorMsg()
+        router.go(0)
+        return Promise.reject(response.data)
+    } else {
         res = response
         showErrorMsg()
         return Promise.reject(response.data)
     }
 }, error => {
-    if(error)
-    showErrorMsg2()
+    if (error)
+        showErrorMsg2()
     return Promise.reject(error)
 })
 

@@ -358,7 +358,7 @@ export default {
 
     data() {
         return {
-            socket: this.$store.state.serviceSocket,
+            socket: this.$store.state.socket,
             service: {
                 serviceId: '',
                 serviceName: '',
@@ -637,7 +637,7 @@ export default {
                 this.offMessageCount = response
             }).catch(error=>{
                 if(error.type=='accessDenied'){
-                    this.$toast(this.$t('text.customerService.t31'))
+                    alert(this.$t('text.customerService.t31'))
                     setTimeout(this.loginOut(),1000)
                 }
             })

@@ -53,7 +53,7 @@ const EN = {
         t28: "Search username",
         t29: "Search",
         t30: "Search result is empty",
-        t31: "Please do not access the customer service end after agreeing to access the client in the browser"
+        t31: "Please do not access the customer service end after accessing the client in the same browser"
     },
     customerChat:{
         t1: "close",

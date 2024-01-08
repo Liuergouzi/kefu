@@ -31,7 +31,7 @@ import JSEncrypt from 'jsencrypt';
     export default {
     data() {
         return {
-            socket: this.$store.state.serviceSocket,
+            socket: this.$store.state.socket,
             publicKey: '',
             login: {
                 serviceAccount: '',

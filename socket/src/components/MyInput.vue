@@ -1,7 +1,7 @@
 <!--
  * @轮子的作者: 轮子哥
  * @Date: 2024-01-03 10:43:04
- * @LastEditTime: 2024-01-04 11:19:02
+ * @LastEditTime: 2024-01-08 15:38:32
 -->
 <template>
     <div>
@@ -28,7 +28,7 @@ export default {
     },
     data() {
         return {
-            socket: this.$store.state.serviceSocket,
+            socket: this.$store.state.socket,
             serviceName: this.serviceNameProps,
             serviceMax: this.serviceMaxProps
         }
