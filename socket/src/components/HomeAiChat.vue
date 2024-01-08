@@ -75,6 +75,10 @@
 
             </div>
         </div>
+        <div class="initLoadingDiv" v-if="initLoading">
+            <div class="animation_div" ></div>
+            <div style="color: #555;padding-top: 5px;">{{ $t('text.HomeAiChat.t6') }}</div>
+        </div>
     </div>
 </template>
 
@@ -83,6 +87,7 @@ export default {
     name: 'HomeAiChat',
     props: {
         messageList: Object,
+        initLoading:Boolean,
         specifyServiceList: {
             default: []
         }

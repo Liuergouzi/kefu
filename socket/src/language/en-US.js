@@ -98,7 +98,8 @@ const EN = {
         t2: "",
         t3: "cancellation",
         t4: "Please cancel the queue first",
-        t5: "Please select human customer service:"
+        t5: "Please select human customer service:",
+        t6: "Initializing loading, please be patient and wait..."
     },
     MessageWindow:{
         t1:"Load more",

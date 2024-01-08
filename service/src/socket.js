@@ -50,6 +50,7 @@ module.exports = class controller {
                             returns.data = data;
                             returns.token = token.createTokenUser(data);
                             socket.emit("visitReturn", returns);
+                            delete returns.token;
                         } else {
                             //进行用户注册
                             mysql.insertUser(newData);
@@ -57,6 +58,7 @@ module.exports = class controller {
                             returns.data = datas;
                             returns.token = token.createTokenUser(data);
                             socket.emit("visitInsertReturn", returns);
+                            delete returns.token;
                         }
                     });
 
@@ -87,6 +89,7 @@ module.exports = class controller {
                             returns.token = token.createToken(data);
                             returns.data = data;
                             socket.emit("loginReturn", returns);
+                            delete returns.token;
                         } else {
                             //登录失败
                             socket.emit("error", state.__("loginFalse"));

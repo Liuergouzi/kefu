@@ -31,7 +31,7 @@
             <!--信息窗口-->
             <HomeAiChat :messageList="messageList" id="userMessage" class="userMessage" @waitCancel="waitCancel"
                 style="display:inline-block" :specifyServiceList="specifyServiceList"
-                @specifyConnection="specifyConnection">
+                @specifyConnection="specifyConnection" :initLoading="initLoading">
             </HomeAiChat>
 
             <!--底部发送-->
@@ -133,6 +133,7 @@ export default {
             specifyFinished: false,
             specifyPage: 1,
             serviceType: null,
+            initLoading:true
         }
     },
 
@@ -277,6 +278,7 @@ export default {
                         reply: response.filter(v => v.type == 'reply')
                     }
                 ]
+                this.initLoading=false
             })
         },
 
